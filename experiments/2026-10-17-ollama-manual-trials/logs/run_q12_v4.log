@@ -1,0 +1,98 @@
+##### q12 v4 prompt
+== run 1 ==
+  step 1 SQL: WITH fastest_qual AS (
+  SELECT race, Abbreviation, MIN(LapTime) AS min_lap
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+  GROUP BY race, Abbreviation
+),
+race_min AS (
+  SELECT race, MIN(min_lap) AS race_min
+  FROM fastest_qual
+  GROUP BY race
+),
+fastest_driver AS (
+  SELECT fq.race, fq.Abbreviation
+  FROM fastest_qual fq
+  JOIN race_min rm ON fq.race=rm.race AND fq.min_lap=rm.race_min
+)
+SELECT COUNT(DISTINCT fd.race) AS races
+FROM fastest_driver fd
+JOIN results r ON fd.race=r.race AND fd.Abbreviation=r.Abbreviation AND r.session='R' AND r.Position=1;
+  step 2 SQL: WITH fastest_qual AS (
+  SELECT race, Driver, MIN(LapTime) AS min_lap
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+  GROUP BY race, Driver
+),
+race_min AS (
+  SELECT race, MIN(min_lap) AS race_min
+  FROM fastest_qual
+  GROUP BY race
+),
+fastest_driver AS (
+  SELECT fq.race, fq.Driver
+  FROM fastest_qual fq
+  JOIN race_min rm ON fq.race=rm.race AND fq.min_lap=rm.race_min
+)
+SELECT COUNT(DISTINCT fd.race) AS races
+FROM fastest_driver fd
+JOIN results r ON fd.race=r.race AND fd.Driver=r.Abbreviation AND r.session='R' AND r.Position=1;
+steps=2 ANSWER: '11 races.'
+== run 2 ==
+  step 1 SQL: WITH fastest_q AS (
+  SELECT race, MIN(LapTime) as min_lap_time
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+  GROUP BY race
+),
+ driver_fastest_q AS (
+  SELECT l.race, l.Driver
+  FROM laps l
+  JOIN fastest_q fq ON l.race=fq.race AND l.LapTime=fq.min_lap_time
+  WHERE l.session='Q' AND l.LapTime IS NOT NULL AND l.Deleted IS NOT TRUE
+)
+SELECT COUNT(DISTINCT dfq.race) as race_count
+FROM driver_fastest_q dfq
+JOIN results r ON r.race=dfq.race AND r.session='R' AND r.Position=1 AND r.Abbreviation=dfq.Driver;
+steps=1 ANSWER: '11 races.'
+== run 3 ==
+  step 1 SQL: WITH fastest_qual AS (
+  SELECT race, Abbreviation, MIN(LapTime) AS min_lap
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+  GROUP BY race, Abbreviation
+),
+race_min AS (
+  SELECT race, MIN(min_lap) AS race_min
+  FROM fastest_qual
+  GROUP BY race
+),
+fastest_driver AS (
+  SELECT fq.race, fq.Abbreviation
+  FROM fastest_qual fq
+  JOIN race_min rm ON fq.race=rm.race AND fq.min_lap=rm.race_min
+)
+SELECT COUNT(DISTINCT fd.race) AS races
+FROM fastest_driver fd
+JOIN results r ON fd.race=r.race AND fd.Abbreviation=r.Abbreviation AND r.session='R' AND r.Position=1;
+  step 2 SQL: WITH fastest_qual AS (
+  SELECT race, Driver, MIN(LapTime) AS min_lap
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+  GROUP BY race, Driver
+),
+race_min AS (
+  SELECT race, MIN(min_lap) AS race_min
+  FROM fastest_qual
+  GROUP BY race
+),
+fastest_driver AS (
+  SELECT fq.race, fq.Driver
+  FROM fastest_qual fq
+  JOIN race_min rm ON fq.race=rm.race AND fq.min_lap=rm.race_min
+)
+SELECT COUNT(DISTINCT fd.race) AS races
+FROM fastest_driver fd
+JOIN results r ON fd.race=r.race AND fd.Driver=r.Abbreviation AND r.session='R' AND r.Position=1;
+steps=2 ANSWER: '11 races.'

@@ -1,0 +1,182 @@
+##### Q1 (cloudflare gpt-oss-20b, v4 prompt, 1 run): In the 2024 Bahrain Grand Prix, who had the faster race pace, Verstappen or Norris? Use only green-flag laps, excluding in-laps, out-laps and deleted laps. Give the median lap time for each.
+== run 1 ==
+  step 1 SQL: SELECT Driver,
+       percentile_cont(0.5) WITHIN GROUP (ORDER BY LapTime) / 1e9 AS median_sec
+FROM laps
+WHERE race='bahrain_grand_prix'
+  AND session='R'
+  AND TrackStatus='1'
+  AND PitInTime IS NULL
+  AND PitOutTime IS NULL
+  AND Deleted IS NOT TRUE
+  AND LapTime IS NOT NULL
+  AND Driver IN ('VER','NOR')
+GROUP BY Driver;
+
+steps=1 ANSWER: 'Verstappen had the faster race pace.\n\n| Driver | Median lap time (green‑flag, no pit‑in/out, not deleted) |\n|--------|--------------------------------------------------------|\n| Max\u202fVerstappen | **95.48\u202fs** |\n| Lando\u202fNorris   | **96.54\u202fs** |\n\nSo Verstappen’s median lap was about 1.06\u202fs quicker than Norris’s.'
+##### Q2 (cloudflare gpt-oss-20b, v4 prompt, 1 run): Across the 2024 Grand Prix races, which drivers finished on the podium (top 3) after starting outside the top 10 on the grid? Give each driver with how many times they did it.
+== run 1 ==
+  step 1 SQL: SELECT r.Abbreviation, ds.full_name, COUNT(*) as times
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'R' AND r.Position <= 3 AND r.GridPosition > 10
+GROUP BY r.Abbreviation, ds.full_name
+ORDER BY times DESC, ds.full_name
+  step 2 SQL: SELECT r.race, r.Abbreviation, ds.full_name, r.GridPosition, r.Position
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'R' AND r.Position <= 3 AND r.GridPosition > 10
+ORDER BY r.race, r.Position
+  step 3 SQL: SELECT r.race, r.Abbreviation, ds.full_name, r.GridPosition, r.Position
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'R' AND r.Position <= 3 AND r.GridPosition > 10
+ORDER BY r.race, r.Position
+steps=3 ANSWER: '**Drivers who finished on the podium after starting outside the top‑10 (grid position\u202f>\u202f10)**  \n\n| Driver | Full name | Times |\n|--------|-----------|-------|\n| LEC | Charles Leclerc | 1 |\n| VER | Max\u202fVerstappen | 1 |\n| GAS | Pierre Gasly | 1 |\n\nEach of these drivers achieved a podium finish in a single race while starting beyond the top‑10 on the grid.'
+##### Q3 (cloudflare gpt-oss-20b, v4 prompt, 1 run): Across the 2024 season, which driver had the largest gap between their best qualifying lap and their median race lap at the same Grand Prix? Use green-flag race laps only (excluding in-laps, out-laps and deleted laps) for the race median, and ignore deleted qualifying laps. Give the driver, the Grand Prix, and the gap in seconds.
+== run 1 ==
+  step 1 SQL: WITH best_qual AS (
+  SELECT
+    l.Driver,
+    l.race,
+    MIN(l.LapTime) AS best_qual_lap
+  FROM laps l
+  WHERE l.session = 'Q'
+    AND l.Deleted = FALSE
+    AND l.LapTime IS NOT NULL
+  GROUP BY l.Driver, l.race
+),
+ race_laps AS (
+  SELECT
+    l.Driver,
+    l.race,
+    l.LapTime
+  FROM laps l
+  WHERE l.session = 'R'
+    AND l.Deleted = FALSE
+    AND l.PitInTime IS NULL
+    AND l.PitOutTime IS NULL
+    AND l.TrackStatus = '1'
+    AND l.LapTime IS NOT NULL
+),
+ median_lap AS (
+  SELECT
+    r.Driver,
+    r.race,
+    percentile_cont(0.5) WITHIN GROUP (ORDER BY r.LapTime) AS median_lap
+  FROM race_laps r
+  GROUP BY r.Driver, r.race
+)
+SELECT
+  d.full_name AS driver,
+  bq.race AS grand_prix,
+  (median_lap.median_lap - bq.best_qual_lap) / 1e9 AS gap_seconds
+FROM best_qual bq
+JOIN median_lap ON median_lap.Driver = bq.Driver AND median_lap.race = bq.race
+JOIN driver_seasons d ON d.driver_code = bq.Driver AND d.season = 2024
+ORDER BY gap_seconds DESC
+LIMIT 1;
+steps=1 ANSWER: 'Logan\u202fSargeant – Canadian Grand Prix – 16.767\u202fseconds.'
+##### Q4 (cloudflare gpt-oss-20b, v4 prompt, 1 run): Across all 2024 Grand Prix races, how many laps did each driver lead? Count a lap as led when the driver's Position is 1 on that lap. Give the driver with the most laps led and their count.
+== run 1 ==
+  step 1 SQL: SELECT l.Driver, COUNT(*) AS laps_led FROM laps l WHERE l.session = 'R' AND l.Position = 1 GROUP BY l.Driver ORDER BY laps_led DESC LIMIT 10
+  step 2 SQL: SELECT l.Driver, COUNT(*) AS laps_led, ds.full_name FROM laps l JOIN driver_seasons ds ON l.Driver = ds.driver_code AND l.season = ds.season WHERE l.session = 'R' AND l.Position = 1 GROUP BY l.Driver, ds.full_name ORDER BY laps_led DESC
+steps=2 ANSWER: 'Across the 24 2024 Grand Prix races, the number of laps each driver led (i.e., Position\u202f=\u202f1 on a lap) is:\n\n| Driver | Laps led |\n|--------|----------|\n| Max\u202fVerstappen | 559 |\n| Lando\u202fNorris | 271 |\n| Charles\u202fLeclerc | 172 |\n| George\u202fRussell | 137 |\n| Carlos\u202fSainz | 134 |\n| Oscar\u202fPiastri | 123 |\n| Lewis\u202fHamilton | 31 |\n| Esteban\u202fOcon | 14 |\n| Sergio\u202fPerez | 1 |\n\n**Driver with the most laps led:** Max\u202fVerstappen, 559 laps.'
+##### Q5 (cloudflare gpt-oss-20b, v4 prompt, 1 run): Who won the 2023 Monaco Grand Prix, and by how many seconds?
+== run 1 ==
+steps=0 ANSWER: 'I’m sorry, but the data set only contains information for the 2024 season, so it does not include the 2023 Monaco Grand Prix.'
+##### Q6 (cloudflare gpt-oss-20b, v4 prompt, 1 run): In the 2024 Grand Prix race laps, pair each pit-in lap with the next lap's pit-out time to get each stop's pit-lane time. Ignore stops under 10 seconds or over 60 seconds. For each team, give the median pit-lane time and the number of stops. Which team had the fastest median?
+== run 1 ==
+  step 1 SQL: SELECT
+  l.Team AS team,
+  median((l2.PitOutTime - l.PitInTime)/1e9) AS median_pit_time,
+  count(*) AS stops
+FROM laps l
+JOIN laps l2
+  ON l.Driver = l2.Driver
+  AND l.race = l2.race
+  AND l.session = l2.session
+  AND l.LapNumber + 1 = l2.LapNumber
+WHERE l.PitInTime IS NOT NULL
+  AND l2.PitOutTime IS NOT NULL
+  AND l.session = 'R'
+  AND (l2.PitOutTime - l.PitInTime)/1e9 BETWEEN 10 AND 60
+GROUP BY l.Team
+ORDER BY median_pit_time ASC;
+steps=1 ANSWER: '**Median pit‑lane times (seconds) and stop counts – 2024 Grand Prix races**\n\n| Team | Median pit‑lane time | Number of stops |\n|------|----------------------|-----------------|\n| McLaren | **22.887** | 77 |\n| Mercedes | 22.908 | 78 |\n| Red\u202fBull\u202fRacing | 22.928 | 80 |\n| RB | 22.940 | 72 |\n| Ferrari | 23.091 | 75 |\n| Alpine | 23.205 | 71 |\n| Aston\u202fMartin | 23.265 | 81 |\n| Williams | 23.545 | 72 |\n| Haas\u202fF1\u202fTeam | 24.010 | 85 |\n| Kick\u202fSauber | 24.256 | 78 |\n\n**Fastest median** – **McLaren** (22.887\u202fs).'
+##### Q7 (cloudflare gpt-oss-20b, v4 prompt, 1 run): Chart each driver's total Grand Prix race points in 2024, highest first.
+== run 1 ==
+  step 1 SQL: SELECT ds.full_name AS driver, SUM(r.Points) AS total_points
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'R'
+GROUP BY ds.full_name
+ORDER BY total_points DESC
+LIMIT 50
+steps=1 ANSWER: "**2024 Formula\u202f1 – Grand Prix Race Points (Highest to Lowest)**  \n\n| Rank | Driver | Total Points |\n|------|--------|--------------|\n| 1 | Max\u202fVerstappen | 399 |\n| 2 | Lando\u202fNorris | 344 |\n| 3 | Charles\u202fLeclerc | 327 |\n| 4 | Oscar\u202fPiastri | 265 |\n| 5 | Carlos\u202fSainz | 262 |\n| 6 | George\u202fRussell | 226 |\n| 7 | Lewis\u202fHamilton | 207 |\n| 8 | Sergio\u202fPerez | 138 |\n| 9 | Fernando\u202fAlonso | 70 |\n| 10 | Pierre\u202fGasly | 40 |\n| 11 | Nico\u202fHulkenberg | 36 |\n| 12 | Yuki\u202fTsunoda | 29 |\n| 13 | Lance\u202fStroll | 24 |\n| 14 | Esteban\u202fOcon | 23 |\n| 15 | Kevin\u202fMagnussen | 14 |\n| 16 | Alexander\u202fAlbon | 12 |\n| 17 | Oliver\u202fBearman | 7 |\n| 18 | Daniel\u202fRicciardo | 7 |\n| 19 | Franco\u202fColapinto | 5 |\n| 20 | Liam\u202fLawson | 4 |\n| 21 | Guanyu\u202fZhou | 4 |\n| 22 | Valtteri\u202fBottas | 0 |\n| 23 | Logan\u202fSargeant | 0 |\n| 24 | Jack\u202fDoohan | 0 |\n\n*Data source: `results` table, session = 'R', summed `Points` per driver for the 2024 season.*"
+##### Q8 (cloudflare gpt-oss-20b, v4 prompt, 1 run): Who was the most consistent driver in the 2024 races?
+== run 1 ==
+  step 1 SQL: SELECT r.Abbreviation, ds.full_name, STDDEV_SAMP(r.Position) AS stddev_pos
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'R' AND r.Position IS NOT NULL
+GROUP BY r.Abbreviation, ds.full_name
+ORDER BY stddev_pos ASC
+LIMIT 10;
+steps=1 ANSWER: 'The driver with the lowest standard deviation of finishing positions across the 2024 race season was **Valtteri\u202fBottas** (full name “Valtteri Bottas”), with a position‑standard deviation of about **2.22**. This indicates the most consistent race results among all drivers who finished races that season.'
+##### Q9 (cloudflare gpt-oss-20b, v4 prompt, 1 run): Why did Max Verstappen retire from the 2024 Bahrain Grand Prix?
+== run 1 ==
+  step 1 SQL: SELECT Status, Laps, Time, Points, FullName FROM results WHERE race='bahrain_grand_prix' AND session='R' AND Abbreviation='VER';
+steps=1 ANSWER: 'The 2024 Bahrain Grand Prix results show that Max\u202fVerstappen finished the race (Status\u202f=\u202f“Finished”) and earned 26 points. The data does not record a retirement for him in that event.'
+##### Q10 (cloudflare gpt-oss-20b, v4 prompt, 1 run): Did any driver finish a 2024 race with fewer laps than the winner of that race? If so, list the driver, the race, and how many laps fewer.
+== run 1 ==
+  step 1 SQL: WITH winner AS (
+  SELECT race, Laps AS winner_laps
+  FROM results
+  WHERE session='R' AND Position=1
+)
+SELECT ds.full_name AS driver, r.race, (w.winner_laps - r.Laps) AS laps_fewer
+FROM results r
+JOIN winner w ON r.race = w.race
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND ds.season=2024
+WHERE r.session='R' AND r.Position <> 1 AND r.Laps < w.winner_laps
+ORDER BY r.race, laps_fewer DESC;
+  step 2 SQL: WITH race_laps AS (
+  SELECT race, Driver, COUNT(*) AS laps
+  FROM laps
+  WHERE session='R'
+  GROUP BY race, Driver
+), winner AS (
+  SELECT race, MAX(laps) AS winner_laps
+  FROM race_laps
+  GROUP BY race
+)
+SELECT ds.full_name AS driver, r.race, (w.winner_laps - r.laps) AS laps_fewer
+FROM race_laps r
+JOIN winner w ON r.race = w.race
+JOIN driver_seasons ds ON r.Driver = ds.driver_code AND ds.season=2024
+WHERE r.laps < w.winner_laps
+ORDER BY r.race, laps_fewer DESC;
+  step 3 SQL: SELECT DISTINCT Status FROM results WHERE session='R' LIMIT 20;
+  step 4 SQL: WITH race_laps AS (
+  SELECT race, Driver, COUNT(*) AS laps
+  FROM laps
+  WHERE session='R'
+  GROUP BY race, Driver
+), winner AS (
+  SELECT race, MAX(laps) AS winner_laps
+  FROM race_laps
+  GROUP BY race
+), finished AS (
+  SELECT r.race, r.Abbreviation, r.Status
+  FROM results r
+  WHERE r.session='R' AND r.Status IN ('Finished', 'Lapped')
+)
+SELECT ds.full_name AS driver, r.race, (w.winner_laps - r.laps) AS laps_fewer
+FROM race_laps r
+JOIN winner w ON r.race = w.race
+JOIN finished f ON r.race = f.race AND r.Driver = f.Abbreviation
+JOIN driver_seasons ds ON r.Driver = ds.driver_code AND ds.season=2024
+WHERE r.laps < w.winner_laps
+ORDER BY r.race, laps_fewer DESC;
+steps=4 ANSWER: 'Yes – many drivers finished a 2024 race with fewer laps than the winner.  \nBelow is a list of every such driver, the race in which it happened, and how many laps fewer they completed than the race winner.\n\n| Driver | Race | Laps fewer |\n|--------|------|------------|\n| Guanyu\u202fZhou | abu_dhabi_grand_prix | 1 |\n| Alexander\u202fAlbon | abu_dhabi_grand_prix | 1 |\n| Yuki\u202fTsunoda | abu_dhabi_grand_prix | 1 |\n| Lance\u202fStroll | abu_dhabi_grand_prix | 1 |\n| Jack\u202fDoohan | abu_dhabi_grand_prix | 1 |\n| Kevin\u202fMagnussen | abu_dhabi_grand_prix | 1 |\n| Valtteri\u202fBottas | australian_grand_prix | 1 |\n| Daniel\u202fRicciardo | australian_grand_prix | 1 |\n| Kevin\u202fMagnussen | australian_grand_prix | 1 |\n| Pierre\u202fGasly | australian_grand_prix | 1 |\n| Guanyu\u202fZhou | australian_grand_prix | 1 |\n| Alexander\u202fAlbon | australian_grand_prix | 1 |\n| Esteban\u202fOcon | australian_grand_prix | 1 |\n| Lando\u202fNorris | austrian_grand_prix | 7 |\n| Logan\u202fSargeant | austrian_grand_prix | 2 |\n| Guanyu\u202fZhou | austrian_grand_prix | 1 |\n| Alexander\u202fAlbon | austrian_grand_prix | 1 |\n| Yuki\u202fTsunoda | austrian_grand_prix | 1 |\n| Valtteri\u202fBottas | austrian_grand_prix | 1 |\n| Lance\u202fStroll | austrian_grand_prix | 1 |\n| Fernando\u202fAlonso | austrian_grand_prix | 1 |\n| Valtteri\u202fBottas | azerbaijan_grand_prix | 1 |\n| Esteban\u202fOcon | azerbaijan_grand_prix | 1 |\n| Logan\u202fSargeant | bahrain_grand_prix | 2 |\n| Esteban\u202fOcon | bahrain_grand_prix | 1 |\n| Nico\u202fHulkenberg | bahrain_grand_prix | 1 |\n| Alexander\u202fAlbon | bahrain_grand_prix | 1 |\n| Yuki\u202fTsunoda | bahrain_grand_prix | 1 |\n| Guanyu\u202fZhou | bahrain_grand_prix | 1 |\n| Pierre\u202fGasly | bahrain_grand_prix | 1 |\n| Daniel\u202fRicciardo | bahrain_grand_prix | 1 |\n| Kevin\u202fMagnussen | bahrain_grand_prix | 1 |\n| Valtteri\u202fBottas | bahrain_grand_prix | 1 |\n| Sergio\u202fPerez | british_grand_prix | 2 |\n| Esteban\u202fOcon | british_grand_prix | 2 |\n| Guanyu\u202fZhou | british_grand_prix | 2 |\n| Charles\u202fLeclerc | british_grand_prix | 1 |\n| Daniel\u202fRicciardo | british_grand_prix | 1 |\n| Valtteri\u202fBottas | british_grand_prix | 1 |\n| Guanyu\u202fZhou | canadian_grand_prix | 1 |\n| Valtteri\u202fBottas | dutch_grand_prix | 2 |\n| Guanyu\u202fZhou | dutch_grand_prix | 2 |\n| Nico\u202fHulkenberg | dutch_grand_prix | 1 |\n| Esteban\u202fOcon | dutch_grand_prix | 1 |\n| Alexander\u202fAlbon | dutch_grand_prix | 1 |\n| Kevin\u202fMagnussen | dutch_grand_prix | 1 |\n| Yuki\u202fTsunoda | dutch_grand_prix | 1 |\n| Logan\u202fSargeant | dutch_grand_prix | 1 |\n| Lance\u202fStroll | dutch_grand_prix | 1 |\n| Daniel\u202fRicciardo | dutch_grand_prix | 1 |\n\n(Only drivers who finished the race – status “Finished” or “Lapped” – are included. The “laps_fewer” column shows how many fewer laps each driver completed compared to the race winner.)'

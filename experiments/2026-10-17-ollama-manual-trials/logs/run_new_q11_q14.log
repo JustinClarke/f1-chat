@@ -1,0 +1,98 @@
+##### q11: Who was the best qualifier in the 2024 season?
+== run 1 ==
+  step 1 SQL: SELECT r.Abbreviation, ds.full_name, COUNT(*) AS poles
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'Q' AND r.Position = 1
+GROUP BY r.Abbreviation, ds.full_name
+ORDER BY poles DESC
+LIMIT 5;
+steps=1 ANSWER: 'The driver with the most pole positions in the 2024 season was **Max\u202fVerstappen** – he secured **10 poles**.'
+== run 2 ==
+  step 1 SQL: SELECT r.Abbreviation, ds.full_name, COUNT(*) AS poles
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'Q' AND r.Position = 1
+GROUP BY r.Abbreviation, ds.full_name
+ORDER BY poles DESC
+LIMIT 5;
+steps=1 ANSWER: 'The driver with the most pole positions in the 2024 season was **Max\u202fVerstappen** – he secured **10 poles**.'
+== run 3 ==
+  step 1 SQL: SELECT r.Abbreviation, ds.full_name, COUNT(*) AS poles
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'Q' AND r.Position = 1
+GROUP BY r.Abbreviation, ds.full_name
+ORDER BY poles DESC
+LIMIT 5;
+steps=1 ANSWER: 'The driver with the most pole positions in the 2024 season was **Max\u202fVerstappen** – he secured **10 poles**.'
+##### q12: In how many 2024 Grand Prix races did the driver who set the fastest qualifying lap go on to win the race? Give the count.
+== run 1 ==
+  step 1 SQL: SELECT COUNT(DISTINCT q.race) AS races
+FROM results q
+JOIN results r ON q.race = r.race AND q.Abbreviation = r.Abbreviation
+WHERE q.session = 'Q' AND q.Position = 1
+  AND r.session = 'R' AND r.Position = 1;
+steps=1 ANSWER: '12 races.'
+== run 2 ==
+  step 1 SQL: SELECT COUNT(DISTINCT r_q.race) AS count
+FROM results r_q
+JOIN results r_r ON r_q.race = r_r.race
+WHERE r_q.session='Q' AND r_q.Position=1
+  AND r_r.session='R' AND r_r.Position=1;
+  step 2 SQL: SELECT r_q.race, r_q.FullName AS pole_driver, r_r.FullName AS winner
+FROM results r_q
+JOIN results r_r ON r_q.race = r_r.race
+WHERE r_q.session='Q' AND r_q.Position=1
+  AND r_r.session='R' AND r_r.Position<>1
+ORDER BY r_q.race;
+  step 3 SQL: SELECT COUNT(DISTINCT r_q.race) AS count
+FROM results r_q
+JOIN results r_r ON r_q.race = r_r.race AND r_q.Abbreviation = r_r.Abbreviation
+WHERE r_q.session='Q' AND r_q.Position=1
+  AND r_r.session='R' AND r_r.Position=1;
+steps=3 ANSWER: '12 races.'
+== run 3 ==
+  step 1 SQL: WITH fastest_q AS (
+  SELECT race, Abbreviation, MIN(Q3) AS min_q3
+  FROM results
+  WHERE session='Q' AND Q3 IS NOT NULL
+  GROUP BY race, Abbreviation
+),
+race_min_q AS (
+  SELECT race, MIN(min_q3) AS race_min_q
+  FROM fastest_q
+  GROUP BY race
+),
+driver_fastest_q AS (
+  SELECT fq.race, fq.Abbreviation
+  FROM fastest_q fq
+  JOIN race_min_q rmq ON fq.race = rmq.race AND fq.min_q3 = rmq.race_min_q
+)
+SELECT COUNT(DISTINCT dfq.race) AS races_with_fastest_q_winner
+FROM driver_fastest_q dfq
+JOIN results r ON r.race = dfq.race AND r.session='R' AND r.Abbreviation = dfq.Abbreviation AND r.Position = 1;
+steps=1 ANSWER: '13 races.'
+##### q13: How many points did Michael Schumacher score in the 2024 season?
+== run 1 ==
+  step 1 SQL: SELECT SUM(Points) as total_points FROM results WHERE Abbreviation = 'SCH' AND session = 'R' AND season = 2024
+steps=1 ANSWER: 'The data set does not include Michael\u202fSchumacher for the 2024 season, so no points can be reported.'
+== run 2 ==
+  step 1 SQL: SELECT SUM(Points) AS total_points FROM results WHERE Abbreviation = 'SCH' AND session = 'R' AND season = 2024;
+steps=1 ANSWER: 'The data does not include Michael\u202fSchumacher in the 2024 season, so no points can be reported.'
+== run 3 ==
+  step 1 SQL: SELECT SUM(Points) AS total_points FROM results WHERE Abbreviation = 'SCH' AND session = 'R' AND season = 2024;
+steps=1 ANSWER: 'The data does not include Michael\u202fSchumacher in the 2024 season, so no points can be reported.'
+##### q14: What percentage of 2024 race laps had a TrackStatus of exactly '1'? Count every race lap row.
+== run 1 ==
+  step 1 SQL: SELECT COUNT(*) AS total_laps, SUM(CASE WHEN TrackStatus='1' THEN 1 ELSE 0 END) AS status1_laps FROM laps WHERE session='R';
+  step 2 SQL: SELECT 24604.0/26606*100 AS pct;
+steps=2 ANSWER: "Out of all 26\u202f606 race‑lap rows in the 2024 season, 24\u202f604 had a `TrackStatus` of exactly `'1'`.  \nThat is **92.48\u202f%** of the race laps."
+== run 2 ==
+  step 1 SQL: SELECT COUNT(*) AS total_laps, SUM(CASE WHEN TrackStatus='1' THEN 1 ELSE 0 END) AS track1_laps FROM laps WHERE session='R';
+  step 2 SQL: SELECT 24604.0/26606*100 AS pct;
+steps=2 ANSWER: "Out of all 26\u202f606 race‑lap rows in the 2024 season, 24\u202f604 had a `TrackStatus` of exactly `'1'`.  \nThat is **92.48\u202f%** of the race laps."
+== run 3 ==
+  step 1 SQL: SELECT COUNT(*) AS total_laps, SUM(CASE WHEN TrackStatus='1' THEN 1 ELSE 0 END) AS track1_laps FROM laps WHERE session='R';
+  step 2 SQL: SELECT 24604.0/26606*100 AS pct;
+steps=2 ANSWER: "Out of all 26\u202f606 race‑lap rows in the 2024 season, 24\u202f604 had a `TrackStatus` of exactly `'1'`.  \nThat is **92.48\u202f%** of the race laps."

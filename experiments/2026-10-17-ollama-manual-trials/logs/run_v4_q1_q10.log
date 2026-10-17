@@ -1,0 +1,108 @@
+##### Q1 (v4, local gpt-oss:20b, 1 run): In the 2024 Bahrain Grand Prix, who had the faster race pace, Verstappen or Norris? Use only green-flag laps, excluding in-laps, out-laps and deleted laps. Give the median lap time for each.
+== run 1 ==
+  step 1 SQL: SELECT Abbreviation, median(LapTime)/1e9 AS median_sec FROM laps WHERE race='bahrain_grand_prix' AND session='R' AND TrackStatus='1' AND PitInTime IS NULL AND PitOutTime IS NULL AND Deleted IS NOT TRUE AND Abbreviation IN ('VER','NOR') GROUP BY Abbreviation;
+  step 2 SQL: SELECT Driver, median(LapTime)/1e9 AS median_sec FROM laps WHERE race='bahrain_grand_prix' AND session='R' AND TrackStatus='1' AND PitInTime IS NULL AND PitOutTime IS NULL AND Deleted IS NOT TRUE AND LapTime IS NOT NULL AND Driver IN ('VER','NOR') GROUP BY Driver;
+  step 3 SQL: SELECT ds.full_name, median(l.LapTime)/1e9 AS median_sec FROM laps l JOIN driver_seasons ds ON l.Driver = ds.driver_code AND l.season = ds.season WHERE l.race='bahrain_grand_prix' AND l.session='R' AND l.TrackStatus='1' AND l.PitInTime IS NULL AND l.PitOutTime IS NULL AND l.Deleted IS NOT TRUE AND l.LapTime IS NOT NULL AND l.Driver IN ('VER','NOR') GROUP BY ds.full_name;
+steps=3 ANSWER: 'In the 2024 Bahrain Grand Prix, **Max\u202fVerstappen** had the faster race pace.\n\n| Driver | Median green‑flag lap time (seconds) |\n|--------|-------------------------------------|\n| Max\u202fVerstappen | **95.48\u202fs** |\n| Lando\u202fNorris | **96.54\u202fs** |\n\nVerstappen’s median lap was about 1.06\u202fs quicker than Norris’s.'
+##### Q2 (v4, local gpt-oss:20b, 1 run): Across the 2024 Grand Prix races, which drivers finished on the podium (top 3) after starting outside the top 10 on the grid? Give each driver with how many times they did it.
+== run 1 ==
+  step 1 SQL: SELECT ds.full_name, COUNT(*) as podiums
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session='R' AND r.Position <=3 AND r.GridPosition >10
+GROUP BY ds.full_name
+ORDER BY podiums DESC;
+  step 2 SQL: SELECT r.Abbreviation, ds.full_name, r.GridPosition, r.Position, r.race
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session='R' AND r.Position <=3 AND r.GridPosition >10
+ORDER BY r.race;
+  step 3 SQL: SELECT r.Abbreviation, ds.full_name, r.GridPosition, r.Position, r.race
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session='R' AND r.Position <=3 AND r.GridPosition >10
+ORDER BY r.race;
+steps=3 ANSWER: '**Drivers who reached the podium after starting outside the top‑10 (2024 season)**  \n\n| Driver | Podium finishes |\n|--------|-----------------|\n| Max\u202fVerstappen | 1 |\n| Pierre\u202fGasly | 1 |\n| Charles\u202fLeclerc | 1 |\n\nEach of these drivers achieved a podium position (1st‑3rd) in a race where their grid start was 11th or lower.'
+##### Q3 (v4, local gpt-oss:20b, 1 run): Across the 2024 season, which driver had the largest gap between their best qualifying lap and their median race lap at the same Grand Prix? Use green-flag race laps only (excluding in-laps, out-laps and deleted laps) for the race median, and ignore deleted qualifying laps. Give the driver, the Grand Prix, and the gap in seconds.
+== run 1 ==
+  step 1 SQL: WITH best_q AS (
+  SELECT race, Abbreviation as driver, MIN(LapTime) as best_q
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+  GROUP BY race, Abbreviation
+),
+median_r AS (
+  SELECT race, Abbreviation as driver,
+    percentile_cont(0.5) WITHIN GROUP (ORDER BY LapTime) AS median_r
+  FROM laps
+  WHERE session='R' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+    AND TrackStatus='1' AND PitInTime IS NULL AND PitOutTime IS NULL
+  GROUP BY race, Abbreviation
+)
+SELECT ds.full_name, br.race, (median_r - best_q)/1e9 AS gap_seconds
+FROM median_r
+JOIN best_q ON median_r.race=best_q.race AND median_r.driver=best_q.driver
+JOIN driver_seasons ds ON ds.driver_code=median_r.driver AND ds.season=2024
+ORDER BY gap_seconds DESC
+LIMIT 1;
+  step 2 SQL: WITH best_q AS (
+  SELECT race, Driver as driver, MIN(LapTime) as best_q
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+  GROUP BY race, Driver
+),
+median_r AS (
+  SELECT race, Driver as driver,
+    percentile_cont(0.5) WITHIN GROUP (ORDER BY LapTime) AS median_r
+  FROM laps
+  WHERE session='R' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+    AND TrackStatus='1' AND PitInTime IS NULL AND PitOutTime IS NULL
+  GROUP BY race, Driver
+)
+SELECT ds.full_name, br.race, (median_r - best_q)/1e9 AS gap_seconds
+FROM median_r
+JOIN best_q ON median_r.race=best_q.race AND median_r.driver=best_q.driver
+JOIN driver_seasons ds ON ds.driver_code=median_r.driver AND ds.season=2024
+ORDER BY gap_seconds DESC
+LIMIT 1;
+  step 3 SQL: WITH best_q AS (
+  SELECT race, Driver as driver, MIN(LapTime) as best_q
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+  GROUP BY race, Driver
+),
+median_r AS (
+  SELECT race, Driver as driver,
+    percentile_cont(0.5) WITHIN GROUP (ORDER BY LapTime) AS median_r
+  FROM laps
+  WHERE session='R' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+    AND TrackStatus='1' AND PitInTime IS NULL AND PitOutTime IS NULL
+  GROUP BY race, Driver
+)
+SELECT ds.full_name, best_q.race, (median_r - best_q)/1e9 AS gap_seconds
+FROM median_r
+JOIN best_q ON median_r.race=best_q.race AND median_r.driver=best_q.driver
+JOIN driver_seasons ds ON ds.driver_code=median_r.driver AND ds.season=2024
+ORDER BY gap_seconds DESC
+LIMIT 1;
+steps=3 ANSWER: 'Logan\u202fSargeant – Canadian Grand Prix – 16.767\u202fseconds.'
+##### Q4 (v4, local gpt-oss:20b, 1 run): Across all 2024 Grand Prix races, how many laps did each driver lead? Count a lap as led when the driver's Position is 1 on that lap. Give the driver with the most laps led and their count.
+== run 1 ==
+  step 1 SQL: SELECT l.Driver, COUNT(*) AS laps_led
+FROM laps l
+WHERE l.session = 'R' AND l.Position = 1
+GROUP BY l.Driver
+ORDER BY laps_led DESC
+LIMIT 50;
+  step 2 SQL: SELECT ds.full_name, l.Driver, COUNT(*) AS laps_led
+FROM laps l
+JOIN driver_seasons ds ON ds.driver_code = l.Driver AND ds.season = 2024
+WHERE l.session = 'R' AND l.Position = 1
+GROUP BY ds.full_name, l.Driver
+ORDER BY laps_led DESC;
+steps=2 ANSWER: '**Laps led by each driver in the 2024 season**\n\n| Driver | Laps led |\n|--------|----------|\n| Max\u202fVerstappen | 559 |\n| Lando\u202fNorris | 271 |\n| Charles\u202fLeclerc | 172 |\n| George\u202fRussell | 137 |\n| Carlos\u202fSainz | 134 |\n| Oscar\u202fPiastri | 123 |\n| Lewis\u202fHamilton | 31 |\n| Esteban\u202fOcon | 14 |\n| Sergio\u202fPerez | 1 |\n\n**Driver with the most laps led**\n\n- **Max\u202fVerstappen – 559 laps led**'
+##### Q5 (v4, local gpt-oss:20b, 1 run): Who won the 2023 Monaco Grand Prix, and by how many seconds?
+== run 1 ==
+steps=0 ANSWER: 'I’m sorry, but the data set only contains information for the 2024 season, so it does not include the 2023 Monaco Grand Prix.'
+##### Q6 (v4, local gpt-oss:20b, 1 run): In the 2024 Grand Prix race laps, pair each pit-in lap with the next lap's pit-out time to get each stop's pit-lane time. Ignore stops under 10 seconds or over 60 seconds. For each team, give the median pit-lane time and the number of stops. Which team had the fastest median?
+== run 1 ==

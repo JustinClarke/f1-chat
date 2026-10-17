@@ -1,0 +1,59 @@
+##### q11 (cloudflare gpt-oss-20b, v4 prompt, 1 run): Who was the best qualifier in the 2024 season?
+== run 1 ==
+  step 1 SQL: SELECT r.Abbreviation, ds.full_name, COUNT(*) AS poles
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'Q' AND r.Position = 1
+GROUP BY r.Abbreviation, ds.full_name
+ORDER BY poles DESC
+LIMIT 5;
+steps=1 ANSWER: 'The driver with the most pole positions in the 2024 season was **Max\u202fVerstappen** – he secured 10 poles.'
+##### q12 (cloudflare gpt-oss-20b, v4 prompt, 1 run): In how many 2024 Grand Prix races did the driver who set the fastest qualifying lap go on to win the race? Give the count.
+== run 1 ==
+  step 1 SQL: WITH qual_laps AS (
+  SELECT race, Abbreviation, LapTime
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+),
+ranked AS (
+  SELECT race, Abbreviation, LapTime,
+         ROW_NUMBER() OVER (PARTITION BY race ORDER BY LapTime ASC) AS rn
+  FROM qual_laps
+),
+fastest AS (
+  SELECT race, Abbreviation
+  FROM ranked
+  WHERE rn = 1
+)
+SELECT COUNT(*) AS count
+FROM fastest f
+JOIN results r
+  ON r.race = f.race AND r.session='R' AND r.Position=1 AND r.Abbreviation = f.Abbreviation;
+  step 2 SQL: WITH qual_laps AS (
+  SELECT race, Driver, LapTime
+  FROM laps
+  WHERE session='Q' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE
+),
+ranked AS (
+  SELECT race, Driver, LapTime,
+         ROW_NUMBER() OVER (PARTITION BY race ORDER BY LapTime ASC) AS rn
+  FROM qual_laps
+),
+fastest AS (
+  SELECT race, Driver
+  FROM ranked
+  WHERE rn = 1
+)
+SELECT COUNT(*) AS count
+FROM fastest f
+JOIN results r
+  ON r.race = f.race AND r.session='R' AND r.Position=1 AND r.Abbreviation = f.Driver;
+steps=2 ANSWER: '11 races.'
+##### q13 (cloudflare gpt-oss-20b, v4 prompt, 1 run): How many points did Michael Schumacher score in the 2024 season?
+== run 1 ==
+  step 1 SQL: SELECT driver_code, full_name FROM driver_seasons WHERE season = 2024 LIMIT 10;
+steps=1 ANSWER: 'The data set only contains the 2024 Formula\u202f1 season, and Michael\u202fSchumacher is not a participant in that season. Therefore, the data does not include any points for him.'
+##### q14 (cloudflare gpt-oss-20b, v4 prompt, 1 run): What percentage of 2024 race laps had a TrackStatus of exactly '1'? Count every race lap row.
+== run 1 ==
+  step 1 SQL: SELECT COUNT(*) AS total_laps, SUM(CASE WHEN TrackStatus='1' THEN 1 ELSE 0 END) AS status1_laps FROM laps WHERE session='R';
+steps=1 ANSWER: "Out of 26\u202f606 race‑lap rows, 24\u202f604 had a `TrackStatus` of exactly `'1'`.  \nThat is **92.47\u202f%** of all race laps."

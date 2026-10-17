@@ -1,0 +1,20 @@
+provider=ollama model=gpt-oss:20b row_cap=50 guide=/Users/justin/github/_misc/_chat/f1-chat/experiments/2026-10-15-prompt-variants/variants/v3.txt
+system prompt chars: 10691
+== run 1 ==
+DEBUG options {'temperature': 0, 'num_predict': 4096, 'num_ctx': 20480}
+  step 1 SQL: SELECT Driver, COUNT(DISTINCT PitInTime) AS pit_stops
+FROM laps
+WHERE race = 'bahrain_grand_prix' AND session = 'R'
+GROUP BY Driver
+ORDER BY pit_stops DESC
+LIMIT 10;
+DEBUG options {'temperature': 0, 'num_predict': 4096, 'num_ctx': 20480}
+  step 2 SQL: SELECT ds.full_name, COUNT(DISTINCT l.PitInTime) AS pit_stops
+FROM laps l
+JOIN driver_seasons ds ON l.Driver = ds.driver_code AND ds.season = 2024
+WHERE l.race = 'bahrain_grand_prix' AND l.session = 'R'
+GROUP BY ds.full_name
+HAVING COUNT(DISTINCT l.PitInTime) = 3
+ORDER BY ds.full_name;
+DEBUG options {'temperature': 0, 'num_predict': 4096, 'num_ctx': 20480}
+steps=2 ANSWER: 'The 2024 Bahrain Grand Prix saw a three‑way tie for the most pit stops:\n\n| Driver | Pit stops |\n|--------|-----------|\n| Logan\u202fSargeant | 3 |\n| Nico\u202fHulkenberg | 3 |\n| Pierre\u202fGasly | 3 |\n\nAll three drivers each made three pit stops during the race.'

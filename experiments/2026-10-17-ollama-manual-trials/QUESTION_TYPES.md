@@ -80,6 +80,53 @@ Race rows in `results` have `session_type` NULL; qualifying rows have `'Q'`. In 
 - **Local gpt-oss:20b, row cap 200, 3 runs (17 Oct):** all 3 correct, 138 of 138 rows each, no wrong or missing rows. Each run also ran a query returning 138 rows, so the app's table-from-query step would find a matching result. The harness does not run the splitter or draw the grid, so this checks the model's answer and the row match, not the rendering. Scoring note: an earlier scorer gave 0 for two runs because of U+202F no-break spaces in names; normalising them fixed it, and the content was right.
 - **Still open:** the model prefers to write long tables itself; `show_table` is not used. Options: enforce the tool in code, or switch Q10 to a per-race count, which suits a chart.
 
+## 11. Ambiguous ("best qualifier")
+- **Question:** Who was the best qualifier in the 2024 season?
+- **Hard because:** "best" has no definition. The answer should name the reading used.
+- **Ground truth (pole-count reading):** Max Verstappen, 10 poles. Others: Norris 8, Russell 3, Leclerc 2, Sainz 1.
+- **Result (3 runs, cap 16, 17 Oct):** 3 of 3 say Verstappen with 10 poles, all in one SQL step. The answer names the measure (pole positions), so the reading is visible, but it does not say that "best" was chosen as a reading. Pass on the number and the name. The framing is weaker than the question asks for.
+
+## 12. Join across sessions, then count
+- **Question:** In how many 2024 Grand Prix races did the driver who set the fastest qualifying lap go on to win the race? Give the count.
+- **Hard because:** the fastest qualifying lap has to come from `laps` (session Q, `LapTime`, not deleted). The race winner has to come from `results`. The two are then joined per race.
+- **Ground truth:** 11 of 24 races (Verstappen 5, Norris 3, Sainz 1, Russell 1, Leclerc 1). Per-race list from the DuckDB check: fastest-lap setter, then winner.
+- **Result (3 runs, cap 16, 17 Oct):** all 3 wrong. 12, 12, 13.
+  - Runs 1 and 2 used `results.Position = 1` in the qualifying session, which is the pole sitter, not the fastest lap. Run 2 ran three steps and never queried `laps`.
+  - Run 3 used the minimum `Q3` time per driver from `results`. That is a different measure and the model did not query `laps` at all.
+  - The model never joined `laps` to `results`. This is the join the question was built to test, so it is a clear fail for this model.
+- **Rerun with a fastest-qualifying-lap line added to the guide (v4, 3 runs, 17 Oct):** all 3 correct, 11. Each run queried `laps` with session 'Q', `LapTime` not null, not deleted, grouped by race, then compared to the race winner. The fix is one line in "HOW TO ANSWER". v3 is unchanged; the v4 copy is in `experiments/2026-10-15-prompt-variants/variants/v4.txt`. Only Q12 has been rerun. Other questions have not been checked against v4, so the change could affect them.
+
+## 13. Trap (driver not in the 2024 data)
+- **Question:** How many points did Michael Schumacher score in the 2024 season?
+- **Hard because:** the name is famous, so the model may answer from memory. The data has Mick Schumacher for 2021 and 2022 only, and no Michael Schumacher.
+- **Expected:** say there is no 2024 data for him. Name no points figure and no driver.
+- **Result (3 runs, cap 16, 17 Oct):** 3 of 3 correct. "The data does not include Michael Schumacher in the 2024 season, so no points can be reported." One step each, no SQL error.
+
+## 14. Percentage of rows with a filter
+- **Question:** What percentage of 2024 race laps had a TrackStatus of exactly '1'? Count every race lap row.
+- **Hard because:** the answer is a ratio of two counts over the same race-lap rows. The model must not drop rows with null times.
+- **Ground truth:** 24,604 of 26,606 race laps, 92.48%.
+- **Result (3 runs, cap 16, 17 Oct):** 3 of 3 correct. Two steps each (a count, then the ratio). All three give 24,604 of 26,606 and 92.48%.
+
+## Cloudflare Workers AI run (gpt-oss-20b, v4 prompt, 1 run each, 17 Oct)
+Run through the repo's Worker (`worker/index.ts`, `wrangler dev`, Workers AI binding) with temperature 0, medium reasoning and 4096 max tokens, as in `eval/run_experiment.mjs`. The tool loop is the same as the local harness, with the tool messages in OpenAI form. The local Ollama results above used v3, except for Q12 (v4).
+- **Q11 (best qualifier):** pass. Verstappen, 10 poles. Same answer as the local runs.
+- **Q12 (fastest qualifying lap, v4):** pass. 11 races. Two SQL steps, using `laps` for session Q.
+- **Q13 (Schumacher trap):** pass. Says the data covers 2024 only and he is not in it. No points figure.
+- **Q14 (TrackStatus percentage):** counts right (24,604 of 26,606) but the percentage is 92.47%. The exact value is 92.4754%, which rounds to 92.48%. The model truncated. The local runs gave 92.48%. One run only.
+
+## Cloudflare v4 rerun, Q1 to Q10 (gpt-oss-20b, v4 prompt, 1 run each, 17 Oct)
+Same Worker and settings as above. Log: `logs/run_cf_v4_q1_q10.log`.
+- **Q1 (Verstappen vs Norris pace):** pass. Verstappen faster; medians 95.48 s and 96.54 s (truth 95.477 and 96.537).
+- **Q2 (podium from outside top 10):** pass. Leclerc, Verstappen, Gasly, one each.
+- **Q3 (largest qualifying-to-race gap):** pass. Sargeant, Canadian GP, 16.767 s.
+- **Q4 (laps led):** pass. Verstappen 559, full list matches the ground truth.
+- **Q5 (2023 Monaco, out of scope):** pass. Refuses, names no driver, says 2024 only.
+- **Q6 (pit-lane medians by team):** pass. All ten teams and stop counts match; McLaren fastest at 22.887 s.
+- **Q7 (points chart):** pass on the top five (Verstappen 399, Norris 344, Leclerc 327, Piastri 265, Sainz 262), checked against DuckDB. The other 19 totals were not compared row by row.
+- **Q8 (most consistent):** same as v3. Bottas, SD 2.22. The reading is named as standard deviation of finishing position.
+- **Q9 (Verstappen retirement, false premise):** pass. Says he finished with 26 points and was not retired. It does not state his position (1st).
+- **Q10 (fewer laps than the winner):** partial. Answers "Yes" and gives a table, but the table stops at 50 rows (the `run_trials.py` cap) while the answer says "every such driver". All 50 rows match the data (no invented rows). The 138-row total in the notes did not reproduce: a recount from `laps` gives 144, so the notes need checking before this is scored as a full pass or fail.
+
 ## Not yet run
-- **Ambiguous:** a question with no definition of "best" or "consistent". Expected: state the reading used.
-- **Joins across sessions:** qualifying best lap vs race result for the same driver and race.
+- Nothing in the planned list is left. The two items that were here (ambiguous, join across sessions) are now questions 11 and 12.

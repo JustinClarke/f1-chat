@@ -1,0 +1,17 @@
+provider=ollama model=gpt-oss:20b row_cap=50 guide=/Users/justin/github/_misc/_chat/f1-chat/experiments/2026-10-15-prompt-variants/variants/v3.txt
+system prompt chars: 10691
+== run 1 ==
+  step 1 SQL: SELECT l.Driver, COUNT(DISTINCT l.PitInTime) AS pit_stops
+FROM laps l
+WHERE l.race = 'bahrain_grand_prix' AND l.session = 'R' AND l.PitInTime IS NOT NULL
+GROUP BY l.Driver
+ORDER BY pit_stops DESC
+LIMIT 5;
+  step 2 SQL: SELECT ds.full_name, l.Driver, COUNT(DISTINCT l.PitInTime) AS pit_stops
+FROM laps l
+JOIN driver_seasons ds ON ds.driver_code = l.Driver AND ds.season = 2024
+WHERE l.race = 'bahrain_grand_prix' AND l.session = 'R' AND l.PitInTime IS NOT NULL
+GROUP BY ds.full_name, l.Driver
+ORDER BY pit_stops DESC
+LIMIT 5;
+steps=2 ANSWER: 'The 2024 Bahrain Grand Prix saw three drivers each make the highest number of pit stops:\n\n| Driver | Pit stops |\n|--------|-----------|\n| Pierre\u202fGasly | 3 |\n| Logan\u202fSargeant | 3 |\n| Nico\u202fHulkenberg | 3 |\n\nSo Pierre Gasly, Logan Sargeant and Nico Hulkenberg all made the most pit stops, with three each.'
