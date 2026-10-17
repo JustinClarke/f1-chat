@@ -1,0 +1,130 @@
+Seed 20261015; 80 planned, 0 already logged.
+#1 v2|top_compound|rep1: fail (2.8s, 5518 tok) | The most used tyre compound for race laps in 2024 was **HARD**, with **13,612 laps** recorded.
+#2 v2|wins_team|rep1: pass (2.3s, 5468 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#3 v1|top_compound|rep1: pass (2.4s, 4459 tok) | The most race laps in 2024 were run on the **HARD** compound, with **13 767** laps.
+#4 v2|unanswerable|rep1: pass (1.6s, 2718 tok) | I’m sorry, but the data set only contains information for the 2024 Formula 1 season, so it does not include th
+#5 v0|top_compound|rep1: pass (3.0s, 3797 tok) | The most race laps in 2024 were run on the **HARD** tyre compound, with **13,767 laps**.
+#6 v1|wins_team|rep1: pass (2.4s, 4416 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#7 v3|wins_team|rep1: pass (2.2s, 7187 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#8 v3|top_compound|rep1: pass (2.6s, 7196 tok) | The most race laps were run on the **HARD** compound, with **13,767 laps** recorded.
+#9 v0|bahrain_clean_pace|rep1: fail (5.0s, 4323 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time = 95 590 500 000 µs - **Norris**: media
+#10 v0|wins_team|rep1: pass (2.6s, 3810 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#11 v0|unanswerable|rep1: pass (3.1s, 5721 tok) | I’m sorry, but the database does not contain any records for the 2023 Monaco Grand Prix.
+#12 v2|bahrain_clean_pace|rep1: pass (6.5s, 6423 tok) | Verstappen’s median green‑flag lap time was **95.48 s** (95 477 000 000 ns). Norris’s median green‑flag lap ti
+#13 v3|unanswerable|rep1: pass (6.7s, 3589 tok) | I’m sorry, but the data set only contains the 2024 Formula 1 season, so it does not include the 2023 Monaco Gr
+#14 v3|bahrain_clean_pace|rep1: pass (6.1s, 7969 tok) | **Median green‑flag lap times (2024 Bahrain Grand Prix, race session)** | Driver | Median lap time (ns) | Medi
+#15 v1|unanswerable|rep1: pass (1.5s, 2214 tok) | I’m sorry, but the dataset only contains information for the 2024 Formula 1 season, so I don’t have the result
+#16 v1|bahrain_clean_pace|rep1: pass (4.8s, 4877 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time = 95 477 000 000 ns - **Norris**: media
+#17 v2|bahrain_clean_pace|rep2: pass (7.4s, 6120 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time = 95 477 000 000 ns (≈ 95.48 s) - **Nor
+#18 v2|unanswerable|rep2: pass (1.1s, 2716 tok) | I’m sorry, but the data set only contains the 2024 Formula 1 season, so it does not include the 2023 Monaco Gr
+#19 v0|unanswerable|rep2: pass (68.6s, 5943 tok) | I’m sorry, but the dataset does not contain any rows for the 2023 Monaco Grand Prix.
+#20 v0|bahrain_clean_pace|rep2: fail (5.8s, 6438 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time = 95,342,000,000 ns (≈ 95.342 s) - **No
+#21 v2|wins_team|rep2: pass (1.9s, 5513 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#22 v3|wins_team|rep2: pass (2.0s, 7222 tok) | Red Bull Racing – 9 wins.
+#23 v2|top_compound|rep2: fail (2.0s, 5508 tok) | The most race laps in 2024 were run on the **HARD** tyre compound, with **13,612 laps** recorded.
+#24 v0|top_compound|rep2: pass (2.4s, 3797 tok) | The most race laps in 2024 were run on the **HARD** tyre compound, with **13,767** laps.
+#25 v3|top_compound|rep2: pass (2.2s, 7196 tok) | The most race laps were run on the **HARD** compound, with **13,767 laps** recorded.
+#26 v1|unanswerable|rep2: pass (1.2s, 2198 tok) | I’m sorry, but the dataset only contains information for the 2024 Formula 1 season, so I don’t have data on th
+#27 v3|bahrain_clean_pace|rep2: pass (5.2s, 7804 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time = 95.477 s - **Norris**: median lap tim
+#28 v3|unanswerable|rep2: pass (1.5s, 3591 tok) | I’m sorry, but the data set only contains information for the 2024 Formula 1 season, so it does not include th
+#29 v1|bahrain_clean_pace|rep2: pass (6.6s, 4865 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time = 95 477 000 000 ns - **Norris**: media
+#30 v1|wins_team|rep2: fail (2.2s, 4432 tok) | Red Bull Racing won the most races in 2024, with **19 victories**.
+#31 v1|top_compound|rep2: pass (2.6s, 4417 tok) | The most race laps in 2024 were run on the **HARD** tyre compound, with **13,767** laps.
+#32 v0|wins_team|rep2: pass (2.5s, 3801 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#33 v1|wins_team|rep3: fail (2.7s, 4472 tok) | Red Bull Racing won the most races in 2024, with **19 victories**.
+#34 v0|top_compound|rep3: pass (2.4s, 3818 tok) | The most used tyre compound for race laps in 2024 was **HARD**, with **13,767 laps**.
+#35 v1|top_compound|rep3: pass (2.5s, 4438 tok) | The most race laps in 2024 were run on the **HARD** compound, with **13 767** laps.
+#36 v1|bahrain_clean_pace|rep3: pass (4.9s, 5125 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time = 95 477 000 000 ns - **Norris**: media
+#37 v2|top_compound|rep3: fail (2.6s, 5510 tok) | The most used tyre compound for race laps in 2024 was **HARD**, with **13,612 laps** recorded.
+#38 v3|unanswerable|rep3: pass (1.6s, 3589 tok) | I’m sorry, but the data set only contains the 2024 Formula 1 season, so it does not include the 2023 Monaco Gr
+#39 v2|wins_team|rep3: pass (31.5s, 5513 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#40 v0|unanswerable|rep3: pass (3.7s, 5716 tok) | I’m sorry, but there is no record of the 2023 Monaco Grand Prix in the available data.
+
+<--- Last few GCs --->
+
+[5010:0x120008000]   306388 ms: Incremental Mark-Compact (reduce) 2045.5 (2057.9) -> 2043.6 (2053.8) MB, pooled: 0.0 MB, 1169.97 / 0.00 ms (+ 64.3 ms in 12 steps since start of marking, biggest step 8.0 ms, walltime since start of marking 1292 ms) (averag[5010:0x120008000]   308977 ms: Mark-Compact 2046.1 (2056.3) -> 2044.0 (2054.4) MB, pooled: 0.0 MB, 2570.89 / 0.00 ms (average mu = 0.117, current mu = 0.007) allocation failure; scavenge might not succeed
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0x108f23f84 node::OOMErrorHandler(char const*, v8::OOMDetails const&) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+ 2: 0x1090b003c v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+ 3: 0x1090affec v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+ 4: 0x10926ebd8 v8::internal::Heap::IsLoadingInitialized() const [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+ 5: 0x10926e074 v8::internal::Heap::CheckIneffectiveMarkCompact(unsigned long, unsigned long, double) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+ 6: 0x10926d530 v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags, v8::internal::PerformHeapLimitCheck, v8::internal::PerformIneffectiveMarkCompactCheck) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+ 7: 0x1092648ec v8::internal::HeapAllocator::CollectGarbageAndRetryAllocation(v8::base::FunctionRef<bool ()>, v8::internal::AllocationType) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+ 8: 0x1092647ec v8::internal::HeapAllocator::RetryCustomAllocate(v8::base::FunctionRef<bool ()>, v8::internal::AllocationType) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+ 9: 0x1092642bc v8::internal::HeapAllocator::RetryCustomAllocateOrFail(v8::base::FunctionRef<bool ()>, v8::internal::AllocationType) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+10: 0x109264214 v8::internal::HeapAllocator::AllocateRawSlowPath(v8::internal::HeapAllocator::AllocationRetryMode, int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment, v8::internal::AllocationHint) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+11: 0x109236fe8 v8::internal::FactoryBase<v8::internal::Factory>::AllocateRawArray(int, v8::internal::AllocationType, v8::internal::AllocationHint, v8::internal::AllocationAlignment) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+12: 0x109245f00 v8::internal::Handle<v8::internal::FixedArray> v8::internal::TaggedArrayBase<v8::internal::FixedArray, v8::internal::TaggedArrayShape, v8::internal::HeapObjectLayout>::Allocate<v8::internal::Isolate>(v8::internal::Isolate*, int, std::__1::optional<v8::internal::PerThreadAssertScopeEmpty<false, (v8::internal::PerThreadAssertType)1, (v8::internal::PerThreadAssertType)2>>*, v8::internal::AllocationType, v8::internal::AllocationHint) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+13: 0x109236a94 v8::internal::FactoryBase<v8::internal::Factory>::NewFixedArray(unsigned int, v8::internal::AllocationType, v8::internal::AllocationHint) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+14: 0x10944ca3c v8::internal::GetOwnValuesOrEntries(v8::internal::Isolate*, v8::internal::DirectHandle<v8::internal::JSReceiver>, v8::internal::PropertyFilter, bool, bool) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+15: 0x109570198 v8::internal::Runtime_ObjectEntriesSkipFastPath(int, unsigned long*, v8::internal::Isolate*) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+16: 0x1099fccac Builtins_CEntry_Return1_ArgvOnStack_NoBuiltinExit [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+17: 0x1099d9158 Builtins_ObjectEntries [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+18: 0x1381f3fb8 
+19: 0x138277ec8 
+20: 0x138278200 
+21: 0x109a75458 Builtins_PromiseFulfillReactionJob [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+22: 0x109986904 Builtins_RunMicrotasks [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+23: 0x109956678 Builtins_JSRunMicrotasksEntry [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+24: 0x1091c8e00 v8::internal::(anonymous namespace)::Invoke(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+25: 0x1091c94bc v8::internal::(anonymous namespace)::InvokeWithTryCatch(v8::internal::Isolate*, v8::internal::(anonymous namespace)::InvokeParams const&) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+26: 0x1091c95ac v8::internal::Execution::TryRunMicrotasks(v8::internal::Isolate*, v8::internal::MicrotaskQueue*) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+27: 0x1091ec4b8 v8::internal::MicrotaskQueue::RunMicrotasks(v8::internal::Isolate*) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+28: 0x1091ec2d4 v8::internal::MicrotaskQueue::PerformCheckpointInternal(v8::Isolate*) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+29: 0x108e63f80 node::InternalCallbackScope::Close() [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+30: 0x108e63e10 node::InternalCallbackScope::~InternalCallbackScope() [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+31: 0x108f78950 node::PerIsolatePlatformData::RunForegroundTask(std::__1::unique_ptr<v8::Task, std::__1::default_delete<v8::Task>>) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+32: 0x108f77a74 node::PerIsolatePlatformData::FlushForegroundTasksInternal() [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+33: 0x108f78b04 node::NodePlatform::DrainTasks(v8::Isolate*) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+34: 0x108e64fc0 node::SpinEventLoopInternal(node::Environment*) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+35: 0x108f53efc node::NodeMainInstance::Run(node::ExitCode*, node::Environment*) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+36: 0x108f53c30 node::NodeMainInstance::Run() [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+37: 0x108ef4e90 node::Start(int, char**) [/opt/homebrew/Cellar/node/26.5.0/lib/libnode.147.dylib]
+38: 0x19b586b98 start [/usr/lib/dyld]
+Seed 20261015; 80 planned, 40 already logged.
+#41 v0|wins_team|rep3: pass (6.5s, 3800 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#42 v2|unanswerable|rep3: pass (1.9s, 2716 tok) | I’m sorry, but the data set only contains the 2024 Formula 1 season, so it does not include the 2023 Monaco Gr
+#43 v3|wins_team|rep3: pass (3.4s, 7187 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#44 v2|bahrain_clean_pace|rep3: pass (10.1s, 6413 tok) | Verstappen’s median green‑flag lap time was **95.477 s** (95 477 000 000 ns). Norris’s median green‑flag lap t
+#45 v3|bahrain_clean_pace|rep3: pass (9.2s, 8320 tok) | **Median green‑flag lap times (excluding in‑laps, out‑laps and deleted laps)** | Driver | Median lap time (ns)
+#46 v1|unanswerable|rep3: pass (4.0s, 4441 tok) | I’m sorry, but the dataset does not contain any results for the 2023 Monaco Grand Prix.
+#47 v3|top_compound|rep3: pass (3.5s, 7217 tok) | The most race laps in 2024 were run on the **HARD** compound, with **13,767 laps** recorded.
+#48 v0|bahrain_clean_pace|rep3: fail (16.5s, 4607 tok) | Verstappen had the faster race pace. | Driver | Median lap time (nanoseconds) | Median lap time (seconds) | |-
+#49 v1|bahrain_clean_pace|rep4: fail (8.1s, 2481 tok) | **Median lap times (nanoseconds) for green‑flag laps in the 2024 Bahrain Grand Prix** | Driver | Median LapTim
+#50 v3|unanswerable|rep4: pass (4.1s, 3598 tok) | I’m sorry, but the data set only contains the 2024 Formula 1 season, so it does not include the 2023 Monaco Gr
+#51 v1|unanswerable|rep4: pass (3.9s, 4456 tok) | I’m sorry, but the dataset does not contain any results for the 2023 Monaco Grand Prix, so I can’t provide the
+#52 v0|top_compound|rep4: pass (4.1s, 3811 tok) | The most used tyre compound for race laps in 2024 was **HARD**, with **13,767 laps**.
+#53 v1|wins_team|rep4: fail (3.6s, 4396 tok) | Red Bull Racing won the most races in 2024, with **19 victories**.
+#54 v3|top_compound|rep4: pass (2.7s, 7214 tok) | The most race laps were run on the **HARD** compound, with **13,767 laps** recorded.
+Seed 20261015; 80 planned, 54 already logged.
+#55 v0|bahrain_clean_pace|rep4: fail (9.7s, 6546 tok) | Verstappen had the faster race pace. Median lap times (green‑flag laps only, no in‑laps, out‑laps, or deleted 
+#56 v2|top_compound|rep4: fail (3.8s, 5506 tok) | The most used tyre compound for race laps in 2024 was **HARD**, with **13,612 laps** recorded.
+#57 v3|wins_team|rep4: pass (28.1s, 7227 tok) | Red Bull Racing – 9 wins.
+#58 v2|unanswerable|rep4: pass (2.5s, 2716 tok) | I’m sorry, but the data set only contains the 2024 Formula 1 season, so it does not include the 2023 Monaco Gr
+#59 v2|bahrain_clean_pace|rep4: pass (5.0s, 6306 tok) | Verstappen’s median green‑flag lap time was **95.477 s**, while Norris’s was **96.5365 s**. Thus, Verstappen h
+#60 v0|wins_team|rep4: fail (2.5s, 3772 tok) | Red Bull Racing won the most races in 2024, with **19 victories**.
+#61 v0|unanswerable|rep4: check manually (7.4s, 7953 tok) | I couldn’t find any 2023 Monaco Grand Prix results in the database. The query returned zero rows.
+#62 v1|top_compound|rep4: pass (6.5s, 4433 tok) | The most race laps in 2024 were run on the **HARD** tyre compound, with **13,767** laps.
+#63 v2|wins_team|rep4: pass (3.7s, 5500 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#64 v3|bahrain_clean_pace|rep4: fail (8.7s, 7910 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time ≈ 95.48 s - **Norris**: median lap time
+#65 v0|unanswerable|rep5: pass (5.1s, 7864 tok) | I’m sorry, but the database does not contain any records for the 2023 Monaco Grand Prix.
+#66 v0|top_compound|rep5: fail (2.1s, 3792 tok) | The most used tyre compound for race laps in 2024 was **HARD**, with **13,770** laps.
+#67 v3|bahrain_clean_pace|rep5: fail (6.7s, 7916 tok) | Verstappen had the faster race pace. - **Max Verstappen** – median lap time: **95.48 s** - **Lando Norris** – 
+#68 v3|top_compound|rep5: fail (3.3s, 7445 tok) | The most race laps in 2024 were run on the **HARD** tyre compound, with **13,612 laps** recorded.
+Seed 20261015; 80 planned, 68 already logged.
+#69 v1|unanswerable|rep5: pass (1.8s, 2215 tok) | I’m sorry, but the dataset only contains information for the 2024 Formula 1 season, so I don’t have the result
+#70 v0|wins_team|rep5: fail (2.1s, 3787 tok) | Red Bull Racing won the most races in 2024, with **19 victories**.
+#71 v1|top_compound|rep5: pass (1.7s, 4417 tok) | The most race laps in 2024 were run on the **HARD** tyre compound, with **13,767** laps.
+#72 v2|wins_team|rep5: pass (2.0s, 5514 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#73 v0|bahrain_clean_pace|rep5: pass (26.4s, 21244 tok) | Verstappen’s median green‑flag lap time was **95,477,000,000 ns** (≈95.48 s). Norris’s median green‑flag lap t
+#74 v3|wins_team|rep5: pass (1.9s, 7187 tok) | Red Bull Racing won the most races in 2024, with **9 victories**.
+#75 v2|bahrain_clean_pace|rep5: pass (6.0s, 6053 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time = 95 477 000 000 ns (≈ 95.48 s) - **Nor
+#76 v2|top_compound|rep5: fail (2.4s, 5510 tok) | The most used tyre compound for race laps in 2024 was **HARD**, with **13,612 laps** recorded.
+#77 v1|bahrain_clean_pace|rep5: pass (3.7s, 5000 tok) | Verstappen had the faster race pace. - **Verstappen**: median lap time = 95 477 000 000 ns - **Norris**: media
+#78 v3|unanswerable|rep5: pass (1.6s, 3598 tok) | I’m sorry, but the data set only contains the 2024 Formula 1 season, so it does not include the 2023 Monaco Gr
+#79 v1|wins_team|rep5: fail (2.5s, 4472 tok) | Red Bull Racing won the most races in 2024, with **19 victories**.
+#80 v2|unanswerable|rep5: pass (2.3s, 2718 tok) | I’m sorry, but the data set only contains information for the 2024 Formula 1 season, so it does not include th

@@ -1,0 +1,168 @@
+system prompt chars: 10691
+QUESTION: Across the 2024 season, which driver had the largest gap between their best qualifying lap and their median race lap at the same Grand Prix? Use green-flag race laps only (excluding in-laps, out-laps and deleted laps) for the race median, and ignore deleted qualifying laps. Give the driver, the Grand Prix, and the gap in seconds.
+== run 1 ==
+  step 1 SQL: WITH best_qual AS (
+  SELECT
+    l.Driver,
+    l.race,
+    MIN(l.LapTime) AS best_qual_lap
+  FROM laps l
+  WHERE l.session = 'Q'
+    AND l.LapTime IS NOT NULL
+    AND l.Deleted = FALSE
+  GROUP BY l.Driver, l.race
+),
+
+race_laps AS (
+  SELECT
+    l.Driver,
+    l.race,
+    l.LapTime
+  FROM laps l
+  WHERE l.session = 'R'
+    AND l.LapTime IS NOT NULL
+    AND l.Deleted = FALSE
+    AND l.PitInTime IS NULL
+    AND l.PitOutTime IS NULL
+    AND l.TrackStatus = '1'
+),
+
+median_race AS (
+  SELECT
+    Driver,
+    race,
+    percentile_cont(0.5) WITHIN GROUP (ORDER BY LapTime) AS median_lap
+  FROM race_laps
+  GROUP BY Driver, race
+),
+
+gap AS (
+  SELECT
+    b.Driver,
+    b.race,
+    (m.median_lap - b.best_qual_lap) AS gap_ns
+  FROM best_qual b
+  JOIN median_race m
+    ON b.Driver = m.Driver AND b.race = m.race
+),
+
+max_gap AS (
+  SELECT
+    MAX(gap_ns) AS max_gap_ns
+  FROM gap
+)
+
+SELECT
+  ds.full_name AS driver,
+  g.race,
+  g.gap_ns / 1e9 AS gap_seconds
+FROM gap g
+JOIN driver_seasons ds
+  ON g.Driver = ds.driver_code AND ds.season = 2024
+JOIN max_gap mg
+  ON g.gap_ns = mg.max_gap_ns
+ORDER BY g.gap_ns DESC;
+    -> {"row_count":1,"rows":[{"driver":"Logan Sargeant","race":"canadian_grand_prix","gap_seconds":16.767}]}
+  step 2 SQL: WITH best_qual AS (
+  SELECT
+    l.Driver,
+    l.race,
+    MIN(l.LapTime) AS best_qual_lap
+  FROM laps l
+  WHERE l.session = 'Q'
+    AND l.LapTime IS NOT NULL
+    AND l.Deleted = FALSE
+  GROUP BY l.Driver, l.race
+),
+
+race_laps AS (
+  SELECT
+    l.Driver,
+    l.race,
+    l.LapTime
+  FROM laps l
+  WHERE l.session = 'R'
+    AND l.LapTime IS NOT NULL
+    AND l.Deleted = FALSE
+    AND l.PitInTime IS NULL
+    AND l.PitOutTime IS NULL
+    AND l.TrackStatus = '1'
+),
+
+median_race AS (
+  SELECT
+    Driver,
+    race,
+    percentile_cont(0.5) WITHIN GROUP (ORDER BY LapTime) AS median_lap
+  FROM race_laps
+  GROUP BY Driver, race
+),
+
+gap AS (
+  SELECT
+    b.Driver,
+    b.race,
+    (m.median_lap - b.best_qual_lap) AS gap_ns
+  FROM best_qual b
+  JOIN median_race m
+    ON b.Driver = m.Driver AND b.race = m.race
+)
+SELECT
+  ds.full_name AS driver,
+  g.race,
+  g.gap_ns / 1e9 AS gap_seconds
+FROM gap g
+JOIN driver_seasons ds
+  ON g.Driver = ds.driver_code AND ds.season = 2024
+ORDER BY g.gap_ns DESC
+LIMIT 10;
+    -> {"row_count":10,"rows":[{"driver":"Logan Sargeant","race":"canadian_grand_prix","gap_seconds":16.767},{"driver":"Charles Leclerc","race":"canadian_grand_prix","gap_seconds":16.3285},{"driver":"Alexander Albon","race":"canadian_grand_prix","gap_seconds":16.179},{"driver":"Carlos Sainz","race":"canadi
+  step 3 SQL: WITH best_qual AS (
+  SELECT
+    l.Driver,
+    l.race,
+    MIN(l.LapTime) AS best_qual_lap
+  FROM laps l
+  WHERE l.session = 'Q'
+    AND l.LapTime IS NOT NULL
+    AND l.Deleted = FALSE
+  GROUP BY l.Driver, l.race
+),
+
+race_laps AS (
+  SELECT
+    l.Driver,
+    l.race,
+    l.LapTime
+  FROM laps l
+  WHERE l.session = 'R'
+    AND l.LapTime IS NOT NULL
+    AND l.Deleted = FALSE
+    AND l.PitInTime IS NULL
+    AND l.PitOutTime IS NULL
+    AND l.TrackStatus = '1'
+),
+
+median_race AS (
+  SELECT
+    Driver,
+    race,
+    percentile_cont(0.5) WITHIN GROUP (ORDER BY LapTime) AS median_lap
+  FROM race_laps
+  GROUP BY Driver, race
+),
+
+gap AS (
+  SELECT
+    b.Driver,
+    b.race,
+    (m.median_lap - b.best_qual_lap) AS gap_ns
+  FROM best_qual b
+  JOIN median_race m
+    ON b.Driver = m.Driver AND b.race = m.race
+)
+SELECT
+  MAX(gap_ns) AS max_gap_ns
+FROM gap;
+    -> {"row_count":1,"rows":[{"max_gap_ns":16767000000}]}
+steps=3 ANSWER: "Logan Sargeant – Canadian Grand Prix – 16.767 seconds."

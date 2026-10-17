@@ -1,0 +1,7 @@
+system prompt chars: 11002
+QUESTION: Why did Max Verstappen retire from the 2024 Bahrain Grand Prix?
+== run 1 ==
+  step 1 SQL: SELECT FullName, Status, Points, Time, Laps FROM results WHERE race='bahrain_grand_prix' AND session='R' AND Abbreviation='VER';
+    -> {"row_count":1,"rows":[{"FullName":"Max Verstappen","Status":"Finished","Points":26,"Time":5504742000000,"Laps":null}]}
+steps=1 ANSWER: "Max Verstappen did **not** retire from the 2024 Bahrain Grand Prix.  \nThe official results show him finishing the race in 26 points (the 2nd‑place score) with a status of “Finished”. Therefore there was no retirement for him in that event."
+CHART: none

@@ -1,0 +1,24 @@
+system prompt chars: 10691
+QUESTION: In the 2024 Grand Prix race laps, pair each pit-in lap with the next lap's pit-out time to get each stop's pit-lane time. Ignore stops under 10 seconds or over 60 seconds. For each team, give the median pit-lane time and the number of stops. Which team had the fastest median?
+== run 1 ==
+  step 1 SQL: SELECT
+  pit_in.Team AS team,
+  median((pit_out.PitOutTime - pit_in.PitInTime)/1e9) AS median_pit_time,
+  count(*) AS stops
+FROM
+  laps AS pit_in
+JOIN
+  laps AS pit_out
+  ON pit_in.Driver = pit_out.Driver
+  AND pit_in.race = pit_out.race
+  AND pit_in.session = 'R'
+  AND pit_out.session = 'R'
+  AND pit_out.LapNumber = pit_in.LapNumber + 1
+WHERE
+  pit_in.PitInTime IS NOT NULL
+  AND pit_out.PitOutTime IS NOT NULL
+  AND (pit_out.PitOutTime - pit_in.PitInTime)/1e9 BETWEEN 10 AND 60
+GROUP BY pit_in.Team
+ORDER BY median_pit_time ASC;
+    -> {"row_count":10,"rows":[{"team":"McLaren","median_pit_time":22.887,"stops":77},{"team":"Mercedes","median_pit_time":22.908,"stops":78},{"team":"Red Bull Racing","median_pit_time":22.928,"stops":80},{"team":"RB","median_pit_time":22.94,"stops":72},{"team":"Ferrari","median_pit_time":23.091,"stops":75
+steps=1 ANSWER: "**Median pit‑lane times (2024 race season)**  \n\n| Team | Median pit‑lane time (s) | Number of stops |\n|------|--------------------------|-----------------|\n| McLaren | **22.887** | 77 |\n| Mercedes | 22.908 | 78 |\n| Red Bull Racing | 22.928 | 80 |\n| RB | 22.940 | 72 |\n| Ferrari | 23.091 | 75 |\n| Alpine | 23.205 | 71 |\n| Aston Martin | 23.265 | 81 |\n| Williams | 23.545 | 72 |\n| Haas F1 Team | 24.010 | 85 |\n| Kick Sauber | 24.256 | 78 |\n\n**Fastest median**  \nThe team with the lowest median pit‑lane time is **McLaren** (22.887 s)."

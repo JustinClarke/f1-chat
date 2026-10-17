@@ -1,0 +1,9 @@
+name = "off-the-pace-chat"
+main = "worker/index.ts"
+compatibility_date = "2025-01-01"
+
+[ai]
+binding = "AI"
+
+[vars]
+AI_MODEL = "@cf/openai/gpt-oss-20b"

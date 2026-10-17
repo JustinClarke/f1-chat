@@ -1,0 +1,297 @@
+{
+  "started": "2026-10-14T07:02:03.290Z",
+  "notes_off": [
+    {
+      "id": "wins_driver",
+      "category": "aggregate",
+      "question": "Who won the most races in 2024, and how many?",
+      "expected": "Verstappen, 9",
+      "answer": "Max Verstappen – 9 races.",
+      "sql": [
+        "SELECT Abbreviation, FullName, COUNT(*) as wins FROM results WHERE session='R' AND Position=1 GROUP BY Abbreviation, FullName ORDER BY wins DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 2.716
+    },
+    {
+      "id": "wins_team",
+      "category": "aggregate",
+      "question": "Which team won the most races in 2024, and how many?",
+      "expected": "Red Bull, 9",
+      "answer": "Red Bull Racing won the most races in 2024, with **9 victories**.",
+      "sql": [
+        "SELECT TeamName, COUNT(*) AS wins FROM results WHERE session='R' AND Position=1 GROUP BY TeamName ORDER BY wins DESC LIMIT 1"
+      ],
+      "verdict": "check manually",
+      "seconds": 1.876
+    },
+    {
+      "id": "distinct_winners",
+      "category": "naive-wrong",
+      "question": "How many different drivers won a race in 2024?",
+      "expected": "7",
+      "answer": "7 different drivers won a race in the 2024 season.",
+      "sql": [
+        "SELECT COUNT(DISTINCT Abbreviation) AS win_drivers FROM results WHERE session='R' AND Position=1 LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 1.506
+    },
+    {
+      "id": "races_count",
+      "category": "naive-wrong",
+      "question": "How many races were there in the 2024 season?",
+      "expected": "24",
+      "answer": "24 races.",
+      "sql": [
+        "SELECT COUNT(DISTINCT race) AS races FROM results WHERE session = 'R' AND season = 2024 LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 11.41
+    },
+    {
+      "id": "poles",
+      "category": "naive-wrong",
+      "question": "How many pole positions did Max Verstappen take in 2024?",
+      "expected": "10",
+      "answer": "Max Verstappen secured **10 pole positions** in the 2024 season.",
+      "sql": [
+        "SELECT COUNT(*) as pole_count FROM results WHERE session='Q' AND Position=1 AND Abbreviation='VER' LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 1.984
+    },
+    {
+      "id": "points_driver",
+      "category": "aggregate",
+      "question": "Which driver scored the most points across the 2024 Grand Prix races, and how many?",
+      "expected": "Verstappen, 399",
+      "answer": "Max Verstappen scored the most points in 2024, with **399 points**.",
+      "sql": [
+        "SELECT Abbreviation, FullName, SUM(Points) AS total_points\nFROM results\nWHERE session = 'R'\nGROUP BY Abbreviation, FullName\nORDER BY total_points DESC\nLIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 1.633
+    },
+    {
+      "id": "points_team",
+      "category": "aggregate",
+      "question": "Which team scored the most points across the 2024 Grand Prix races, and how many?",
+      "expected": "McLaren, 609",
+      "answer": "The team that accumulated the most points in the 2024 Grand Prix races was **McLaren**, with a total of **609 points**.",
+      "sql": [
+        "SELECT TeamName, SUM(Points) AS total_points FROM results WHERE session='R' GROUP BY TeamName ORDER BY total_points DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 2.333
+    },
+    {
+      "id": "fastest_monza",
+      "category": "lap-level",
+      "question": "What was the fastest lap in the 2024 Italian Grand Prix (Monza) race, and who set it?",
+      "expected": "NOR, 1:21.432",
+      "answer": "The fastest lap of the 2024 Italian Grand Prix (Monza) was 81.432 seconds, set by **Lando Norris** on lap 53.",
+      "sql": [
+        "SELECT Driver, LapTime, Time, LapNumber FROM laps WHERE race='italian_grand_prix' AND session='R' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE ORDER BY LapTime ASC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 3.03
+    },
+    {
+      "id": "nor_monaco_laps",
+      "category": "lap-level",
+      "question": "How many race laps did Lando Norris complete in the 2024 Monaco Grand Prix?",
+      "expected": "78",
+      "answer": "Lando Norris completed **78 race laps** in the 2024 Monaco Grand Prix.",
+      "sql": [
+        "SELECT COUNT(*) AS lap_count FROM laps WHERE race='monaco_grand_prix' AND session='R' AND Driver='NOR' LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 2.302
+    },
+    {
+      "id": "top_compound",
+      "category": "lap-level",
+      "question": "Which tyre compound was used for the most race laps in 2024?",
+      "expected": "HARD",
+      "answer": "The most common tyre compound used for race laps in 2024 was **HARD**, with **13,514 laps**.",
+      "sql": [
+        "SELECT Compound, COUNT(*) as lap_count FROM laps WHERE session='R' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE GROUP BY Compound ORDER BY lap_count DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 3.295
+    },
+    {
+      "id": "unanswerable",
+      "category": "unanswerable",
+      "question": "Who won the 2023 Monaco Grand Prix?",
+      "expected": "Not answerable: the data covers the 2024 season only.",
+      "answer": "The data set only contains the 2024 Formula 1 season, so it does not include information about the 2023 Monaco Grand Prix.",
+      "sql": [],
+      "verdict": "pass",
+      "seconds": 0.835
+    }
+  ],
+  "exploration": {
+    "stats": {
+      "saved": 1,
+      "rejected": 0,
+      "toolCalls": 8,
+      "turns": 8
+    },
+    "log": [
+      "Profiling schema...",
+      "run_sql: SELECT COUNT(*) AS total_rows, COUNT(DISTINCT race_id || '_' || session || '_' || Driver || '_' || LapNumber) AS distinct_rows FROM laps LIMIT 200",
+      "run_sql: SELECT race_id, session, DriverNumber, COUNT(*) AS cnt FROM laps GROUP BY race_id, session, DriverNumber HAVING cnt>1 LIMIT 5",
+      "run_sql: SELECT COUNT(*) AS total_rows, COUNT(DISTINCT race_id || '_' || session || '_' || Driver || '_' || LapNumber) AS distinct_rows FROM laps LIMIT 200",
+      "run_sql: SELECT COUNT(*) FROM laps WHERE LapTime IS NULL LIMIT 200",
+      "run_sql: SELECT COUNT(*) AS total_rows, COUNT(DISTINCT race_id || '_' || session || '_' || DriverNumber || '_' || LapNumber) AS distinct_rows FROM laps LIMIT 200",
+      "run_sql: SELECT race_id, session, MAX(LapNumber) AS max_lap FROM laps GROUP BY race_id, session ORDER BY max_lap DESC LIMIT 5",
+      "run_sql: SELECT COUNT(*) AS total, COUNT(DISTINCT race_id || '_' || DriverNumber) AS distinct_keys FROM results LIMIT 200",
+      "note saved [high] laps table grain and key: Each row in the laps view represents a single lap for a driver in a specific race session; the combination of race_id, session, DriverNumber, and LapNumber uniquely identifies a row.",
+      "Done: 1 notes saved, 0 rejected, 8 tool calls, 8 turns."
+    ],
+    "notes": [
+      {
+        "id": 1,
+        "topic": "laps table grain and key",
+        "claim": "Each row in the laps view represents a single lap for a driver in a specific race session; the combination of race_id, session, DriverNumber, and LapNumber uniquely identifies a row.",
+        "evidence_sql": "SELECT COUNT(*) AS total_rows, COUNT(DISTINCT race_id || '_' || session || '_' || DriverNumber || '_' || LapNumber) AS distinct_rows FROM laps LIMIT 200",
+        "evidence_result": "[{\"total_rows\":34196,\"distinct_rows\":34196}]",
+        "confidence": "high"
+      }
+    ]
+  },
+  "notes_on": [
+    {
+      "id": "wins_driver",
+      "category": "aggregate",
+      "question": "Who won the most races in 2024, and how many?",
+      "expected": "Verstappen, 9",
+      "answer": "Max Verstappen won the most races in 2024, with **9 victories**.",
+      "sql": [
+        "SELECT FullName, COUNT(*) as wins FROM results WHERE session='R' AND Position=1 GROUP BY FullName ORDER BY wins DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 11.38
+    },
+    {
+      "id": "wins_team",
+      "category": "aggregate",
+      "question": "Which team won the most races in 2024, and how many?",
+      "expected": "Red Bull, 9",
+      "answer": "Red Bull Racing – 9 race wins in 2024.",
+      "sql": [
+        "SELECT TeamName, COUNT(*) AS wins FROM results WHERE session='R' AND Position=1 GROUP BY TeamName ORDER BY wins DESC LIMIT 1"
+      ],
+      "verdict": "check manually",
+      "seconds": 2.34
+    },
+    {
+      "id": "distinct_winners",
+      "category": "naive-wrong",
+      "question": "How many different drivers won a race in 2024?",
+      "expected": "7",
+      "answer": "There were 7 different drivers who won a race in the 2024 season.",
+      "sql": [
+        "SELECT COUNT(DISTINCT Abbreviation) AS drivers_won FROM results WHERE session='R' AND Position=1 LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 1.431
+    },
+    {
+      "id": "races_count",
+      "category": "naive-wrong",
+      "question": "How many races were there in the 2024 season?",
+      "expected": "24",
+      "answer": "There were **24 races** in the 2024 season.",
+      "sql": [
+        "SELECT COUNT(DISTINCT race) AS race_count FROM laps LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 13.257
+    },
+    {
+      "id": "poles",
+      "category": "naive-wrong",
+      "question": "How many pole positions did Max Verstappen take in 2024?",
+      "expected": "10",
+      "answer": "Max Verstappen secured **10 pole positions** in the 2024 season.",
+      "sql": [
+        "SELECT COUNT(*) AS pole_count FROM results WHERE session='Q' AND Position=1 AND Abbreviation='VER' LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 1.296
+    },
+    {
+      "id": "points_driver",
+      "category": "aggregate",
+      "question": "Which driver scored the most points across the 2024 Grand Prix races, and how many?",
+      "expected": "Verstappen, 399",
+      "answer": "Max Verstappen – 399 points.",
+      "sql": [
+        "SELECT Abbreviation, FullName, SUM(Points) AS total_points FROM results WHERE session='R' GROUP BY Abbreviation, FullName ORDER BY total_points DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 1.691
+    },
+    {
+      "id": "points_team",
+      "category": "aggregate",
+      "question": "Which team scored the most points across the 2024 Grand Prix races, and how many?",
+      "expected": "McLaren, 609",
+      "answer": "The team that scored the most points in the 2024 season’s Grand Prix races is **McLaren**, with a total of **609 points**.",
+      "sql": [
+        "SELECT TeamName, SUM(Points) AS total_points\nFROM results\nWHERE session='R'\nGROUP BY TeamName\nORDER BY total_points DESC\nLIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 1.873
+    },
+    {
+      "id": "fastest_monza",
+      "category": "lap-level",
+      "question": "What was the fastest lap in the 2024 Italian Grand Prix (Monza) race, and who set it?",
+      "expected": "NOR, 1:21.432",
+      "answer": "Fastest lap in the 2024 Italian Grand Prix (Monza) race  \n**Driver:** Lando Norris (NOR)  \n**Lap time:** 81 432 000 000 ns → 81.432 s (≈ 1 min 21.432 s)",
+      "sql": [
+        "SELECT Driver, LapTime FROM laps WHERE race='italian_grand_prix' AND session='R' AND LapTime IS NOT NULL AND Deleted IS NOT TRUE ORDER BY LapTime ASC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 3.717
+    },
+    {
+      "id": "nor_monaco_laps",
+      "category": "lap-level",
+      "question": "How many race laps did Lando Norris complete in the 2024 Monaco Grand Prix?",
+      "expected": "78",
+      "answer": "Lando Norris completed **78 race laps** in the 2024 Monaco Grand Prix.",
+      "sql": [
+        "SELECT COUNT(DISTINCT LapNumber) AS laps_completed FROM laps WHERE Driver='NOR' AND session='R' AND race='monaco_grand_prix' LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 3.422
+    },
+    {
+      "id": "top_compound",
+      "category": "lap-level",
+      "question": "Which tyre compound was used for the most race laps in 2024?",
+      "expected": "HARD",
+      "answer": "The most race laps in 2024 were run on **HARD** compound – 13,767 laps.",
+      "sql": [
+        "SELECT Compound, COUNT(*) as laps FROM laps WHERE session='R' GROUP BY Compound ORDER BY laps DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 3.015
+    },
+    {
+      "id": "unanswerable",
+      "category": "unanswerable",
+      "question": "Who won the 2023 Monaco Grand Prix?",
+      "expected": "Not answerable: the data covers the 2024 season only.",
+      "answer": "The data only covers the 2024 Formula 1 season, so it does not include the 2023 Monaco Grand Prix.",
+      "sql": [],
+      "verdict": "pass",
+      "seconds": 1.013
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+system prompt chars: 11002
+QUESTION: Who was the most consistent driver in the 2024 races?
+== run 1 ==
+  step 1 SQL: SELECT r.Abbreviation, ds.full_name, COUNT(*) as races, STDDEV_SAMP(r.Position) as stddev_pos
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'R' AND r.Position IS NOT NULL
+GROUP BY r.Abbreviation, ds.full_name
+ORDER BY stddev_pos ASC
+LIMIT 10;
+    -> {"row_count":10,"rows":[{"Abbreviation":"BOT","full_name":"Valtteri Bottas","races":24,"stddev_pos":2.2198054491067585},{"Abbreviation":"BEA","full_name":"Oliver Bearman","races":3,"stddev_pos":2.516611478423583},{"Abbreviation":"SAR","full_name":"Logan Sargeant","races":14,"stddev_pos":2.6269942712
+steps=1 ANSWER: "The driver with the lowest standard deviation of finishing positions across the 24 2024 races was **Valtteri Bottas**.  \nHis standard deviation of race positions was **2.22**, the smallest value among all drivers who completed races that season. This indicates that Bottas’ finishing positions varied the least from race to race, making him the most consistent performer in the 2024 season."
+CHART: none

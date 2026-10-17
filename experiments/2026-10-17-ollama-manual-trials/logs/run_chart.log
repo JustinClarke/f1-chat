@@ -1,0 +1,9 @@
+system prompt chars: 10691
+QUESTION: How many Grand Prix races did each team win in 2024? Chart the number of wins per team.
+== run 1 ==
+  step 1 SQL: SELECT TeamName, COUNT(*) AS wins FROM results WHERE session='R' AND Position=1 GROUP BY TeamName ORDER BY wins DESC
+    -> {"row_count":4,"rows":[{"TeamName":"Red Bull Racing","wins":9},{"TeamName":"McLaren","wins":6},{"TeamName":"Ferrari","wins":5},{"TeamName":"Mercedes","wins":4}]}
+  step 2 CHART: {"title":"2024 Grand Prix Wins per Team","type":"bar","x":"TeamName","y":"wins"}
+    -> {"ok":true,"drawn":"bar chart of wins by TeamName, 4 rows"}
+steps=2 ANSWER: "**2024 Grand Prix wins by team**\n\n| Team | Wins |\n|------|------|\n| Red Bull Racing | 9 |\n| McLaren | 6 |\n| Ferrari | 5 |\n| Mercedes | 4 |\n\n*Chart:* A bar chart showing the number of wins per team (4 bars)."
+CHART: {"type":"bar","x":"TeamName","y":"wins","title":"2024 Grand Prix Wins per Team"}

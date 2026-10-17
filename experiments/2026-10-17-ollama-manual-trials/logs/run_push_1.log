@@ -1,0 +1,15 @@
+system prompt chars: 11002
+QUESTION: Chart each driver's total Grand Prix race points in 2024, highest first.
+== run 1 ==
+  step 1 SQL: SELECT ds.full_name AS driver, SUM(r.Points) AS total_points
+FROM results r
+JOIN driver_seasons ds ON r.Abbreviation = ds.driver_code AND r.season = ds.season
+WHERE r.session = 'R'
+GROUP BY ds.full_name
+ORDER BY total_points DESC
+LIMIT 50;
+    -> {"row_count":24,"rows":[{"driver":"Max Verstappen","total_points":399},{"driver":"Lando Norris","total_points":344},{"driver":"Charles Leclerc","total_points":327},{"driver":"Oscar Piastri","total_points":265},{"driver":"Carlos Sainz","total_points":262},{"driver":"George Russell","total_points":226
+  step 2 CHART: {"title":"2024 Grand Prix Race Points by Driver","type":"bar","x":"driver","y":"total_points"}
+    -> {"ok":true,"drawn":"bar chart of total_points by driver, 24 rows"}
+steps=2 ANSWER: "**2024 Grand Prix race points – highest first**\n\n| Driver | Total points |\n|--------|--------------|\n| Max Verstappen | 399 |\n| Lando Norris | 344 |\n| Charles Leclerc | 327 |\n| Oscar Piastri | 265 |\n| Carlos Sainz | 262 |\n| George Russell | 226 |\n| Lewis Hamilton | 207 |\n| Sergio Perez | 138 |\n| Fernando Alonso | 70 |\n| Pierre Gasly | 40 |\n| Nico Hulkenberg | 36 |\n| Yuki Tsunoda | 29 |\n| Lance Stroll | 24 |\n| Esteban Ocon | 23 |\n| Kevin Magnussen | 14 |\n| Alexander Albon | 12 |\n| Oliver Bearman | 7 |\n| Daniel Ricciardo | 7 |\n| Franco Colapinto | 5 |\n| Liam Lawson | 4 |\n| Guanyu Zhou | 4 |\n| Logan Sargeant | 0 |\n| Valtteri Bottas | 0 |\n| Jack Doohan | 0 |\n\nThe bar chart visualises these totals, sorted from highest to lowest."
+CHART: {"type":"bar","x":"driver","y":"total_points","title":"2024 Grand Prix Race Points by Driver"}

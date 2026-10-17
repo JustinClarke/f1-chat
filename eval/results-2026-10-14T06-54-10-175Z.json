@@ -1,0 +1,344 @@
+{
+  "started": "2026-10-14T06:52:31.399Z",
+  "notes_off": [
+    {
+      "id": "wins_driver",
+      "category": "aggregate",
+      "question": "Who won the most races in 2024, and how many?",
+      "expected": "Verstappen, 9",
+      "answer": "Pierre Gasly won the most races in 2024, with 1432 wins.",
+      "sql": [
+        "WITH race_winners AS ( SELECT Driver, COUNT(*) AS wins FROM laps WHERE session = 'R' AND LapTime IS NOT NULL GROUP BY Driver ) SELECT Driver, wins FROM race_winners ORDER BY wins DESC LIMIT 1"
+      ],
+      "verdict": "fail",
+      "seconds": 3.544
+    },
+    {
+      "id": "wins_team",
+      "category": "aggregate",
+      "question": "Which team won the most races in 2024, and how many?",
+      "expected": "Red Bull, 9",
+      "answer": "Red Bull Racing won the most races in 2024, with 1027 wins.",
+      "sql": [
+        "WITH race_winners AS ( SELECT Team, COUNT(*) AS wins FROM laps JOIN results ON laps.Driver = results.Abbreviation AND laps.race_id = results.race_id AND laps.season = results.season AND laps.session = 'R' AND laps.LapTime IS NOT NULL WHERE results.Position = 1 GROUP BY Team ) SELECT Team, wins FROM race_winners ORDER BY wins DESC LIMIT 1"
+      ],
+      "verdict": "check manually",
+      "seconds": 3.424
+    },
+    {
+      "id": "distinct_winners",
+      "category": "naive-wrong",
+      "question": "How many different drivers won a race in 2024?",
+      "expected": "7",
+      "answer": "7 drivers won a race in 2024.",
+      "sql": [
+        "SELECT COUNT(DISTINCT Driver) FROM results WHERE session = 'R' AND season = 2024 AND Position = 1 LIMIT 200",
+        "SELECT COUNT(DISTINCT Abbreviation) FROM results WHERE session = 'R' AND season = 2024 AND Position = 1 LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 4.667
+    },
+    {
+      "id": "races_count",
+      "category": "naive-wrong",
+      "question": "How many races were there in the 2024 season?",
+      "expected": "24",
+      "answer": "There were 24 races in the 2024 Formula 1 season.",
+      "sql": [
+        "SELECT COUNT(DISTINCT race) FROM results WHERE season = 2024 LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 3.226
+    },
+    {
+      "id": "poles",
+      "category": "naive-wrong",
+      "question": "How many pole positions did Max Verstappen take in 2024?",
+      "expected": "10",
+      "answer": "Max Verstappen took 10 pole positions in 2024.",
+      "sql": [
+        "SELECT COUNT(*) FROM results WHERE FullName = 'Max Verstappen' AND session = 'Q' AND Position = 1 AND season = 2024 LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 2.231
+    },
+    {
+      "id": "points_driver",
+      "category": "aggregate",
+      "question": "Which driver scored the most points across the 2024 Grand Prix races, and how many?",
+      "expected": "Verstappen, 399",
+      "answer": "Max Verstappen scored the most points across the 2024 Grand Prix races, with 399 points.",
+      "sql": [
+        "SELECT FullName, SUM(Points) AS TotalPoints FROM results WHERE session = 'R' AND season = 2024 GROUP BY FullName ORDER BY TotalPoints DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 2.079
+    },
+    {
+      "id": "points_team",
+      "category": "aggregate",
+      "question": "Which team scored the most points across the 2024 Grand Prix races, and how many?",
+      "expected": "McLaren, 609",
+      "answer": "McLaren scored the most points across the 2024 Grand Prix races, with a total of 609 points.",
+      "sql": [
+        "SELECT TeamName, SUM(Points) AS TotalPoints FROM results WHERE session = 'R' GROUP BY TeamName ORDER BY TotalPoints DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 2.122
+    },
+    {
+      "id": "fastest_monza",
+      "category": "lap-level",
+      "question": "What was the fastest lap in the 2024 Italian Grand Prix (Monza) race, and who set it?",
+      "expected": "NOR, 1:21.432",
+      "answer": "The fastest lap in the 2024 Italian Grand Prix was 81.432 seconds, set by Lando Norris.",
+      "sql": [
+        "WITH fastest_lap AS ( SELECT Driver, LapTime FROM laps WHERE race ILIKE '%italian_grand_prix%' AND session = 'R' AND LapTime IS NOT NULL ORDER BY LapTime ASC LIMIT 1 ) SELECT Driver, LapTime / 1e9 AS LapTime FROM fastest_lap"
+      ],
+      "verdict": "pass",
+      "seconds": 3.319
+    },
+    {
+      "id": "nor_monaco_laps",
+      "category": "lap-level",
+      "question": "How many race laps did Lando Norris complete in the 2024 Monaco Grand Prix?",
+      "expected": "78",
+      "answer": "Lando Norris completed 77 race laps in the 2024 Monaco Grand Prix.",
+      "sql": [
+        "SELECT COUNT(*) FROM laps WHERE Driver = 'NOR' AND race ILIKE '%monaco%' AND session = 'R' AND LapTime IS NOT NULL LIMIT 200"
+      ],
+      "verdict": "fail",
+      "seconds": 2.172
+    },
+    {
+      "id": "top_compound",
+      "category": "lap-level",
+      "question": "Which tyre compound was used for the most race laps in 2024?",
+      "expected": "HARD",
+      "answer": "The HARD tyre compound was used for the most race laps in 2024.",
+      "sql": [
+        "SELECT Compound, COUNT(*) as laps FROM laps WHERE session = 'R' AND season = 2024 AND LapTime IS NOT NULL GROUP BY Compound ORDER BY laps DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 3.384
+    },
+    {
+      "id": "unanswerable",
+      "category": "unanswerable",
+      "question": "Who won the 2023 Monaco Grand Prix?",
+      "expected": "Not answerable: the data covers the 2024 season only.",
+      "answer": "Charles Leclerc won the 2024 Monaco Grand Prix.",
+      "sql": [
+        "SELECT FullName FROM results WHERE race ILIKE '%monaco_grand_prix%' AND session = 'R' AND Position = 1 AND season = 2024 LIMIT 200"
+      ],
+      "verdict": "fail",
+      "seconds": 3.242
+    }
+  ],
+  "exploration": {
+    "stats": {
+      "saved": 6,
+      "rejected": 0,
+      "toolCalls": 8,
+      "turns": 4
+    },
+    "log": [
+      "Profiling schema...",
+      "run_sql: SELECT * FROM laps LIMIT 5",
+      "run_sql: SELECT * FROM results LIMIT 5",
+      "note saved [high] laps: Each row in the laps table represents a single lap completed by a driver in a race.",
+      "note saved [high] laps: The laps table includes columns for time, driver, driver number, lap time, lap number, stint, pit times, sector times, speeds, tyre compound, tyre life, fresh tyre status, team, lap start time, track status, position, and race details.",
+      "note saved [high] laps: The laps table includes columns for time, driver, driver number, lap time, lap number, stint, pit times, sector times, speeds, tyre compound, tyre life, fresh tyre status, team, lap start time, track status, position, and race details.",
+      "note saved [high] laps: The laps table includes columns for time, driver, driver number, lap time, lap number, stint, pit times, sector times, speeds, tyre compound, tyre life, fresh tyre status, team, lap start time, track status, position, and race details.",
+      "note saved [high] results: Each row in the results table represents the final result of a driver in a race.",
+      "note saved [high] results: The results table includes columns for driver number, broadcast name, abbreviation, driver ID, team name, team color, team ID, first name, last name, full name, country code, position, classified position, grid position, qualifying times, race time, status, points, race ID, season, laps, race name, and session.",
+      "Done: 6 notes saved, 0 rejected, 8 tool calls, 4 turns."
+    ],
+    "notes": [
+      {
+        "id": 1,
+        "topic": "laps",
+        "claim": "Each row in the laps table represents a single lap completed by a driver in a race.",
+        "evidence_sql": "SELECT * FROM laps LIMIT 5",
+        "evidence_result": "[{\"Time\":3507597000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":99510000000,\"LapNumber\":1,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":null,\"Sector2Time\":39931000000,\"Sector3Time\":34944000000,\"Sector1SessionTime\":null,\"Sector2SessionTime\":3472858000000,\"Sector3SessionTime\":3507693000000,\"SpeedI1\":290,\"SpeedI2\":302,\"SpeedFL\":208,\"SpeedST\":289,\"IsPersonalBest\":false,\"Compound\":\"MEDIUM\",\"TyreLife\":1,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3407817000000,\"LapStartDate\":1733663015034,\"TrackStatus\":\"12\",\"Position\":12,\"Deleted\":false,\"DeletedReason\":\"\",\"FastF1Generated\":false,\"IsAccurate\":false,\"race_id\":\"2024_24\",\"season\":2024,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"Time\":3622535000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":114938000000,\"LapNumber\":2,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":18209000000,\"Sector2Time\":54569000000,\"Sector3Time\":42160000000,\"Sector1SessionTime\":3525842000000,\"Sector2SessionTime\":3580411000000,\"Sector3SessionTime\":3622571000000,\"SpeedI1\":291,\"SpeedI2\":239,\"SpeedFL\":191,\"SpeedST\":320,\"IsPersonalBest\":true,\"Compound\":\"MEDIUM\",\"TyreLife\":2,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3507597000000,\"LapStartDate\":1733663114814,\"TrackStatus\":\"126\",\"Position\":11,\"Deleted\":false,\"DeletedReason\":\"\",\"FastF1Generated\":false,\"IsAccurate\":false,\"race_id\":\"2024_24\",\"season\":2024,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"Time\":3720586000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":98051000000,\"LapNumber\":3,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":23196000000,\"Sector2Time\":41997000000,\"Sector3Time\":32858000000,\"Sector1SessionTime\":3645767000000,\"Sector2SessionTime\":3687764000000,\"Sector3SessionTime\":3720622000000,\"SpeedI1\":239,\"SpeedI2\":303,\"SpeedFL\":211,\"SpeedST\":321,\"IsPersonalBest\":true,\"Compound\":\"MEDIUM\",\"TyreLife\":3,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3622535000000,\"LapStartDate\":1733663229752,\"TrackStatus\":\"671\",\"Position\":10,\"Dele",
+        "confidence": "high"
+      },
+      {
+        "id": 2,
+        "topic": "laps",
+        "claim": "The laps table includes columns for time, driver, driver number, lap time, lap number, stint, pit times, sector times, speeds, tyre compound, tyre life, fresh tyre status, team, lap start time, track status, position, and race details.",
+        "evidence_sql": "SELECT * FROM laps LIMIT 5",
+        "evidence_result": "[{\"Time\":3507597000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":99510000000,\"LapNumber\":1,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":null,\"Sector2Time\":39931000000,\"Sector3Time\":34944000000,\"Sector1SessionTime\":null,\"Sector2SessionTime\":3472858000000,\"Sector3SessionTime\":3507693000000,\"SpeedI1\":290,\"SpeedI2\":302,\"SpeedFL\":208,\"SpeedST\":289,\"IsPersonalBest\":false,\"Compound\":\"MEDIUM\",\"TyreLife\":1,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3407817000000,\"LapStartDate\":1733663015034,\"TrackStatus\":\"12\",\"Position\":12,\"Deleted\":false,\"DeletedReason\":\"\",\"FastF1Generated\":false,\"IsAccurate\":false,\"race_id\":\"2024_24\",\"season\":2024,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"Time\":3622535000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":114938000000,\"LapNumber\":2,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":18209000000,\"Sector2Time\":54569000000,\"Sector3Time\":42160000000,\"Sector1SessionTime\":3525842000000,\"Sector2SessionTime\":3580411000000,\"Sector3SessionTime\":3622571000000,\"SpeedI1\":291,\"SpeedI2\":239,\"SpeedFL\":191,\"SpeedST\":320,\"IsPersonalBest\":true,\"Compound\":\"MEDIUM\",\"TyreLife\":2,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3507597000000,\"LapStartDate\":1733663114814,\"TrackStatus\":\"126\",\"Position\":11,\"Deleted\":false,\"DeletedReason\":\"\",\"FastF1Generated\":false,\"IsAccurate\":false,\"race_id\":\"2024_24\",\"season\":2024,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"Time\":3720586000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":98051000000,\"LapNumber\":3,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":23196000000,\"Sector2Time\":41997000000,\"Sector3Time\":32858000000,\"Sector1SessionTime\":3645767000000,\"Sector2SessionTime\":3687764000000,\"Sector3SessionTime\":3720622000000,\"SpeedI1\":239,\"SpeedI2\":303,\"SpeedFL\":211,\"SpeedST\":321,\"IsPersonalBest\":true,\"Compound\":\"MEDIUM\",\"TyreLife\":3,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3622535000000,\"LapStartDate\":1733663229752,\"TrackStatus\":\"671\",\"Position\":10,\"Dele",
+        "confidence": "high"
+      },
+      {
+        "id": 3,
+        "topic": "laps",
+        "claim": "The laps table includes columns for time, driver, driver number, lap time, lap number, stint, pit times, sector times, speeds, tyre compound, tyre life, fresh tyre status, team, lap start time, track status, position, and race details.",
+        "evidence_sql": "SELECT * FROM laps LIMIT 5",
+        "evidence_result": "[{\"Time\":3507597000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":99510000000,\"LapNumber\":1,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":null,\"Sector2Time\":39931000000,\"Sector3Time\":34944000000,\"Sector1SessionTime\":null,\"Sector2SessionTime\":3472858000000,\"Sector3SessionTime\":3507693000000,\"SpeedI1\":290,\"SpeedI2\":302,\"SpeedFL\":208,\"SpeedST\":289,\"IsPersonalBest\":false,\"Compound\":\"MEDIUM\",\"TyreLife\":1,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3407817000000,\"LapStartDate\":1733663015034,\"TrackStatus\":\"12\",\"Position\":12,\"Deleted\":false,\"DeletedReason\":\"\",\"FastF1Generated\":false,\"IsAccurate\":false,\"race_id\":\"2024_24\",\"season\":2024,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"Time\":3622535000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":114938000000,\"LapNumber\":2,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":18209000000,\"Sector2Time\":54569000000,\"Sector3Time\":42160000000,\"Sector1SessionTime\":3525842000000,\"Sector2SessionTime\":3580411000000,\"Sector3SessionTime\":3622571000000,\"SpeedI1\":291,\"SpeedI2\":239,\"SpeedFL\":191,\"SpeedST\":320,\"IsPersonalBest\":true,\"Compound\":\"MEDIUM\",\"TyreLife\":2,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3507597000000,\"LapStartDate\":1733663114814,\"TrackStatus\":\"126\",\"Position\":11,\"Deleted\":false,\"DeletedReason\":\"\",\"FastF1Generated\":false,\"IsAccurate\":false,\"race_id\":\"2024_24\",\"season\":2024,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"Time\":3720586000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":98051000000,\"LapNumber\":3,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":23196000000,\"Sector2Time\":41997000000,\"Sector3Time\":32858000000,\"Sector1SessionTime\":3645767000000,\"Sector2SessionTime\":3687764000000,\"Sector3SessionTime\":3720622000000,\"SpeedI1\":239,\"SpeedI2\":303,\"SpeedFL\":211,\"SpeedST\":321,\"IsPersonalBest\":true,\"Compound\":\"MEDIUM\",\"TyreLife\":3,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3622535000000,\"LapStartDate\":1733663229752,\"TrackStatus\":\"671\",\"Position\":10,\"Dele",
+        "confidence": "high"
+      },
+      {
+        "id": 4,
+        "topic": "laps",
+        "claim": "The laps table includes columns for time, driver, driver number, lap time, lap number, stint, pit times, sector times, speeds, tyre compound, tyre life, fresh tyre status, team, lap start time, track status, position, and race details.",
+        "evidence_sql": "SELECT * FROM laps LIMIT 5",
+        "evidence_result": "[{\"Time\":3507597000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":99510000000,\"LapNumber\":1,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":null,\"Sector2Time\":39931000000,\"Sector3Time\":34944000000,\"Sector1SessionTime\":null,\"Sector2SessionTime\":3472858000000,\"Sector3SessionTime\":3507693000000,\"SpeedI1\":290,\"SpeedI2\":302,\"SpeedFL\":208,\"SpeedST\":289,\"IsPersonalBest\":false,\"Compound\":\"MEDIUM\",\"TyreLife\":1,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3407817000000,\"LapStartDate\":1733663015034,\"TrackStatus\":\"12\",\"Position\":12,\"Deleted\":false,\"DeletedReason\":\"\",\"FastF1Generated\":false,\"IsAccurate\":false,\"race_id\":\"2024_24\",\"season\":2024,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"Time\":3622535000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":114938000000,\"LapNumber\":2,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":18209000000,\"Sector2Time\":54569000000,\"Sector3Time\":42160000000,\"Sector1SessionTime\":3525842000000,\"Sector2SessionTime\":3580411000000,\"Sector3SessionTime\":3622571000000,\"SpeedI1\":291,\"SpeedI2\":239,\"SpeedFL\":191,\"SpeedST\":320,\"IsPersonalBest\":true,\"Compound\":\"MEDIUM\",\"TyreLife\":2,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3507597000000,\"LapStartDate\":1733663114814,\"TrackStatus\":\"126\",\"Position\":11,\"Deleted\":false,\"DeletedReason\":\"\",\"FastF1Generated\":false,\"IsAccurate\":false,\"race_id\":\"2024_24\",\"season\":2024,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"Time\":3720586000000,\"Driver\":\"VER\",\"DriverNumber\":\"1\",\"LapTime\":98051000000,\"LapNumber\":3,\"Stint\":1,\"PitOutTime\":null,\"PitInTime\":null,\"Sector1Time\":23196000000,\"Sector2Time\":41997000000,\"Sector3Time\":32858000000,\"Sector1SessionTime\":3645767000000,\"Sector2SessionTime\":3687764000000,\"Sector3SessionTime\":3720622000000,\"SpeedI1\":239,\"SpeedI2\":303,\"SpeedFL\":211,\"SpeedST\":321,\"IsPersonalBest\":true,\"Compound\":\"MEDIUM\",\"TyreLife\":3,\"FreshTyre\":true,\"Team\":\"Red Bull Racing\",\"LapStartTime\":3622535000000,\"LapStartDate\":1733663229752,\"TrackStatus\":\"671\",\"Position\":10,\"Dele",
+        "confidence": "high"
+      },
+      {
+        "id": 5,
+        "topic": "results",
+        "claim": "Each row in the results table represents the final result of a driver in a race.",
+        "evidence_sql": "SELECT * FROM results LIMIT 5",
+        "evidence_result": "[{\"index\":\"4\",\"DriverNumber\":\"4\",\"BroadcastName\":\"L NORRIS\",\"Abbreviation\":\"NOR\",\"DriverId\":\"norris\",\"TeamName\":\"McLaren\",\"TeamColor\":\"FF8000\",\"TeamId\":\"mclaren\",\"FirstName\":\"Lando\",\"LastName\":\"Norris\",\"FullName\":\"Lando Norris\",\"CountryCode\":\"GBR\",\"Position\":1,\"ClassifiedPosition\":\"1\",\"GridPosition\":1,\"Q1\":null,\"Q2\":null,\"Q3\":null,\"Time\":5193291000000,\"Status\":\"Finished\",\"Points\":25,\"race_id\":\"2024_24\",\"season\":2024,\"Laps\":null,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"index\":\"55\",\"DriverNumber\":\"55\",\"BroadcastName\":\"C SAINZ\",\"Abbreviation\":\"SAI\",\"DriverId\":\"sainz\",\"TeamName\":\"Ferrari\",\"TeamColor\":\"E80020\",\"TeamId\":\"ferrari\",\"FirstName\":\"Carlos\",\"LastName\":\"Sainz\",\"FullName\":\"Carlos Sainz\",\"CountryCode\":\"ESP\",\"Position\":2,\"ClassifiedPosition\":\"2\",\"GridPosition\":3,\"Q1\":null,\"Q2\":null,\"Q3\":null,\"Time\":5832000000,\"Status\":\"Finished\",\"Points\":18,\"race_id\":\"2024_24\",\"season\":2024,\"Laps\":null,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"index\":\"16\",\"DriverNumber\":\"16\",\"BroadcastName\":\"C LECLERC\",\"Abbreviation\":\"LEC\",\"DriverId\":\"leclerc\",\"TeamName\":\"Ferrari\",\"TeamColor\":\"E80020\",\"TeamId\":\"ferrari\",\"FirstName\":\"Charles\",\"LastName\":\"Leclerc\",\"FullName\":\"Charles Leclerc\",\"CountryCode\":\"MON\",\"Position\":3,\"ClassifiedPosition\":\"3\",\"GridPosition\":19,\"Q1\":null,\"Q2\":null,\"Q3\":null,\"Time\":31928000000,\"Status\":\"Finished\",\"Points\":15,\"race_id\":\"2024_24\",\"season\":2024,\"Laps\":null,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"index\":\"44\",\"DriverNumber\":\"44\",\"BroadcastName\":\"L HAMILTON\",\"Abbreviation\":\"HAM\",\"DriverId\":\"hamilton\",\"TeamName\":\"Mercedes\",\"TeamColor\":\"27F4D2\",\"TeamId\":\"mercedes\",\"FirstName\":\"Lewis\",\"LastName\":\"Hamilton\",\"FullName\":\"Lewis Hamilton\",\"CountryCode\":\"GBR\",\"Position\":4,\"ClassifiedPosition\":\"4\",\"GridPosition\":16,\"Q1\":null,\"Q2\":null,\"Q3\":null,\"Time\":36483000000,\"Status\":\"Finished\",\"Points\":12,\"race_id\":\"2024_24\",\"season\":2024,\"Laps\":null,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"index\":\"63\",\"DriverNumber\":\"63\",\"BroadcastName\":\"G RUSSELL\",\"Abbreviation\":\"",
+        "confidence": "high"
+      },
+      {
+        "id": 6,
+        "topic": "results",
+        "claim": "The results table includes columns for driver number, broadcast name, abbreviation, driver ID, team name, team color, team ID, first name, last name, full name, country code, position, classified position, grid position, qualifying times, race time, status, points, race ID, season, laps, race name, and session.",
+        "evidence_sql": "SELECT * FROM results LIMIT 5",
+        "evidence_result": "[{\"index\":\"4\",\"DriverNumber\":\"4\",\"BroadcastName\":\"L NORRIS\",\"Abbreviation\":\"NOR\",\"DriverId\":\"norris\",\"TeamName\":\"McLaren\",\"TeamColor\":\"FF8000\",\"TeamId\":\"mclaren\",\"FirstName\":\"Lando\",\"LastName\":\"Norris\",\"FullName\":\"Lando Norris\",\"CountryCode\":\"GBR\",\"Position\":1,\"ClassifiedPosition\":\"1\",\"GridPosition\":1,\"Q1\":null,\"Q2\":null,\"Q3\":null,\"Time\":5193291000000,\"Status\":\"Finished\",\"Points\":25,\"race_id\":\"2024_24\",\"season\":2024,\"Laps\":null,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"index\":\"55\",\"DriverNumber\":\"55\",\"BroadcastName\":\"C SAINZ\",\"Abbreviation\":\"SAI\",\"DriverId\":\"sainz\",\"TeamName\":\"Ferrari\",\"TeamColor\":\"E80020\",\"TeamId\":\"ferrari\",\"FirstName\":\"Carlos\",\"LastName\":\"Sainz\",\"FullName\":\"Carlos Sainz\",\"CountryCode\":\"ESP\",\"Position\":2,\"ClassifiedPosition\":\"2\",\"GridPosition\":3,\"Q1\":null,\"Q2\":null,\"Q3\":null,\"Time\":5832000000,\"Status\":\"Finished\",\"Points\":18,\"race_id\":\"2024_24\",\"season\":2024,\"Laps\":null,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"index\":\"16\",\"DriverNumber\":\"16\",\"BroadcastName\":\"C LECLERC\",\"Abbreviation\":\"LEC\",\"DriverId\":\"leclerc\",\"TeamName\":\"Ferrari\",\"TeamColor\":\"E80020\",\"TeamId\":\"ferrari\",\"FirstName\":\"Charles\",\"LastName\":\"Leclerc\",\"FullName\":\"Charles Leclerc\",\"CountryCode\":\"MON\",\"Position\":3,\"ClassifiedPosition\":\"3\",\"GridPosition\":19,\"Q1\":null,\"Q2\":null,\"Q3\":null,\"Time\":31928000000,\"Status\":\"Finished\",\"Points\":15,\"race_id\":\"2024_24\",\"season\":2024,\"Laps\":null,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"index\":\"44\",\"DriverNumber\":\"44\",\"BroadcastName\":\"L HAMILTON\",\"Abbreviation\":\"HAM\",\"DriverId\":\"hamilton\",\"TeamName\":\"Mercedes\",\"TeamColor\":\"27F4D2\",\"TeamId\":\"mercedes\",\"FirstName\":\"Lewis\",\"LastName\":\"Hamilton\",\"FullName\":\"Lewis Hamilton\",\"CountryCode\":\"GBR\",\"Position\":4,\"ClassifiedPosition\":\"4\",\"GridPosition\":16,\"Q1\":null,\"Q2\":null,\"Q3\":null,\"Time\":36483000000,\"Status\":\"Finished\",\"Points\":12,\"race_id\":\"2024_24\",\"season\":2024,\"Laps\":null,\"race\":\"abu_dhabi_grand_prix\",\"session\":\"R\"},{\"index\":\"63\",\"DriverNumber\":\"63\",\"BroadcastName\":\"G RUSSELL\",\"Abbreviation\":\"",
+        "confidence": "high"
+      }
+    ]
+  },
+  "notes_on": [
+    {
+      "id": "wins_driver",
+      "category": "aggregate",
+      "question": "Who won the most races in 2024, and how many?",
+      "expected": "Verstappen, 9",
+      "answer": "PIA won the most races in 2024, with 1432 wins.",
+      "sql": [
+        "WITH race_winners AS (    SELECT        Driver,        COUNT(*) AS wins    FROM        laps    WHERE        session = 'R'        AND LapTime IS NOT NULL    GROUP BY        Driver) SELECT    Driver,    wins FROM    race_winners ORDER BY    wins DESC LIMIT 1"
+      ],
+      "verdict": "fail",
+      "seconds": 2.704
+    },
+    {
+      "id": "wins_team",
+      "category": "aggregate",
+      "question": "Which team won the most races in 2024, and how many?",
+      "expected": "Red Bull, 9",
+      "answer": "Red Bull Racing won the most races in 2024, with 9 wins.",
+      "sql": [
+        "WITH race_winners AS ( SELECT TeamName, COUNT(*) AS wins FROM results WHERE session = 'R' AND Position = 1 GROUP BY TeamName ) SELECT TeamName, wins FROM race_winners ORDER BY wins DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 2.253
+    },
+    {
+      "id": "distinct_winners",
+      "category": "naive-wrong",
+      "question": "How many different drivers won a race in 2024?",
+      "expected": "7",
+      "answer": "7 drivers won a race in 2024.",
+      "sql": [
+        "SELECT COUNT(DISTINCT Driver) FROM results WHERE session = 'R' AND season = 2024 AND Position = 1 LIMIT 200",
+        "SELECT COUNT(DISTINCT Abbreviation) FROM results WHERE session = 'R' AND season = 2024 AND Position = 1 LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 6.141
+    },
+    {
+      "id": "races_count",
+      "category": "naive-wrong",
+      "question": "How many races were there in the 2024 season?",
+      "expected": "24",
+      "answer": "There were 24 races in the 2024 season.",
+      "sql": [
+        "SELECT COUNT(DISTINCT race) FROM laps WHERE season = 2024 AND session = 'R' LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 3.441
+    },
+    {
+      "id": "poles",
+      "category": "naive-wrong",
+      "question": "How many pole positions did Max Verstappen take in 2024?",
+      "expected": "10",
+      "answer": "Max Verstappen took 10 pole positions in 2024.",
+      "sql": [
+        "SELECT COUNT(*) FROM results WHERE Abbreviation = 'VER' AND session = 'Q' AND Position = 1 AND season = 2024 LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 2.045
+    },
+    {
+      "id": "points_driver",
+      "category": "aggregate",
+      "question": "Which driver scored the most points across the 2024 Grand Prix races, and how many?",
+      "expected": "Verstappen, 399",
+      "answer": "Max Verstappen scored the most points across the 2024 Grand Prix races, with 399 points.",
+      "sql": [
+        "SELECT FullName, SUM(Points) as TotalPoints FROM results WHERE season = 2024 AND session = 'R' GROUP BY FullName ORDER BY TotalPoints DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 2.065
+    },
+    {
+      "id": "points_team",
+      "category": "aggregate",
+      "question": "Which team scored the most points across the 2024 Grand Prix races, and how many?",
+      "expected": "McLaren, 609",
+      "answer": "McLaren scored the most points across the 2024 Grand Prix races, with a total of 609 points.",
+      "sql": [
+        "SELECT TeamName, SUM(Points) as TotalPoints FROM results WHERE session = 'R' GROUP BY TeamName ORDER BY TotalPoints DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 3.058
+    },
+    {
+      "id": "fastest_monza",
+      "category": "lap-level",
+      "question": "What was the fastest lap in the 2024 Italian Grand Prix (Monza) race, and who set it?",
+      "expected": "NOR, 1:21.432",
+      "answer": "The fastest lap in the 2024 Italian Grand Prix was set by Lando Norris of McLaren on lap 53, with a time of 81.432 seconds. He was using hard compound tyres with 21 laps of tyre life remaining. His speeds were 323 km/h at the first intermediate point, 330 km/h at the second intermediate point, 316 km/h at the finish line, and 340 km/h at the start line.",
+      "sql": [
+        "WITH fastest_lap AS ( SELECT MIN(LapTime) AS fastest FROM laps WHERE race ILIKE '%italian_grand_prix%' AND session = 'R' AND LapTime IS NOT NULL ) SELECT laps.Driver, laps.LapTime, laps.Team, laps.LapNumber, laps.TyreLife, laps.Compound, laps.SpeedI1, laps.SpeedI2, laps.SpeedFL, laps.SpeedST, results.FullName, results.Position, results.Points FROM laps JOIN results ON laps.Driver = results.Abbreviation JOIN fastest_lap ON laps.LapTime = fastest_lap.fastest WHERE race ILIKE '%italian_grand_prix%' AND session = 'R' AND LapTime IS NOT NULL LIMIT 200",
+        "WITH fastest_lap AS ( SELECT MIN(LapTime) AS fastest FROM laps WHERE race ILIKE '%italian_grand_prix%' AND session = 'R' AND LapTime IS NOT NULL ) SELECT laps.Driver, laps.LapTime, laps.Team, laps.LapNumber, laps.TyreLife, laps.Compound, laps.SpeedI1, laps.SpeedI2, laps.SpeedFL, laps.SpeedST, results.FullName, results.Position, results.Points FROM laps JOIN results ON laps.Driver = results.Abbreviation CROSS JOIN fastest_lap WHERE laps.race ILIKE '%italian_grand_prix%' AND laps.session = 'R' AND laps.LapTime IS NOT NULL AND laps.LapTime = fastest_lap.fastest LIMIT 200"
+      ],
+      "verdict": "pass",
+      "seconds": 12.594
+    },
+    {
+      "id": "nor_monaco_laps",
+      "category": "lap-level",
+      "question": "How many race laps did Lando Norris complete in the 2024 Monaco Grand Prix?",
+      "expected": "78",
+      "answer": "Lando Norris completed 77 laps.",
+      "sql": [
+        "SELECT COUNT(*) FROM laps WHERE Driver = 'NOR' AND race ILIKE '%monaco%' AND session = 'R' AND LapTime IS NOT NULL LIMIT 200"
+      ],
+      "verdict": "fail",
+      "seconds": 1.969
+    },
+    {
+      "id": "top_compound",
+      "category": "lap-level",
+      "question": "Which tyre compound was used for the most race laps in 2024?",
+      "expected": "HARD",
+      "answer": "The HARD tyre compound was used for the most race laps in 2024, with 13,669 laps.",
+      "sql": [
+        "SELECT Compound, COUNT(*) as lap_count FROM laps WHERE session = 'R' AND season = 2024 AND LapTime IS NOT NULL GROUP BY Compound ORDER BY lap_count DESC LIMIT 1"
+      ],
+      "verdict": "pass",
+      "seconds": 3.806
+    },
+    {
+      "id": "unanswerable",
+      "category": "unanswerable",
+      "question": "Who won the 2023 Monaco Grand Prix?",
+      "expected": "Not answerable: the data covers the 2024 season only.",
+      "answer": "Charles Leclerc won the 2024 Monaco Grand Prix.",
+      "sql": [
+        "SELECT FullName, Position FROM results WHERE race ILIKE '%monaco%' AND season = 2024 AND session = 'R' ORDER BY Position LIMIT 1"
+      ],
+      "verdict": "fail",
+      "seconds": 2.964
+    }
+  ]
+}

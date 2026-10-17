@@ -1,0 +1,76 @@
+import { initDb } from "./db";
+import { ask } from "./chat";
+import { mountChart, type ChartSpec } from "./chart";
+import { explore } from "./explore";
+
+const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+const notes = $<HTMLInputElement>("notes"), exploreBtn = $<HTMLButtonElement>("explore");
+const log = $("log"), form = $("form"), input = $<HTMLInputElement>("q"), status = $("status");
+
+function add(cls: string, text: string): HTMLDivElement {
+  const d = document.createElement("div");
+  d.className = cls; d.textContent = text; log.append(d);
+  return d;
+}
+
+initDb().then(() => {
+  status.textContent = "Ready.";
+  exploreBtn.disabled = false;
+  input.disabled = false; form.querySelector("button")!.disabled = false;
+}).catch((e) => { status.textContent = `Data load failed: ${e}`; });
+
+form.addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = ""; input.disabled = true;
+  add("user", q);
+  const answer = add("bot", "Thinking...");
+  const sqls: string[] = [];
+  const charts: [ChartSpec, Record<string, unknown>[]][] = [];
+  const tables: Record<string, unknown>[][] = [];
+  try {
+    const text = await ask(q, (s) => sqls.push(s), notes.checked, (spec, rows) => charts.push([spec, rows]), (rows) => tables.push(rows));
+    answer.textContent = text;
+    for (const rows of tables) {
+      const wrap = document.createElement("div");
+      wrap.style.cssText = "max-height:360px;overflow:auto";
+      const table = document.createElement("table");
+      const head = table.createTHead().insertRow();
+      for (const k of Object.keys(rows[0] ?? {})) head.appendChild(document.createElement("th")).textContent = k;
+      const body = table.createTBody();
+      for (const r of rows) {
+        const tr = body.insertRow();
+        for (const v of Object.values(r)) tr.insertCell().textContent = String(v ?? "");
+      }
+      wrap.append(table); answer.append(wrap);
+    }
+    for (const [spec, rows] of charts) {
+      const div = document.createElement("div");
+      answer.append(div);
+      mountChart(div, spec, rows);
+    }
+    if (sqls.length) {
+      const det = document.createElement("details");
+      const pre = document.createElement("pre");
+      det.innerHTML = "<summary>SQL run</summary>"; pre.textContent = sqls.join("\n\n"); det.append(pre);
+      answer.append(det);
+    }
+  } catch (e) {
+    answer.className = "err"; answer.textContent = String(e);
+  }
+  input.disabled = false; input.focus();
+});
+
+exploreBtn.addEventListener("click", async () => {
+  exploreBtn.disabled = true;
+  const out = add("bot", "Exploring...");
+  const lines: string[] = [];
+  try {
+    await explore((l) => { lines.push(l); out.textContent = lines.join("\n"); });
+    notes.checked = true;
+  } catch (e) {
+    out.className = "err"; out.textContent = `${lines.join("\n")}\n${e}`;
+  }
+  exploreBtn.disabled = false;
+});

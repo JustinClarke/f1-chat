@@ -1,0 +1,168 @@
+import { query, schemaSummary } from "./db";
+import { DATA_GUIDE } from "./dataGuide";
+import type { ChartSpec } from "./chart";
+
+type Row = Record<string, unknown>;
+
+const WORKER_URL = import.meta.env.VITE_WORKER_URL ?? "http://localhost:8787";
+const MAX_SQL_RETRIES = 2;
+
+const tools = [{
+  type: "function",
+  function: {
+    name: "run_sql",
+    description: "Run one read-only DuckDB SELECT/WITH query against the laps, results and driver_seasons tables. Returns up to 50 rows as JSON.",
+    parameters: { type: "object", properties: { sql: { type: "string", description: "A single DuckDB SQL SELECT statement" } }, required: ["sql"] },
+  },
+}, {
+  type: "function",
+  function: {
+    name: "make_chart",
+    description: "Draw a chart of the rows from your most recent successful run_sql query. Give column names from that query only; the rows are not resent. Use bar for categories (teams, drivers), line for an ordered x such as lap or race number.",
+    parameters: {
+      type: "object",
+      properties: {
+        type: { type: "string", enum: ["bar", "line"] },
+        x: { type: "string", description: "Column for the category or order axis" },
+        y: { type: "string", description: "Numeric column for the value axis" },
+        title: { type: "string", description: "Short chart title" },
+      },
+      required: ["type", "x", "y"],
+    },
+  },
+}, {
+  type: "function",
+  function: {
+    name: "show_table",
+    description: "Show every row of a SQL query as a table in the app. Use for lists longer than about 15 rows. HOW TO USE: pass only the sql argument, a single SELECT that returns exactly the rows and columns to show (one row per item, e.g. one row per driver per race). Do not pass rows, JSON or a list of values in the arguments. The app runs the query and draws every row itself. The result is only {ok, row_count}. Then write a short answer: the row count, the largest values, and any groups with none. Do not repeat the rows in your answer. Example: sql = \"SELECT race, Driver, gap FROM ... ORDER BY gap DESC\"",
+    parameters: { type: "object", properties: { sql: { type: "string", description: "A single DuckDB SELECT statement whose every row should be shown" } }, required: ["sql"] },
+  },
+}];
+
+// Returns the cleaned SQL, or throws with a reason the model can read.
+export function validateSql(raw: string): string {
+  const sql = raw.trim().replace(/;+\s*$/, "");
+  if (sql.includes(";")) throw new Error("Only one statement is allowed.");
+  if (!/^(select|with)\b/i.test(sql)) throw new Error("Only SELECT or WITH queries are allowed.");
+  const bad = sql.match(/\b(insert|update|delete|drop|attach|copy|pragma|install|load)\b/i);
+  if (bad) throw new Error(`Forbidden keyword: ${bad[0]}`);
+  return /\blimit\s+\d+/i.test(sql) ? sql : `${sql} LIMIT 200`;
+}
+
+export function checkChartSpec(args: unknown, rows: Row[]): ChartSpec {
+  const a = (args ?? {}) as Record<string, unknown>;
+  if (a.type !== "bar" && a.type !== "line") throw new Error('type must be "bar" or "line".');
+  if (typeof a.x !== "string" || typeof a.y !== "string") throw new Error("x and y must be column name strings.");
+  if (!rows.length) throw new Error("No rows to chart; run a successful run_sql query first.");
+  for (const col of [a.x, a.y]) if (!(col in rows[0])) throw new Error(`Column ${col} is not in the last query result (columns: ${Object.keys(rows[0]).join(", ")}).`);
+  const y = a.y;
+  if (!rows.every((r) => r[y] != null && r[y] !== "" && Number.isFinite(Number(r[y])))) throw new Error(`Column ${y} is not numeric; choose a numeric column for y.`);
+  return { type: a.type, x: a.x, y, title: typeof a.title === "string" ? a.title : undefined };
+}
+
+export type Msg = { role: string; content?: string | null; tool_calls?: unknown[]; tool_call_id?: string; name?: string };
+export type Call = { id: string; name: string; args: string };
+
+export async function callModel(messages: Msg[], toolList: unknown[] = tools): Promise<{ text: string; calls: Call[] }> {
+  const res = await fetch(`${WORKER_URL}/chat`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages, tools: toolList }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error ?? `Worker error ${res.status}`);
+  // Workers AI returns either {response, tool_calls} or an OpenAI-style {choices}.
+  const m = data.choices?.[0]?.message ?? data;
+  const raw = (m.tool_calls ?? []) as any[];
+  const calls = raw.map((c, i) => {
+    const fn = c.function ?? c;
+    const args = typeof fn.arguments === "string" ? fn.arguments : JSON.stringify(fn.arguments ?? {});
+    return { id: c.id ?? Math.random().toString(36).slice(2, 11).padEnd(9, "0"), name: fn.name, args };
+  });
+  return { text: m.response ?? m.content ?? "", calls };
+}
+
+let history: Msg[] = [];
+export const resetChat = () => { history = []; };
+
+// Exploration notes saved by explore.ts, if any. Empty string when the table is missing or has no rows.
+async function notesBlock(): Promise<string> {
+  try {
+    const rows = await query("SELECT topic, claim, confidence FROM llm_notes ORDER BY id");
+    if (!rows.length) return "";
+    return `\nNotes from an earlier exploration of this data (may be wrong; check with SQL if unsure):\n${rows.map((r) => `- [${r.confidence}] ${r.topic}: ${r.claim}`).join("\n")}\n`;
+  } catch { return ""; }
+}
+
+let schema: string | undefined;
+
+export async function ask(
+  question: string,
+  onSql: (sql: string) => void,
+  useNotes = false,
+  onChart: (spec: ChartSpec, rows: Row[]) => void = () => {},
+  onTable: (rows: Row[]) => void = () => {},
+): Promise<string> {
+  schema ??= await schemaSummary();
+  const system = {
+    role: "system",
+    content: `You answer questions about 2024 Formula 1 using the run_sql tool (DuckDB SQL).
+${DATA_GUIDE}
+TABLE SCHEMA (types as DuckDB reports them)
+${schema}
+RULES
+- Always call run_sql for data; never guess. Then answer briefly in plain text, quoting the numbers from the query.
+- Use only the data guide and query results. Do not use outside knowledge of F1.
+- Apply only the filters the question names. Do not add exclusions (untimed laps, deleted laps, pit laps) unless the question asks for them.
+- 'Laps completed' or 'laps' counts mean every lap row for that driver and race. A lap with no LapTime or marked Deleted was still driven, so count it.
+- If the question's wording is ambiguous, use the broadest reading that matches the words, and say which reading you used in your answer.
+- When asking for the top item (most, fewest, fastest), return every item tied at the top, not just one. Do not use LIMIT 1 to pick a winner; compare against the maximum instead.
+- Name a driver or team only from driver_seasons.full_name or team_name. Join driver_seasons on driver_code and season to get names; never name a driver from a code using your own knowledge.
+- If the user asks for a chart, or the answer is a comparison across many items, run the query first, then call make_chart with column names from that query.
+- If a result has a note saying rows were cut, do not write a table as if it were complete. Say the table is partial, or aggregate in SQL and try again.
+- If you call show_table, do not write its rows out in your answer. Give the row count, the largest or most important values, and any groups with none. Never claim a list is complete unless show_table returned every row.
+${useNotes ? await notesBlock() : ""}`,
+  };
+  history[0] = system; // rebuilt per question so the notes toggle takes effect immediately
+  history.push({ role: "user", content: question });
+
+  let errors = 0;
+  let lastRows: Row[] = []; // rows of the most recent successful run_sql, for make_chart
+  for (let step = 0; step < 8; step++) {
+    const { text, calls } = await callModel(history);
+    if (!calls.length) { history.push({ role: "assistant", content: text }); return text; }
+
+    history.push({
+      role: "assistant", content: text ?? "",
+      tool_calls: calls.map((c) => ({ id: c.id, type: "function", function: { name: c.name, arguments: c.args } })),
+    });
+    for (const c of calls) {
+      let result: string;
+      try {
+        const args = JSON.parse(c.args);
+        if (c.name === "make_chart") {
+          const spec = checkChartSpec(args, lastRows);
+          onChart(spec, lastRows);
+          result = JSON.stringify({ ok: true, drawn: `${spec.type} chart of ${spec.y} by ${spec.x}, ${lastRows.length} rows` });
+        } else if (c.name === "show_table") {
+          if (typeof args.sql !== "string") throw new Error("show_table needs a sql argument: one SELECT returning the rows to show. Do not pass rows or values.");
+          const sql = validateSql(args.sql);
+          onSql(sql);
+          const rows = await query(sql);
+          onTable(rows);
+          result = JSON.stringify({ ok: true, row_count: rows.length });
+        } else {
+          const sql = validateSql(args.sql);
+          onSql(sql);
+          const rows = await query(sql);
+          lastRows = rows;
+          const cut = rows.length > 50;
+          result = JSON.stringify({ row_count: rows.length, rows: rows.slice(0, 50), ...(cut && { note: `Only the first 50 of ${rows.length} rows are shown. Aggregate in SQL if you need every value in text.` }) });
+        }
+      } catch (e) {
+        result = JSON.stringify({ error: String(e instanceof Error ? e.message : e) });
+        if (++errors > MAX_SQL_RETRIES) { history.push({ role: "tool", tool_call_id: c.id, name: c.name, content: result }); return `Gave up after ${errors} SQL errors. Last error: ${result}`; }
+      }
+      history.push({ role: "tool", tool_call_id: c.id, name: c.name, content: result });
+    }
+  }
+  return "Stopped: too many tool steps.";
+}

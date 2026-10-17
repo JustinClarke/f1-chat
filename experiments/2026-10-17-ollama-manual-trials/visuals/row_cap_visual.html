@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Row cap: 50 vs 200</title>
+<style>
+  :root { --ink:#222; --muted:#777; --bg:#fff; --card:#f5f5f5; --good:#2e7d32; --bad:#c62828; --track:#e0e0e0; --accent:#1565c0; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#eee; --muted:#aaa; --bg:#161616; --card:#222; --track:#333; } }
+  body { font: 15px/1.45 system-ui, sans-serif; color: var(--ink); background: var(--bg); max-width: 680px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; margin: 8px 0 4px; }
+  h2 { font-size: 16px; margin: 0 0 8px; }
+  p.note { color: var(--muted); margin: 4px 0 12px; font-size: 13px; }
+  .card { background: var(--card); border-radius: 10px; padding: 14px 16px; margin: 14px 0; }
+  .row { display: grid; grid-template-columns: 120px 1fr 110px; gap: 10px; align-items: center; margin: 8px 0; font-size: 14px; }
+  .track { background: var(--track); border-radius: 4px; height: 18px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 4px; }
+  .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .stack { display: flex; height: 18px; border-radius: 4px; overflow: hidden; background: var(--track); }
+  .stack div { height: 100%; }
+  .legend { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .big { font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pair .card { margin: 0; }
+  .sub { color: var(--muted); font-size: 13px; }
+  @media (max-width: 520px) { .row { grid-template-columns: 90px 1fr 90px; } .pair { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<h1>Q10: what the model saw, and what it got right</h1>
+<p class="note">Question: did any driver finish a 2024 race with fewer laps than the winner? Correct list = 138 classified driver-race rows, checked against the data. Local gpt-oss:20b, one run per setting.</p>
+
+<div class="card">
+  <h2>1. How much of the list was visible to the model</h2>
+  <div class="row"><span>Row cap 50</span><div class="track"><div class="fill" style="width:36.2%;background:var(--accent)"></div></div><span class="val">50 of 138</span></div>
+  <div class="row"><span>Row cap 200</span><div class="track"><div class="fill" style="width:100%;background:var(--good)"></div></div><span class="val">138 of 138</span></div>
+  <p class="sub">With a cap of 50, the other 88 rows never reach the model. It has to invent them to finish the list.</p>
+</div>
+
+<div class="card">
+  <h2>2. Rows in the answer that were correct</h2>
+  <div class="row"><span>Cap 50 + show_table</span><div class="stack" style="width:100%"><div style="width:98.1%;background:var(--good)"></div><div style="width:1.9%;background:var(--bad)"></div></div><span class="val">51 right, 1 wrong</span></div>
+  <div class="row"><span>Cap 200</span><div class="stack" style="width:100%"><div style="width:100%;background:var(--good)"></div></div><span class="val">138 right, 0 wrong</span></div>
+  <div class="row"><span>Investigation run (string_agg)</span><div class="stack" style="width:100%"><div style="width:99.3%;background:var(--good)"></div><div style="width:0.7%;background:var(--bad)"></div></div><span class="val">137 right, 1 wrong</span></div>
+  <p class="sub">Red is a wrong row. The cap-50 run's wrong row is a name typo. The earlier looping runs (not shown) had about 11 invented rows out of 69.</p>
+</div>
+
+<div class="pair">
+  <div class="card">
+    <h2>3. Largest prompt sent in one step</h2>
+    <div class="big">7,715</div><div class="sub">tokens, cap 50 (4 steps)</div>
+    <div class="big" style="margin-top:12px">8,445</div><div class="sub">tokens, cap 200 (3 steps)</div>
+    <p class="sub">Local window is 20,480 tokens. Both fit with room to spare.</p>
+  </div>
+  <div class="card">
+    <h2>4. Tokens the model wrote</h2>
+    <div class="big">3,278</div><div class="sub">total output, cap 50 + show_table</div>
+    <div class="big" style="margin-top:12px">4,270</div><div class="sub">total output, cap 200 (typed table)</div>
+    <p class="sub">The cap-200 run wrote the full table itself. That is the cost of the typed list.</p>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Is it worth it?</h2>
+  <p style="margin:0">For this question, yes. Going from 50 to 200 rows took the answer from 51 of 52 rows (with the list cut short) to all 138 correct. The extra prompt is about 730 tokens on the largest step, which is small against a 20k window. The cost shows up in the output: the model writes the whole table itself, about 1,000 more tokens. <strong>show_table</strong> would remove that cost, but the model still doesn't call it, so for now the cap is the lever that works.</p>
+</div>
+</body>
+</html>

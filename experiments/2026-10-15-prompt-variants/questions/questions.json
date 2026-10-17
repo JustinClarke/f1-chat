@@ -1,0 +1,158 @@
+{
+  "date": "2026-10-15",
+  "note": "The four questions used. Ground truth computed by eval/ground_truth.py in Python DuckDB over raw Parquet, not the app views. Frozen: sha256 of the full eval/questions.json (13 questions) is in results/questions.sha256 and is checked by the runner.",
+  "full_questions_json_sha256": "f46a4155f33d8ce64f6812399eddfda959c88dbe33f6e9e2a42dd8bcd51df695",
+  "green_flag_definition": "For bahrain_clean_pace: laps rows with session='R', race='bahrain_grand_prix', Driver in ('VER','NOR'), TrackStatus exactly '1' (no other status code at any time during the lap), LapTime not null, PitInTime null (not an in-lap), PitOutTime null (not an out-lap), Deleted not true. Median of an even count is the mean of the two middle laps.",
+  "python_output_bahrain_clean_pace": "[('VER', 95477000000.0, 49), ('NOR', 96536500000.0, 48)]  (Driver, median LapTime in ns, laps used). Verstappen 95.477 s = 1:35.477; Norris 96.5365 s (1:36.5365; the scorer displays 1:36.537).",
+  "questions": [
+    {
+      "id": "wins_team",
+      "category": "aggregate",
+      "question": "Which team won the most races in 2024, and how many?",
+      "ground_truth_sql": "SELECT TeamName, count(*) FROM results WHERE session='R' AND Position=1 GROUP BY 1 ORDER BY 2 DESC LIMIT 2",
+      "ground_truth_output": [
+        [
+          "Red Bull Racing",
+          9
+        ],
+        [
+          "McLaren",
+          6
+        ]
+      ],
+      "expected": "team=Red Bull Racing/Red Bull, wins=9",
+      "expected_values": [
+        {
+          "kind": "name",
+          "label": "team",
+          "any": [
+            "Red Bull Racing",
+            "Red Bull"
+          ]
+        },
+        {
+          "kind": "number",
+          "label": "wins",
+          "value": 9
+        }
+      ]
+    },
+    {
+      "id": "top_compound",
+      "category": "lap-level",
+      "question": "Which tyre compound was used for the most race laps in 2024?",
+      "ground_truth_sql": "SELECT Compound, count(*) FROM laps WHERE session='R' GROUP BY 1 ORDER BY 2 DESC LIMIT 2",
+      "ground_truth_output": [
+        [
+          "HARD",
+          13767
+        ],
+        [
+          "MEDIUM",
+          8876
+        ]
+      ],
+      "expected": "compound=HARD, laps on that compound=13767",
+      "expected_values": [
+        {
+          "kind": "name",
+          "label": "compound",
+          "any": [
+            "HARD"
+          ]
+        },
+        {
+          "kind": "number",
+          "label": "laps on that compound",
+          "value": 13767
+        }
+      ]
+    },
+    {
+      "id": "bahrain_clean_pace",
+      "category": "lap-level",
+      "question": "In the 2024 Bahrain Grand Prix, who had the faster race pace, Verstappen or Norris? Use only green-flag laps, excluding in-laps, out-laps and deleted laps. Give the median lap time for each.",
+      "ground_truth_sql": "SELECT Driver, median(LapTime) AS median_ns, count(*) AS laps_used FROM laps WHERE session='R' AND race='bahrain_grand_prix' AND Driver IN ('VER','NOR') AND TrackStatus='1' AND LapTime IS NOT NULL AND PitInTime IS NULL AND PitOutTime IS NULL AND coalesce(Deleted, false) = false GROUP BY Driver ORDER BY median_ns",
+      "ground_truth_output": [
+        [
+          "VER",
+          95477000000.0,
+          49
+        ],
+        [
+          "NOR",
+          96536500000.0,
+          48
+        ]
+      ],
+      "expected": "faster driver=Verstappen/VER/Max Verstappen, median lap NOR=1:36.537 (96.537s), median lap VER=1:35.477 (95.477s)",
+      "expected_values": [
+        {
+          "kind": "name",
+          "label": "faster driver",
+          "any": [
+            "Verstappen",
+            "VER",
+            "Max Verstappen"
+          ]
+        },
+        {
+          "kind": "time",
+          "label": "median lap NOR",
+          "seconds": 96.5365,
+          "display": "1:36.537"
+        },
+        {
+          "kind": "time",
+          "label": "median lap VER",
+          "seconds": 95.477,
+          "display": "1:35.477"
+        }
+      ]
+    },
+    {
+      "id": "unanswerable",
+      "category": "unanswerable",
+      "question": "Who won the 2023 Monaco Grand Prix?",
+      "ground_truth_sql": "SELECT count(*) FROM results WHERE season <> 2024",
+      "ground_truth_output": [
+        [
+          0
+        ]
+      ],
+      "expected": "Refuse: the data covers the 2024 season only; name no driver.",
+      "expected_values": [
+        {
+          "kind": "refusal",
+          "label": "declines (data covers 2024 only)",
+          "forbidden_names": [
+            "Albon",
+            "Alonso",
+            "Bearman",
+            "Bottas",
+            "Colapinto",
+            "Doohan",
+            "Gasly",
+            "Hamilton",
+            "Hulkenberg",
+            "Lawson",
+            "Leclerc",
+            "Magnussen",
+            "Norris",
+            "Ocon",
+            "Perez",
+            "Piastri",
+            "Ricciardo",
+            "Russell",
+            "Sainz",
+            "Sargeant",
+            "Stroll",
+            "Tsunoda",
+            "Verstappen",
+            "Zhou"
+          ]
+        }
+      ]
+    }
+  ]
+}

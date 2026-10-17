@@ -1,0 +1,152 @@
+// One-off trial: same loop as experiments/2026-10-17-ollama-manual-trials/run_trials.py, ported to Node
+// so it can use the native duckdb package. Usage: node trial.mjs "<question>" [runs]
+import { createRequire } from "node:module";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
+import path from "node:path";
+
+const require = createRequire(import.meta.url);
+const duckdb = require("/private/tmp/claude-501/-Users-justin-github--misc--chat-off-the-pace-chat/1ef65478-7cd0-4696-90a1-ad4d4aabced1/scratchpad/node_modules/duckdb");
+
+const DATA_ROOT = process.env.DATA_ROOT || "/Users/justin/github/off-the-pace/data";
+const OLLAMA = "http://localhost:11434/api/chat";
+const MODEL = "gpt-oss:20b";
+const NUM_CTX = 20480;
+const GUIDE = readFileSync("/Users/justin/github/_misc/_chat/off-the-pace-chat/experiments/2026-10-15-prompt-variants/variants/v3.txt", "utf8");
+const QUESTION = process.argv[2];
+const RUNS = Number(process.argv[3] || 1);
+const MAX_STEPS = Number(process.env.MAX_STEPS || 16); // app cap is 8 (web/src/chat.ts); raised for this trial
+
+const RULES = `RULES
+- Always call run_sql for data; never guess. Then answer briefly in plain text, quoting the numbers from the query.
+- Use only the data guide and query results. Do not use outside knowledge of F1.
+- Apply only the filters the question names. Do not add exclusions (untimed laps, deleted laps, pit laps) unless the question asks for them.
+- 'Laps completed' or 'laps' counts mean every lap row for that driver and race. A lap with no LapTime or marked Deleted was still driven, so count it.
+- If the question's wording is ambiguous, use the broadest reading that matches the words, and say which reading you used in your answer.
+- When asking for the top item (most, fewest, fastest), return every item tied at the top, not just one. Do not use LIMIT 1 to pick a winner; compare against the maximum instead.
+- If the user asks for a chart, or the answer is a comparison across many items, run the query first, then call make_chart with column names from that query.
+- If a result has a note saying rows were cut, do not write a table as if it were complete. Say the table is partial, or aggregate in SQL and try again.
+- Name a driver or team only from driver_seasons.full_name or team_name. Join driver_seasons on driver_code and season to get names; never name a driver from a code using your own knowledge.`;
+
+// Same points text as web/src/dataGuide.ts (added 17 Oct after Q9 gave 26 points as "2nd place").
+const POINTS = `POINTS (results.Points, race rows only)
+- 25 for 1st, 18 for 2nd, 15 for 3rd, 12 for 4th, 10 for 5th, 8 for 6th, 6 for 7th, 4 for 8th, 2 for 9th, 1 for 10th, 0 for 11th and below.
+- A driver who finishes in the top 10 also gets 1 extra point for the fastest race lap, so the winner can have 26 and a 2nd-place finisher can have 19. The Points column already includes that bonus.
+- Points are not the finishing position: a 2nd-place finish is 18 points, not 2.
+
+LAP COUNTS AND FINISHING (added 17 Oct after Q10)
+- Laps completed by a driver in a race: max(LapNumber) from laps, filtered to session = 'R' and that race, grouped by Driver. Do not use results.Laps: it is NULL for race rows. Join laps to results on race_id when you need finishing data.
+- Classified finisher: results.Status is 'Finished' or starts with '+' or is 'Lapped' (they finished, possibly laps down). Anything else ('Retired', 'Disqualified', 'Did not start') is not classified.
+- "Finished with fewer laps than the winner" has two readings: classified finishers only (lapped cars), or every driver including retirements. Name the reading you used in your answer and give the list for it. Do not mix the two in one table.`;
+
+const LAPS_NOTES = [
+  "TABLE laps: Bronze-layer fact table. One row per driver per lap. Race laps have no session column in the source; the session column below is derived from the file path (the R/Q value comes from the path).",
+  "NOTES laps: LapTime is nanoseconds in Parquet; convert to seconds with / 1e9. Race laps have no session column at all; qualifying laps carry session_type='Q' in the source, which the session column here reflects.",
+  "NOTES laps: pit-in and pit-out are flagged by PitInLap / PitOutLap (booleans) as well as PitInTime / PitOutTime (timestamps); either can be used. NOTE: the 2024 Parquet has no PitInLap / PitOutLap columns; use the Time columns.",
+  "TABLE results: Official classified results, one row per driver per race session. Source is FastF1 session.results.",
+  "TABLE driver_seasons: One row per season and driver code. Join to laps or results on driver_code = Driver (or Abbreviation) AND season = 2024. driver_id is the stable FastF1 DriverId; full_name, first_name, last_name are the official names for that code in that season; team_name is the team the driver raced for most often that season.",
+];
+
+const db = new duckdb.Database(":memory:");
+const con = new duckdb.Connection(db);
+const all = (sql) => new Promise((res, rej) => con.all(sql, (e, r) => (e ? rej(e) : res(r))));
+
+async function connect() {
+  for (const table of ["laps", "results"]) {
+    const dir = `${DATA_ROOT}/bronze/${table}/season=2024`;
+    const files = [];
+    const walk = (d) => { for (const f of readdirSync(d, { withFileTypes: true })) { const p = path.join(d, f.name); f.isDirectory() ? walk(p) : f.name.endsWith(".parquet") && files.push(p); } };
+    walk(dir);
+    files.sort();
+    const lst = files.map((f) => `'${f}'`).join(",");
+    const extra = table === "laps" ? ", race_name" : ", HeadshotUrl";
+    await all(`CREATE VIEW ${table} AS SELECT * EXCLUDE (filename, session_type${extra}),
+      regexp_extract(filename, 'race=([^/]+)', 1) AS race,
+      CASE WHEN filename LIKE '%/session=Q/%' THEN 'Q' ELSE 'R' END AS session
+      FROM read_parquet([${lst}], union_by_name = true, filename = true, hive_partitioning = false)`);
+  }
+  await all(`CREATE VIEW driver_seasons AS SELECT * FROM read_parquet('${DATA_ROOT}/bronze/reference/drivers/driver_seasons.parquet')`);
+}
+
+async function schema() {
+  const lines = [...LAPS_NOTES];
+  for (const t of ["laps", "results", "driver_seasons"]) {
+    for (const r of await all(`DESCRIBE ${t}`)) lines.push(`- ${t}.${r.column_name} (${r.column_type})`);
+  }
+  return lines.join("\n");
+}
+
+const TOOLS = [{ type: "function", function: {
+  name: "run_sql",
+  description: "Run one read-only DuckDB SELECT/WITH query against the laps, results and driver_seasons tables. Returns up to 50 rows as JSON.",
+  parameters: { type: "object", properties: { sql: { type: "string", description: "A single DuckDB SQL SELECT statement" } }, required: ["sql"] } } }, { type: "function", function: {
+  name: "make_chart",
+  description: "Draw a chart of the rows from your most recent successful run_sql query. Give column names from that query only; the rows are not resent. Use bar for categories (teams, drivers), line for an ordered x such as lap or race number.",
+  parameters: { type: "object", properties: {
+    type: { type: "string", enum: ["bar", "line"] },
+    x: { type: "string", description: "Column for the category or order axis" },
+    y: { type: "string", description: "Numeric column for the value axis" },
+    title: { type: "string", description: "Short chart title" } },
+    required: ["type", "x", "y"] } } }];
+
+function checkChartSpec(a, rows) {
+  a = a ?? {};
+  if (a.type !== "bar" && a.type !== "line") throw new Error('type must be "bar" or "line".');
+  if (typeof a.x !== "string" || typeof a.y !== "string") throw new Error("x and y must be column name strings.");
+  if (!rows.length) throw new Error("No rows to chart; run a successful run_sql query first.");
+  for (const col of [a.x, a.y]) if (!(col in rows[0])) throw new Error(`Column ${col} is not in the last query result (columns: ${Object.keys(rows[0]).join(", ")}).`);
+  if (!rows.every((r) => r[a.y] != null && r[a.y] !== "" && Number.isFinite(Number(r[a.y])))) throw new Error(`Column ${a.y} is not numeric; choose a numeric column for y.`);
+  return { type: a.type, x: a.x, y: a.y, title: typeof a.title === "string" ? a.title : undefined };
+}
+
+async function chat(messages) {
+  const res = await fetch(OLLAMA, { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: MODEL, messages, tools: TOOLS, stream: false,
+      options: { temperature: 0, num_predict: 4096, num_ctx: NUM_CTX } }) });
+  return (await res.json()).message;
+}
+
+async function runQuestion(system, question) {
+  const messages = [{ role: "system", content: system }, { role: "user", content: question }];
+  let lastRows = [], chart = null;
+  for (let step = 0; step < MAX_STEPS; step++) {
+    const m = await chat(messages);
+    const calls = m.tool_calls || [];
+    if (!calls.length) return `steps=${step} ANSWER: ${JSON.stringify(m.content)}\nCHART: ${chart ? JSON.stringify(chart) : "none"}`;
+    const call = calls[0].function;
+    const args = typeof call.arguments === "string" ? JSON.parse(call.arguments) : call.arguments;
+    messages.push({ role: "assistant", content: "", tool_calls: [{ function: { name: call.name, arguments: args } }] });
+    let out;
+    if (call.name === "make_chart") {
+      try {
+        chart = checkChartSpec(args, lastRows);
+        out = { ok: true, drawn: `${chart.type} chart of ${chart.y} by ${chart.x}, ${lastRows.length} rows` };
+      } catch (e) {
+        out = { error: String(e.message || e) };
+      }
+      console.log(`  step ${step + 1} CHART: ${JSON.stringify(args)}`);
+    } else {
+      const sql = args.sql;
+      try {
+        const rows = await all(sql);
+        lastRows = rows.map((r) => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === "bigint" ? Number(v) : v])));
+        const cut = rows.length > 50;
+        out = { row_count: rows.length, rows: rows.slice(0, 50), ...(cut && { note: `Only the first 50 of ${rows.length} rows are shown. Aggregate in SQL if you need every value in text.` }) };
+      } catch (e) {
+        out = { error: String(e.message || e) };
+      }
+      console.log(`  step ${step + 1} SQL: ${sql}`);
+    }
+    console.log(`    -> ${JSON.stringify(out, (k, v) => (typeof v === "bigint" ? Number(v) : v)).slice(0, 300)}`);
+    messages.push({ role: "tool", tool_name: call.name, content: JSON.stringify(out, (k, v) => (typeof v === "bigint" ? Number(v) : v)) });
+  }
+  return `stopped after ${MAX_STEPS} steps, no answer\nCHART: ${chart ? JSON.stringify(chart) : "none"}`;
+}
+
+await connect();
+const system = `You answer questions about F1 seasons using the run_sql tool (DuckDB SQL).\n${GUIDE}\n${POINTS}\nTABLE SCHEMA (types as DuckDB reports them)\n${await schema()}\n${RULES}`;
+console.log(`system prompt chars: ${system.length}`);
+console.log(`QUESTION: ${QUESTION}`);
+for (let i = 1; i <= RUNS; i++) {
+  console.log(`== run ${i} ==`);
+  console.log(await runQuestion(system, QUESTION));
+}

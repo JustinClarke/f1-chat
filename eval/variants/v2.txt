@@ -1,0 +1,42 @@
+
+ABOUT THE DATA
+- Formula 1 2024 season, Grand Prix weekends only: 24 races. Each weekend has a qualifying session (session = 'Q') and a race (session = 'R'). No sprint or practice sessions, no other seasons.
+- laps: one row per driver per lap. results: one row per driver per session.
+
+DERIVED COLUMNS (both tables)
+- race: event name in lowercase with underscores, e.g. 'bahrain_grand_prix', 'monaco_grand_prix'. Use ILIKE '%monaco%' to match loosely.
+- session: 'R' for race, 'Q' for qualifying.
+
+UNITS
+- Every time column (LapTime, Sector*Time, Sector*SessionTime, Time, LapStartTime, PitInTime, PitOutTime, Q1, Q2, Q3) is an integer in NANOSECONDS. Divide by 1e9 for seconds. NULL means no value was recorded.
+- Speeds are km/h.
+
+laps columns
+- Driver: 3-letter code ('VER'). DriverNumber: car number as text. Team: team name.
+- LapTime: lap duration (ns), NULL for some laps. LapNumber, Stint: lap and tyre stint numbers.
+- Time: session time at lap end. LapStartTime: session time at lap start. LapStartDate: wall-clock start.
+- PitOutTime / PitInTime: session time leaving / entering the pits, NULL if no pit out / in on that lap.
+- Sector1Time..Sector3Time: sector durations. Sector1SessionTime..Sector3SessionTime: session time at sector end.
+- SpeedI1, SpeedI2: intermediate speed traps. SpeedFL: finish line. SpeedST: longest straight.
+- Compound: SOFT, MEDIUM, HARD, INTERMEDIATE, WET or UNKNOWN. TyreLife: laps on the tyre. FreshTyre: new when fitted.
+- TrackStatus: track status codes during the lap, concatenated: '1' green, '2' yellow, '4' safety car, '5' red, '6' VSC, '7' VSC ending (e.g. '12').
+- Position: running position at lap end. IsPersonalBest: driver's best lap so far.
+- Deleted: TRUE if stewards deleted the lap. DeletedReason: why.
+- FastF1Generated, IsAccurate: data quality flags. race_id: internal id, use race instead. season: always 2024.
+
+results columns
+- Abbreviation: 3-letter code, matches laps.Driver. FullName, FirstName, LastName, BroadcastName: driver names. DriverNumber, DriverId, CountryCode.
+- TeamName, TeamId, TeamColor: team.
+- Position: finishing position as a number (1 = race winner or pole sitter). ClassifiedPosition: text, or R/D/E/W/F/N for non-classified.
+- GridPosition: race starting slot. Q1, Q2, Q3: qualifying segment best times (ns), NULL if not reached.
+- Time: race only, winner's total time, others' gap to the winner (ns). Status: finish status text. Points: points scored in that session.
+- Laps: laps completed (qualifying files only). index: ignore. race_id, season.
+
+HOW TO ANSWER COMMON QUESTIONS
+- Race wins: count results rows where session = 'R' AND Position = 1, grouped by FullName or TeamName.
+- Pole positions: count results rows where session = 'Q' AND Position = 1.
+- Championship points: sum Points in results where session = 'R'.
+- Fastest race lap at a circuit: min(LapTime) over laps where session = 'R', race matches, LapTime IS NOT NULL and Deleted is not TRUE. Join results on Driver = Abbreviation for names.
+- Lap counts per driver: count rows in laps (one row per lap).
+- Count races with count(DISTINCT race).
+- If a question needs another season, another session type, or data outside these tables, say the data does not cover it.

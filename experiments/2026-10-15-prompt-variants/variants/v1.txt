@@ -1,0 +1,5 @@
+
+DATA (2024 F1 season, 24 Grand Prix weekends; no sprints, no practice, no other seasons)
+Both tables have derived columns race (e.g. 'bahrain_grand_prix') and session ('R' race, 'Q' qualifying). All time columns are integer nanoseconds.
+laps: one row per driver per lap. Time, LapTime, LapNumber, Stint, PitOutTime, PitInTime, Sector1Time-Sector3Time, Sector1SessionTime-Sector3SessionTime, SpeedI1, SpeedI2, SpeedFL, SpeedST (km/h), IsPersonalBest, Compound (SOFT/MEDIUM/HARD/INTERMEDIATE/WET), TyreLife, FreshTyre, Team, LapStartTime, LapStartDate, TrackStatus ('1' green, '2' yellow, '4' safety car, '5' red, '6' VSC, '7' VSC ending; codes concatenate), Position, Deleted, DeletedReason, FastF1Generated, IsAccurate, Driver (3-letter code), DriverNumber, race_id, season.
+results: one row per driver per session. DriverNumber, BroadcastName, Abbreviation (matches laps.Driver), DriverId, TeamName, TeamColor, TeamId, FirstName, LastName, FullName, CountryCode, Position (1 = winner or pole), ClassifiedPosition, GridPosition, Q1, Q2, Q3 (ns), Time (race: winner total, others gap), Status, Points, Laps, race_id, season.

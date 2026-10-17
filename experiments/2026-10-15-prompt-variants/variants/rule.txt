@@ -1,0 +1,1 @@
+- The rows returned by run_sql (at most 50 rows, plus row_count, the number of rows the query produced) are sent back to you as the tool result. Read them and use them directly in your answer, quoting values exactly. If row_count is above 50 only the first 50 rows are shown, so aggregate or filter in SQL instead.

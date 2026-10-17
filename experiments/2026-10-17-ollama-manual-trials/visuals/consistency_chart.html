@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>2024 finishing-position spread</title>
+<style>
+  :root { --bar: #e10600; --ink: #222; --muted: #777; --bg: #fff; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink: #eee; --muted: #aaa; --bg: #161616; } }
+  body { font: 14px/1.4 system-ui, sans-serif; color: var(--ink); background: var(--bg); max-width: 720px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 18px; margin: 8px 0 4px; }
+  p.note { color: var(--muted); margin: 4px 0 12px; }
+  .row { display: grid; grid-template-columns: 44px 1fr 96px; align-items: center; gap: 8px; margin: 3px 0; }
+  .code { font-weight: 600; }
+  .track { background: rgba(127,127,127,.15); height: 16px; border-radius: 3px; position: relative; }
+  .bar { background: var(--bar); height: 100%; border-radius: 3px; }
+  .val { font-variant-numeric: tabular-nums; text-align: right; color: var(--muted); }
+</style>
+</head>
+<body>
+<h1>2024: spread of finishing position, by driver</h1>
+<p class="note">Standard deviation of race finishing position across each driver's classified 2024 Grand Prix finishes. Lower = finishes closer to the same place each race. Drivers with 10 or more classified races. Retirements are excluded. Label shows races (n) and average finishing position.</p>
+<div id="chart"></div>
+<script>
+  const data = [
+    {code:"BOT",n:24,sd:2.22,avg:15.8},{code:"SAR",n:14,sd:2.63,avg:17.1},{code:"ZHO",n:24,sd:2.86,avg:15.5},
+    {code:"RIC",n:18,sd:3.01,avg:13.4},{code:"PIA",n:24,sd:3.11,avg:5.1},{code:"MAG",n:22,sd:3.70,avg:13.4},
+    {code:"VER",n:24,sd:3.84,avg:3.6},{code:"OCO",n:23,sd:3.91,avg:13.7},{code:"ALO",n:24,sd:3.91,avg:10.2},
+    {code:"STR",n:24,sd:3.97,avg:13.4},{code:"HUL",n:24,sd:3.99,avg:11.6},{code:"ALB",n:24,sd:4.03,avg:14.5},
+    {code:"NOR",n:24,sd:4.08,avg:4.3},{code:"LEC",n:24,sd:4.25,avg:4.5},{code:"TSU",n:24,sd:4.40,avg:13.2},
+    {code:"SAI",n:23,sd:4.67,avg:5.7},{code:"HAM",n:24,sd:4.72,avg:7.0},{code:"GAS",n:24,sd:4.83,avg:12.9},
+    {code:"RUS",n:24,sd:4.99,avg:6.8},{code:"PER",n:24,sd:5.85,avg:9.6}
+  ];
+  const max = Math.max(...data.map(d => d.sd));
+  const chart = document.getElementById("chart");
+  for (const d of data) {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<span class="code">${d.code}</span>
+      <span class="track"><span class="bar" style="display:block;width:${(d.sd / max * 100).toFixed(1)}%"></span></span>
+      <span class="val">${d.sd.toFixed(2)} · n=${d.n} · avg ${d.avg.toFixed(1)}</span>`;
+    chart.append(row);
+  }
+</script>
+</body>
+</html>

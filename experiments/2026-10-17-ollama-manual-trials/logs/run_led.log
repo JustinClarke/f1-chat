@@ -1,0 +1,12 @@
+system prompt chars: 10691
+QUESTION: Across all 2024 Grand Prix races, how many laps did each driver lead? Count a lap as led when the driver's Position is 1 on that lap. Give the driver with the most laps led and their count.
+== run 1 ==
+  step 1 SQL: SELECT l.Driver, ds.full_name, COUNT(*) AS laps_led
+FROM laps l
+JOIN driver_seasons ds ON l.Driver = ds.driver_code AND ds.season = 2024
+WHERE l.session = 'R' AND l.Position = 1
+GROUP BY l.Driver, ds.full_name
+ORDER BY laps_led DESC
+LIMIT 10;
+    -> {"row_count":9,"rows":[{"Driver":"VER","full_name":"Max Verstappen","laps_led":559},{"Driver":"NOR","full_name":"Lando Norris","laps_led":271},{"Driver":"LEC","full_name":"Charles Leclerc","laps_led":172},{"Driver":"RUS","full_name":"George Russell","laps_led":137},{"Driver":"SAI","full_name":"Carlo
+steps=1 ANSWER: "**Laps led by each driver in the 2024 season**\n\n| Driver | Laps led |\n|--------|----------|\n| Max Verstappen | 559 |\n| Lando Norris | 271 |\n| Charles Leclerc | 172 |\n| George Russell | 137 |\n| Carlos Sainz | 134 |\n| Oscar Piastri | 123 |\n| Lewis Hamilton | 31 |\n| Esteban Ocon | 14 |\n| Sergio Perez | 1 |\n\n**Driver with the most laps led:** Max Verstappen – **559 laps**."
