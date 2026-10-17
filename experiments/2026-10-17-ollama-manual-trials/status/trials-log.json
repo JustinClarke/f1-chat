@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "ollama manual trials, 2024 F1 questions (gpt-oss 20b)",
-  "updated": "2026-10-17",
+  "updated": "2026-10-18",
   "pointer": "q10-cloudflare-v4",
   "stage_vocabulary": {
     "PLANNED": "Not run yet. Nothing recorded.",
@@ -649,6 +649,94 @@
           "note": "Seeded from QUESTION_TYPES.md"
         }
       ]
+    },
+    {
+      "id": "eval-2026-10-17T16-02-39-673Z-cloudflare-old",
+      "question": null,
+      "provider": "cloudflare",
+      "prompt_version": "old (pre-rewrite)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "eval/questions.json (13 questions, guide on and off)",
+      "log_path": "../../../eval/logs/2026-10-17T16-02-39-673Z/summary.md",
+      "result": "Guide on 11/13, guide off 6/13 (1 run each). Cloudflare, one run per question. Guide-on fails: team_wins_and_points (error), distinct_winners.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PARTIAL",
+          "note": "Added from the prompt-rewrite session; see experiments/2026-10-18-prompt-rewrite/README.md"
+        }
+      ]
+    },
+    {
+      "id": "eval-2026-10-17T17-19-31-632Z-ollama-old-20k",
+      "question": null,
+      "provider": "ollama",
+      "prompt_version": "old (pre-rewrite)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "eval/questions.json (13 questions, guide on and off)",
+      "log_path": "../../../eval/logs/2026-10-17T17-19-31-632Z/summary.md",
+      "result": "Guide on 11/13, guide off 4/13 (1 run each). Local gpt-oss:20b-f1 with 20k context, before the rewrite. Guide-on fails: team_wins_and_points, distinct_winners.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PARTIAL",
+          "note": "Added from the prompt-rewrite session; see experiments/2026-10-18-prompt-rewrite/README.md"
+        }
+      ]
+    },
+    {
+      "id": "eval-2026-10-17T18-59-46-794Z-ollama-rewritten",
+      "question": null,
+      "provider": "ollama",
+      "prompt_version": "rewritten",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "eval/questions.json (13 questions, guide on and off)",
+      "log_path": "../../../eval/logs/2026-10-17T18-59-46-794Z/summary.md",
+      "result": "Guide on 10/13, guide off 6/13 (1 run each). New rewritten prompt (RULES block removed). Guide-on fails: team_wins_and_points, top_compound, bahrain_clean_pace.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PARTIAL",
+          "note": "Added from the prompt-rewrite session; see experiments/2026-10-18-prompt-rewrite/README.md"
+        }
+      ]
+    },
+    {
+      "id": "eval-2026-10-17T19-47-56-938Z-ollama-fixagent",
+      "question": null,
+      "provider": "ollama",
+      "prompt_version": "fix-agent candidate (current in app)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "eval/questions.json (13 questions, guide on and off)",
+      "log_path": "../../../eval/logs/2026-10-17T19-47-56-938Z/summary.md",
+      "result": "Guide on 12/13, guide off 5/13 (1 run each). Fix-agent dataGuide. Guide-on fails: bahrain_clean_pace only (scorer rounding artefact).",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PARTIAL",
+          "note": "Added from the prompt-rewrite session; see experiments/2026-10-18-prompt-rewrite/README.md"
+        }
+      ]
     }
   ],
   "decisions": [
@@ -734,6 +822,14 @@
     {
       "date": "2026-10-17",
       "change": "Status tracking: a board.py and BUILD-ORDER.md were added, then removed at the user's request. Only trials-log.json is kept. HANDOFF.md was written for a fresh session."
+    },
+    {
+      "date": "2026-10-17",
+      "change": "Prompt rewrite session: four eval runs added as eval-* items (summary entries, one per run folder, question null). Details in experiments/2026-10-18-prompt-rewrite/."
+    },
+    {
+      "date": "2026-10-18",
+      "change": "Chart and tooling session. Local model is now the app default (gpt-oss:20b-f1, 20k context). Fix-agent guide installed, 12/13 guide on, 5/13 guide off (19:47 eval). Prompt archived in experiments/2026-10-18-prompt-rewrite/. Browser test of a two-driver lap chart failed: make_chart has no series option, so both drivers drew on one line. Agreed next steps: series option on make_chart, a custom lap-comparison tool, and a declarative chart spec rendered by Recharts (the model does not write Recharts code). See docs/HANDOFF.md."
     }
   ]
 }
