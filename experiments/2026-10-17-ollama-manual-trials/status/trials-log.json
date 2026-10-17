@@ -1,0 +1,739 @@
+{
+  "schema_version": 1,
+  "project": "ollama manual trials, 2024 F1 questions (gpt-oss 20b)",
+  "updated": "2026-10-17",
+  "pointer": "q10-cloudflare-v4",
+  "stage_vocabulary": {
+    "PLANNED": "Not run yet. Nothing recorded.",
+    "RUNNING": "Being run now; no result recorded yet.",
+    "PASS": "Run and scored; answer matches ground truth and states its reading where required. Terminal.",
+    "PARTIAL": "Run and scored; right in part (number, premise or framing), or reliability unproven. Terminal.",
+    "FAIL": "Run and scored; answer wrong or no answer. Terminal.",
+    "BLOCKED": "Cannot be scored or closed until an open decision is ruled. Not terminal."
+  },
+  "items": [
+    {
+      "id": "q01-ollama-v3",
+      "question": 1,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 1. Filter, median, compare (multi-step)",
+      "log_path": null,
+      "result": "Correct: VER faster, medians 95.477 / 96.5365 s (1 run).",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q02-ollama-v3",
+      "question": 2,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 2. Two conditions and a count with ties",
+      "log_path": null,
+      "result": "Correct, all three tied drivers returned (1 run).",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q03-ollama-v3",
+      "question": 3,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "## 3. Join across sessions, then aggregate",
+      "log_path": "logs/run_gap.log",
+      "result": "Run 1 (cap 8) no final answer; run 2 (cap 16) correct (Sargeant, Canada, 16.767 s). Unreliable on 2 runs.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PARTIAL",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q04-ollama-v3",
+      "question": 4,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 4. Per-row condition, grouped count across races",
+      "log_path": "logs/run_led.log",
+      "result": "Correct: Verstappen 559 laps led (1 run, cap 16).",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q05-ollama-v3",
+      "question": 5,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 5. Out of scope (trap)",
+      "log_path": "logs/run_trap.log",
+      "result": "Correct refusal, no driver named (1 run, cap 16).",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q06-ollama-v3",
+      "question": 6,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 6. Complex calculation (self-join, filter, median per group)",
+      "log_path": "logs/run_pit.log",
+      "result": "Correct: McLaren 22.887 s, all ten teams and counts match (1 run).",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q07-ollama-v3",
+      "question": 7,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 7. Chart over many items (bar, 24 drivers)",
+      "log_path": "logs/run_push_1.log",
+      "result": "Correct totals, Verstappen 399, 24-row bar chart (1 run).",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q08-ollama-v3",
+      "question": 8,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "## 8. Ambiguous (\"most consistent driver\")",
+      "log_path": "logs/local_q8_limit_1.log",
+      "result": "Bottas, SD 2.22 correct; midfield caveat never stated in 3+3 reruns. Explanation rules removed 17 Oct.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PARTIAL",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q09-ollama-v3",
+      "question": 9,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 9. False premise (trap)",
+      "log_path": "logs/run_q9_points.log",
+      "result": "Rerun with points rules: 3 of 3 correct (1st, 26 points, Finished). First run was partial.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q10-ollama-v3",
+      "question": 10,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 200,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 10. Comparison across fields, with a definition to get right",
+      "log_path": "logs/local_q10_1.log",
+      "result": "Row cap 200, 3 runs: 138 of 138 rows each, reading stated. Model still types the table itself; show_table unused.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q11-ollama-v3",
+      "question": 11,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 11. Ambiguous (\"best qualifier\")",
+      "log_path": "logs/run_new_q11_q14.log",
+      "result": "3 of 3: Verstappen, 10 poles. Framing of 'best' as a reading is weak.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q12-ollama-v3",
+      "question": 12,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "FAIL",
+      "ground_truth_ref": "## 12. Join across sessions, then count",
+      "log_path": "logs/run_new_q11_q14.log",
+      "result": "3 of 3 wrong (12, 12, 13); never joined laps to results. Fixed by v4 line, see q12-ollama-v4.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "FAIL",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q12-ollama-v4",
+      "question": 12,
+      "provider": "ollama",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 12. Join across sessions, then count",
+      "log_path": "logs/run_q12_v4.log",
+      "result": "3 of 3 correct, 11 races, after one added line in HOW TO ANSWER.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q13-ollama-v3",
+      "question": 13,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 13. Trap (driver not in the 2024 data)",
+      "log_path": "logs/run_new_q11_q14.log",
+      "result": "3 of 3 correct: no 2024 data for him, no points figure.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q14-ollama-v3",
+      "question": 14,
+      "provider": "ollama",
+      "prompt_version": "v3",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 14. Percentage of rows with a filter",
+      "log_path": "logs/run_new_q11_q14.log",
+      "result": "3 of 3 correct: 24,604 of 26,606, 92.48%.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q01-cloudflare-v4",
+      "question": 1,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 1. Filter, median, compare (multi-step)",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "Verstappen faster; medians 95.48 / 96.54 s.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q02-cloudflare-v4",
+      "question": 2,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 2. Two conditions and a count with ties",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "Leclerc, Verstappen, Gasly, one each.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q03-cloudflare-v4",
+      "question": 3,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 3. Join across sessions, then aggregate",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "Sargeant, Canadian GP, 16.767 s.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q04-cloudflare-v4",
+      "question": 4,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 4. Per-row condition, grouped count across races",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "Verstappen 559, full list matches.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q05-cloudflare-v4",
+      "question": 5,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 5. Out of scope (trap)",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "Refuses, names no driver, says 2024 only.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q06-cloudflare-v4",
+      "question": 6,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 6. Complex calculation (self-join, filter, median per group)",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "All ten teams and stop counts match; McLaren 22.887 s.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q07-cloudflare-v4",
+      "question": 7,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 7. Chart over many items (bar, 24 drivers)",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "Top five checked vs DuckDB; other 19 totals not compared row by row.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q08-cloudflare-v4",
+      "question": 8,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "## 8. Ambiguous (\"most consistent driver\")",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "Same as v3: Bottas, SD 2.22, measure named, midfield caveat absent.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PARTIAL",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q09-cloudflare-v4",
+      "question": 9,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 9. False premise (trap)",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "26 points, not retired; does not state position (1st).",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q10-cloudflare-v4",
+      "question": 10,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "BLOCKED",
+      "ground_truth_ref": "## 10. Comparison across fields, with a definition to get right",
+      "log_path": "logs/run_cf_v4_q1_q10.log",
+      "result": "Partial: table stops at 50 rows (row cap) while answer says 'every such driver'; 138 vs 144 truth count unresolved (D1).",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "BLOCKED",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q11-cloudflare-v4",
+      "question": 11,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 11. Ambiguous (\"best qualifier\")",
+      "log_path": "logs/run_cf_q11_q14_v4.log",
+      "result": "Verstappen, 10 poles.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q12-cloudflare-v4",
+      "question": 12,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 12. Join across sessions, then count",
+      "log_path": "logs/run_cf_q11_q14_v4.log",
+      "result": "11 races, two SQL steps using laps for session Q.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q13-cloudflare-v4",
+      "question": 13,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "## 13. Trap (driver not in the 2024 data)",
+      "log_path": "logs/run_cf_q11_q14_v4.log",
+      "result": "Says data covers 2024 only, he is not in it; no points figure.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PASS",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    },
+    {
+      "id": "q14-cloudflare-v4",
+      "question": 14,
+      "provider": "cloudflare",
+      "prompt_version": "v4",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": null,
+        "max_out": 32768
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "## 14. Percentage of rows with a filter",
+      "log_path": "logs/run_cf_q11_q14_v4.log",
+      "result": "Counts right (24,604 of 26,606) but percentage 92.47%, truncated; exact 92.4754% rounds to 92.48%.",
+      "history": [
+        {
+          "date": "2026-10-17",
+          "stage": "PARTIAL",
+          "note": "Seeded from QUESTION_TYPES.md"
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "status": "OPEN",
+      "title": "Q10 truth count: 138 vs 144",
+      "detail": "QUESTION_TYPES.md ground truth says 138 classified finishers lapped. A recount from laps gives 144. Notes need checking before q10-cloudflare-v4 is scored PASS or FAIL.",
+      "blocks": [
+        "q10-cloudflare-v4"
+      ]
+    },
+    {
+      "id": "D2",
+      "status": "OPEN",
+      "title": "Q8 framing caveat",
+      "detail": "Bottas SD 2.22 is correct but the answer never says the measure rewards midfield finishers. Explanation rules were removed on 17 Oct as they did not produce it reliably. Rule whether Q8 stays PARTIAL or the question is reworded.",
+      "blocks": []
+    }
+  ],
+  "watch_rules": [
+    {
+      "id": "W1",
+      "title": "Q10 row cap of 50 truncates",
+      "detail": "run_trials.py ROW_CAP defaults to 50; Q10 has 138+ rows, so the model sees only 50 and may call the list complete. Q10 needs ROW_CAP=200."
+    },
+    {
+      "id": "W2",
+      "title": "v4 prompt changed one line",
+      "detail": "v4 adds a fastest-qualifying-lap line to HOW TO ANSWER. Only Q12 was checked against v4 locally; v3 vs v4 results are not like for like."
+    },
+    {
+      "id": "W3",
+      "title": "App pipeline not compared",
+      "detail": "The app pipeline in the main repo (caps, show_table, grid rendering) is not compared with these harness runs. Results cover the model and prompt only."
+    },
+    {
+      "id": "W4",
+      "title": "Token limits in QUESTION_TYPES.md are stale",
+      "detail": "QUESTION_TYPES.md states 4096 tokens; the code uses 8192 (Ollama num_predict) and 32768 (Cloudflare max_tokens). Settings in this log follow the code defaults."
+    },
+    {
+      "id": "W5",
+      "title": "Most results are single runs",
+      "detail": "Many items rest on 1 run at temperature 0; Q3 showed different outcomes across runs."
+    }
+  ],
+  "reorient": [
+    "Start here: ../HANDOFF.md (how to run, pipeline, open items). Results: ../QUESTION_TYPES.md. This file: status of each question per provider.",
+    "The harness is ../run_trials.py: one loop for both providers. PROVIDER=ollama (default) or cloudflare; only chat() differs.",
+    "Cloudflare needs the Worker up first: cd /Users/justin/github/_misc/_chat/f1-chat && npx --no-install wrangler dev --port 8787. Stop only that process; other wrangler dev processes belong to off-the-pace-chat.",
+    "DuckDB runs from a venv in the session scratchpad (duckvenv), which may not persist. Recreate with: python3 -m venv <dir> && <dir>/bin/pip install duckdb."
+  ],
+  "session_log": [
+    {
+      "date": "2026-10-17",
+      "change": "Q11 to Q14 added to QUESTION_TYPES.md (best qualifier, fastest-qualifying-lap join, Schumacher trap, TrackStatus percentage). Local v3 runs: Q11 pass, Q12 fail (12, 12, 13), Q13 pass, Q14 pass."
+    },
+    {
+      "date": "2026-10-17",
+      "change": "Diagnosis of Q12: the model used the pole sitter (results Position = 1 in session Q) or Q3 times instead of the fastest qualifying lap in laps. The v3 guide has a pole recipe and a race-only fastest-lap recipe, and no qualifying fastest-lap recipe."
+    },
+    {
+      "date": "2026-10-17",
+      "change": "v4.txt created in ../../2026-10-15-prompt-variants/variants/ as a copy of v3 with one added line in HOW TO ANSWER (fastest qualifying lap from laps, session Q). v3.txt is unchanged (SHA-256 matches HASHES.txt). Local v4 on Q12: 3 of 3 correct (11)."
+    },
+    {
+      "date": "2026-10-17",
+      "change": "Cloudflare Q11 to Q14 (v4, one run each): all pass except Q14 rounding (92.47 vs 92.48). Cloudflare Q1 to Q10 (v4, one run each): Q1 to Q6, Q7 (top five), Q8, Q9 pass; Q10 partial (50-row cap, 138 vs 144 count unresolved)."
+    },
+    {
+      "date": "2026-10-17",
+      "change": "Harness unified: first a PROVIDER switch in run_trials.py, then the Cloudflare code moved to archive/run_trials_with_cloudflare.py, then one shared loop again. Ollama uses native /api/chat with num_ctx 20480 (the earlier /v1 endpoint could not set it). Cloudflare converts messages to OpenAI form (string arguments, tool_call_id) just before sending."
+    },
+    {
+      "date": "2026-10-17",
+      "change": "Output limits raised: Ollama num_predict 8192 (MAX_OUT), Cloudflare max_tokens 32768 (CF_MAX_OUT). A short Workers AI probe accepted up to 65536, but that does not prove long outputs. QUESTION_TYPES.md and PROTOCOL.md still say 4096."
+    },
+    {
+      "date": "2026-10-17",
+      "change": "Smoke tests on the Bahrain pit-stop question (reference: three-way tie at 3): smoke2 and smoke3 logs, both providers correct with the current pipeline."
+    },
+    {
+      "date": "2026-10-17",
+      "change": "Status tracking: a board.py and BUILD-ORDER.md were added, then removed at the user's request. Only trials-log.json is kept. HANDOFF.md was written for a fresh session."
+    }
+  ]
+}

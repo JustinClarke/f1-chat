@@ -40,8 +40,8 @@ Race rows in `results` have `session_type` NULL; qualifying rows have `'Q'`. In 
 - **Result (1 run, cap 16):** Correct. "I'm sorry, but the data set only contains information for the 2024 season, so it does not include the 2023 Monaco Grand Prix." No SQL run, no driver named.
 
 ## 6. Complex calculation (self-join, filter, median per group)
-- **Question:** In the 2024 Grand Prix race laps, pair each pit-in lap with the next lap's pit-out time to get each stop's pit-lane time. Ignore stops under 10 seconds or over 60 seconds. For each team, give the median pit-lane time and the number of stops. Which team had the fastest median?
-- **Hard because:** the model has to self-join laps on driver, race and lap number + 1, filter on the computed duration, then take a median per team. The medians are close together (22.887 s to 24.256 s), so a small method error would change the ranking.
+- **Question:** 
+- **Hard because:** the model hIn the 2024 Grand Prix race laps, pair each pit-in lap with the next lap's pit-out time to get each stop's pit-lane time. Ignore stops under 10 seconds or over 60 seconds. For each team, give the median pit-lane time and the number of stops. Which team had the fastest median?as to self-join laps on driver, race and lap number + 1, filter on the computed duration, then take a median per team. The medians are close together (22.887 s to 24.256 s), so a small method error would change the ranking.
 - **Ground truth:** McLaren fastest at 22.887 s median (77 stops). Full order: Mercedes 22.908 (78), Red Bull 22.928 (80), RB 22.940 (72), Ferrari 23.091 (75), Alpine 23.205 (71), Aston Martin 23.265 (81), Williams 23.545 (72), Haas 24.010 (85), Kick Sauber 24.256 (78).
 - **Result (1 run, cap 16):** Correct. All ten teams and counts matched. Model used one SQL step with the same self-join, filter and median. The question gave the method, so this tests execution, not choosing a definition.
 

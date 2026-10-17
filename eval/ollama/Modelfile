@@ -1,0 +1,5 @@
+FROM gpt-oss:20b
+# Context window (prompt + reply). The /v1 endpoint cannot set this per request, so it is baked in here.
+PARAMETER num_ctx 20480
+# Output cap, same as the Worker default (max_tokens 8192).
+PARAMETER num_predict 8192

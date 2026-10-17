@@ -4,7 +4,13 @@ import type { ChartSpec } from "./chart";
 
 type Row = Record<string, unknown>;
 
+// Which model answers. "local" calls Ollama directly; "cloudflare" goes through the Worker (Workers AI).
+// Switch back with: VITE_PROVIDER=cloudflare npm run dev
+const PROVIDER = import.meta.env.VITE_PROVIDER ?? "local";
 const WORKER_URL = import.meta.env.VITE_WORKER_URL ?? "http://localhost:8787";
+const OLLAMA_URL = import.meta.env.VITE_OLLAMA_URL ?? "http://localhost:11434/v1";
+// gpt-oss:20b with a 20k context and 8k output, built from eval/ollama/Modelfile.
+const OLLAMA_MODEL = import.meta.env.VITE_OLLAMA_MODEL ?? "gpt-oss:20b-f1";
 const MAX_SQL_RETRIES = 2;
 const ROW_CAP = 200;
 
@@ -75,11 +81,16 @@ export type Msg ={ role: string; content?: string | null; tool_calls?: unknown[]
 export type Call = { id: string; name: string; args: string };
 
 export async function callModel(messages: Msg[], toolList: unknown[] = tools): Promise<{ text: string; calls: Call[] }> {
-  const res = await fetch(`${WORKER_URL}/chat`, {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages, tools: toolList }),
+  const local = PROVIDER === "local";
+  // Same OpenAI-style body either way. Ollama needs the model name, thinking off, and an output cap (the Worker sets the cap itself).
+  const body = local
+    ? { model: OLLAMA_MODEL, messages, tools: toolList, reasoning_effort: "none", max_tokens: 8192 }
+    : { messages, tools: toolList };
+  const res = await fetch(local ? `${OLLAMA_URL}/chat/completions` : `${WORKER_URL}/chat`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error ?? `Worker error ${res.status}`);
+  if (!res.ok) throw new Error(data.error?.message ?? data.error ?? `${local ? "Ollama" : "Worker"} error ${res.status}`);
   // Workers AI returns either {response, tool_calls} or an OpenAI-style {choices}.
   const m = data.choices?.[0]?.message ?? data;
   const raw = (m.tool_calls ?? []) as any[];
@@ -119,17 +130,6 @@ export async function ask(
 ${DATA_GUIDE}
 TABLE SCHEMA (types as DuckDB reports them)
 ${schema}
-RULES
-- Always call run_sql for data; never guess. Then answer briefly in plain text, quoting the numbers from the query.
-- Use only the data guide and query results. Do not use outside knowledge of F1.
-- Apply only the filters the question names. Do not add exclusions (untimed laps, deleted laps, pit laps) unless the question asks for them.
-- 'Laps completed' or 'laps' counts mean every lap row for that driver and race. A lap with no LapTime or marked Deleted was still driven, so count it.
-- If the question's wording is ambiguous, use the broadest reading that matches the words, and say which reading you used in your answer.
-- When you pick a measure, add one sentence on what it leaves out.
-- When asking for the top item (most, fewest, fastest), return every item tied at the top, not just one. Do not use LIMIT 1 to pick a winner; compare against the maximum instead.
-- Name a driver or team only from driver_seasons.full_name or team_name. Join driver_seasons on driver_code and season to get names; never name a driver from a code using your own knowledge.
-- If the user asks for a chart, or the answer is a comparison across many items, run the query first, then call make_chart with column names from that query.
-- If a result has a note saying rows were cut, do not write a table as if it were complete. Say the table is partial, or aggregate in SQL and try again.
 ${useNotes ? await notesBlock() : ""}`,
   };
   history[0] = system; // rebuilt per question so the notes toggle takes effect immediately

@@ -101,6 +101,10 @@ wrangler.toml        Worker config (model: @cf/openai/gpt-oss-20b)
 | Model | `AI_MODEL` in `wrangler.toml` | `@cf/openai/gpt-oss-20b` |
 | Data folder | `DATA_ROOT` env var | `/Users/justin/github/off-the-pace/data` |
 | Data server port | `PORT` env var | `8000` |
+| Model provider | `VITE_PROVIDER` (`local` or `cloudflare`) | `local` (Ollama) |
+| Local model | `VITE_OLLAMA_URL`, `VITE_OLLAMA_MODEL` | `http://localhost:11434/v1`, `gpt-oss:20b-f1` |
+
+To run the app on Cloudflare instead, use `VITE_PROVIDER=cloudflare npm run dev` and start the Worker. The local model needs `ollama create gpt-oss:20b-f1 -f eval/ollama/Modelfile` once (20k context, 8k output).
 
 ## Deploying
 

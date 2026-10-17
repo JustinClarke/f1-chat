@@ -35,7 +35,8 @@ const out = path.join(mkdtempSync(path.join(tmpdir(), "f1eval-")), "app.mjs");
 await build({
   stdin: { contents: `export * from "${ROOT}/web/src/db.ts"; export * from "${ROOT}/web/src/chat.ts"; export * from "${ROOT}/web/src/explore.ts"; export { __setGuide } from "${ROOT}/web/src/dataGuide.ts";`, resolveDir: ROOT, loader: "ts" },
   bundle: true, platform: "node", format: "esm", outfile: out, plugins: [guideSwitch, stub], logLevel: "error",
-  define: { "import.meta.env": JSON.stringify({ VITE_DATA_URL: DATA_URL, VITE_WORKER_URL: WORKER_URL }) },
+  // The eval always goes through the Worker path; the LLM_URL intercept below swaps in Ollama.
+  define: { "import.meta.env": JSON.stringify({ VITE_DATA_URL: DATA_URL, VITE_WORKER_URL: WORKER_URL, VITE_PROVIDER: "cloudflare" }) },
 });
 const app = await import(pathToFileURL(out).href);
 
@@ -77,7 +78,8 @@ globalThis.fetch = async (url, init) => {
   if (isChat && LLM_URL) {
     // Same OpenAI-style request, sent to Ollama instead of the Worker. The model name is added here.
     url = `${LLM_URL}/chat/completions`;
-    init = { ...init, body: JSON.stringify({ model: LLM_MODEL, reasoning_effort: process.env.LLM_THINK ? undefined : "none", ...JSON.parse(init.body) }) };
+    // max_tokens matches the Worker default (8192). The context size comes from the Ollama model (eval/ollama/Modelfile), not from this request.
+    init = { ...init, body: JSON.stringify({ model: LLM_MODEL, reasoning_effort: process.env.LLM_THINK ? undefined : "none", max_tokens: 8192, ...JSON.parse(init.body) }) };
     // Thinking is off by default: a 4B model spends ~2 min per call reasoning locally. Set LLM_THINK=1 to turn it on.
   }
   if (!(isChat || (LLM_URL && String(url) === `${LLM_URL}/chat/completions`))) return realFetch(url, init);
