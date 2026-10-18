@@ -737,6 +737,182 @@
           "note": "Added from the prompt-rewrite session; see experiments/2026-10-18-prompt-rewrite/README.md"
         }
       ]
+    },
+    {
+      "id": "eval-2026-10-18T07-15-03-118Z-ollama-guide-on",
+      "question": "all 13 eval questions (guide on)",
+      "provider": "ollama",
+      "prompt_version": "fix-agent guide + driver_name, pit toggle, schema note",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "eval/questions.json",
+      "log_path": "eval/logs/2026-10-18T07-15-03-118Z/summary.md",
+      "result": "Guide on 12/13 (1 run). Only failure bahrain_clean_pace: answer right, but 96.537 misses the scorer's 0.5 ms tolerance around 96.5365 (scorer rounding), and no faster driver named.",
+      "history": [
+        {
+          "date": "2026-10-18",
+          "stage": "PARTIAL",
+          "note": "Guide-on eval after compare_lap_times and full-name changes. Same scorer issue as before."
+        }
+      ]
+    },
+    {
+      "id": "eval-2026-10-18-cloudflare-guide-on",
+      "question": "all 13 eval questions (guide on)",
+      "provider": "cloudflare",
+      "prompt_version": "fix-agent guide (app default)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "BLOCKED",
+      "ground_truth_ref": "eval/questions.json",
+      "log_path": "eval/logs/2026-10-18T07-18-29-137Z/",
+      "result": "Not scored. Every call returned AiError 4006 (daily free allocation used up). Rerun after the quota resets.",
+      "history": [
+        {
+          "date": "2026-10-18",
+          "stage": "BLOCKED",
+          "note": "Quota exhausted; no model result."
+        }
+      ]
+    },
+    {
+      "id": "q15-ollama-hamilton-russell-points",
+      "question": "Hamilton vs Russell 2024 points",
+      "provider": "ollama",
+      "prompt_version": "fix-agent guide (app default)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "QUESTION_TYPES.md Q15",
+      "log_path": null,
+      "result": "Russell 226, Hamilton 207, difference 19. Matches DuckDB.",
+      "history": [
+        {
+          "date": "2026-10-18",
+          "stage": "PASS",
+          "note": "Manual run, guide on."
+        }
+      ]
+    },
+    {
+      "id": "q16-ollama-ferrari-points",
+      "question": "Ferrari 2024 points, and which team scored most",
+      "provider": "ollama",
+      "prompt_version": "fix-agent guide (app default)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "QUESTION_TYPES.md Q16",
+      "log_path": null,
+      "result": "Ferrari 595; McLaren scored most (609). Matches DuckDB.",
+      "history": [
+        {
+          "date": "2026-10-18",
+          "stage": "PASS",
+          "note": "Manual run, guide on."
+        }
+      ]
+    },
+    {
+      "id": "q17-ollama-singapore-pit-stops",
+      "question": "Singapore pit stops, most stops",
+      "provider": "ollama",
+      "prompt_version": "fix-agent guide (app default)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "QUESTION_TYPES.md Q17",
+      "log_path": null,
+      "result": "Magnussen and Ricciardo tie on 3; both named. Matches DuckDB.",
+      "history": [
+        {
+          "date": "2026-10-18",
+          "stage": "PASS",
+          "note": "Manual run, guide on."
+        }
+      ]
+    },
+    {
+      "id": "q18-ollama-monaco-pole",
+      "question": "Monaco 2024 pole and time",
+      "provider": "ollama",
+      "prompt_version": "fix-agent guide (app default)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "QUESTION_TYPES.md Q18",
+      "log_path": null,
+      "result": "Leclerc, Q3 70.270 s. Matches DuckDB.",
+      "history": [
+        {
+          "date": "2026-10-18",
+          "stage": "PASS",
+          "note": "Manual run, guide on."
+        }
+      ]
+    },
+    {
+      "id": "q19-ollama-china-sprint",
+      "question": "2024 China sprint winner (not in data)",
+      "provider": "ollama",
+      "prompt_version": "fix-agent guide (app default)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PASS",
+      "ground_truth_ref": "QUESTION_TYPES.md Q19",
+      "log_path": null,
+      "result": "Refused: data has no sprint sessions. Named no driver.",
+      "history": [
+        {
+          "date": "2026-10-18",
+          "stage": "PASS",
+          "note": "Manual run, guide on. Unanswerable question handled correctly."
+        }
+      ]
+    },
+    {
+      "id": "q20-ollama-hamilton-russell-british-lap",
+      "question": "Hamilton vs Russell fastest lap, British GP",
+      "provider": "ollama",
+      "prompt_version": "fix-agent guide (app default)",
+      "settings": {
+        "row_cap": 50,
+        "num_ctx": 20480,
+        "max_out": 8192
+      },
+      "stage": "PARTIAL",
+      "ground_truth_ref": "QUESTION_TYPES.md Q20",
+      "log_path": null,
+      "result": "Right driver and lap (Hamilton 89.438 s, Russell 91.298 s) but answered with run_sql, not compare_lap_times, despite the tool description. Took 41 s.",
+      "history": [
+        {
+          "date": "2026-10-18",
+          "stage": "PARTIAL",
+          "note": "Correct answer; tool not used. Tool choice needs work."
+        }
+      ]
     }
   ],
   "decisions": [
@@ -830,6 +1006,10 @@
     {
       "date": "2026-10-18",
       "change": "Chart and tooling session. Local model is now the app default (gpt-oss:20b-f1, 20k context). Fix-agent guide installed, 12/13 guide on, 5/13 guide off (19:47 eval). Prompt archived in experiments/2026-10-18-prompt-rewrite/. Browser test of a two-driver lap chart failed: make_chart has no series option, so both drivers drew on one line. Agreed next steps: series option on make_chart, a custom lap-comparison tool, and a declarative chart spec rendered by Recharts (the model does not write Recharts code). See docs/HANDOFF.md."
+    },
+    {
+      "date": "2026-10-18",
+      "change": "Chart and tooling session, continued. Added series option to make_chart; compare_lap_times tool (pit laps optional via UI checkbox, full driver names, lap 1 kept). Refactored chat.ts into ChatSession, ModelClient and per-tool classes. Chart styling (axis fit, labels, legend top). Local guide-on eval 12/13 (only the Bahrain rounding scorer issue). Cloudflare blocked by daily quota. Six new questions (Q15-Q20): five PASS, Q20 PARTIAL (right answer, tool not used). Nothing committed yet. Open: D1 (Q10 count), D2 (Q8 framing), W4 (stale token limits). Next: commit, rerun Cloudflare after quota resets, look at why the model skips compare_lap_times."
     }
   ]
 }

@@ -4,7 +4,7 @@ import { mountChart, type ChartSpec } from "./chart";
 import { explore } from "./explore";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
-const notes = $<HTMLInputElement>("notes"), exploreBtn = $<HTMLButtonElement>("explore");
+const notes = $<HTMLInputElement>("notes"), pits = $<HTMLInputElement>("pits"), exploreBtn = $<HTMLButtonElement>("explore");
 const log = $("log"), form = $("form"), input = $<HTMLInputElement>("q"), status = $("status");
 
 function add(cls: string, text: string): HTMLDivElement {
@@ -30,7 +30,7 @@ form.addEventListener("submit", async (ev) => {
   const charts: [ChartSpec, Record<string, unknown>[]][] = [];
   const tables: Record<string, unknown>[][] = [];
   try {
-    const text = await ask(q, (s) => sqls.push(s), notes.checked, (spec, rows) => charts.push([spec, rows]), (rows) => tables.push(rows));
+    const text = await ask(q, (s) => sqls.push(s), notes.checked, (spec, rows) => charts.push([spec, rows]), (rows) => tables.push(rows), pits.checked);
     answer.textContent = text;
     for (const rows of tables) {
       // Drawn from the query's own rows, so the model never types them.

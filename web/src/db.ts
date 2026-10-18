@@ -60,6 +60,7 @@ export async function schemaSummary(): Promise<string> {
   let out = "";
   for (const t of ["laps", "results", "driver_seasons"]) {
     const cols = await query(`DESCRIBE ${t}`);
+    if (t === "driver_seasons") out += "driver_seasons: one row per driver per season. Map a laps.Driver code (e.g. VER) to the driver's name with full_name. Always filter season = 2024; the table covers 2018 to 2025.\n";
     out += `TABLE ${t} (${cols.map((c) => `${c.column_name} ${c.column_type}`).join(", ")})\n`;
     const rows = await query(t === "driver_seasons" ? `SELECT * FROM ${t} WHERE season = 2024 LIMIT 3` : `SELECT * FROM ${t} WHERE session = 'R' LIMIT 3`);
     out += `Sample rows:\n${rows.map((r) => JSON.stringify(r, (k, v) => (typeof v === "string" && v.length > 40 ? v.slice(0, 40) : v))).join("\n")}\n\n`;

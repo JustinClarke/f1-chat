@@ -108,6 +108,42 @@ Race rows in `results` have `session_type` NULL; qualifying rows have `'Q'`. In 
 - **Ground truth:** 24,604 of 26,606 race laps, 92.48%.
 - **Result (3 runs, cap 16, 17 Oct):** 3 of 3 correct. Two steps each (a count, then the ratio). All three give 24,604 of 26,606 and 92.48%.
 
+## 15. Driver comparison with full names (points)
+- **Question:** In the 2024 Grand Prix races, who scored more points, Lewis Hamilton or George Russell, and by how many?
+- **Hard because:** two drivers, a sum of race points each, then a difference. Answer should use full names (join to `driver_seasons` with `season = 2024`).
+- **Ground truth:** George Russell, 226 points. Lewis Hamilton, 207 points. Difference 19. (Race rows only, `session = 'R'`; the data has no sprint sessions.)
+- **Result:** not run.
+
+## 16. Team points
+- **Question:** How many Grand Prix race points did Ferrari score in 2024, and which team scored the most?
+- **Hard because:** a sum over both drivers per team, and a second answer (the top team) from the same grouping. Team name is `TeamName`.
+- **Ground truth:** Ferrari 595 points. McLaren scored the most with 609. Order: McLaren 609, Ferrari 595, Red Bull Racing 537, Mercedes 433.
+- **Result:** not run.
+
+## 17. Pit-stop count with a tie
+- **Question:** Which driver made the most pit stops in the 2024 Singapore Grand Prix, and how many?
+- **Hard because:** a stop is a lap row with `PitInTime` set (race session only), counted per driver. Two drivers tie, so both must be named.
+- **Ground truth:** Kevin Magnussen and Daniel Ricciardo, 3 stops each. Next: Alexander Albon 2.
+- **Result:** not run.
+
+## 18. Qualifying result
+- **Question:** Who took pole for the 2024 Monaco Grand Prix, and what was their Q3 time?
+- **Hard because:** the qualifying session rows (`session = 'Q'`), `Position = 1`, and a Q3 time stored in nanoseconds that must be converted.
+- **Ground truth:** Charles Leclerc, Q3 70.270 s (1:10.270). Piastri second at 70.424 s.
+- **Result:** not run.
+
+## 19. Out of scope (sprint race, trap)
+- **Question:** Who won the sprint race at the 2024 Chinese Grand Prix?
+- **Hard because:** the model may know the answer from memory. The data has only the Grand Prix race (`R`) and qualifying (`Q`) for each of 24 weekends, with no sprint sessions and no sprint points.
+- **Expected:** say the data does not cover sprint races. Name no driver.
+- **Result:** not run.
+
+## 20. Two-driver lap comparison (compare_lap_times wording)
+- **Question:** Compare Lewis Hamilton and George Russell at the 2024 British Grand Prix. Which of them set the faster single race lap, and what was it?
+- **Hard because:** this is a two-driver, one-race lap-time comparison, the case the `compare_lap_times` tool description names. The model should call it with race `british`, `driver_a` HAM and `driver_b` RUS (3-letter codes), then read the minimum lap for each. The minimum does not depend on the pit-lap setting.
+- **Ground truth:** Hamilton, 89.438 s (1:29.438). Russell 91.298 s (1:31.298). Russell retired (status Retired, 19th) and has 32 timed laps against Hamilton's 51, so a median comparison would rest on different lap counts.
+- **Result:** not run.
+
 ## Cloudflare Workers AI run (gpt-oss-20b, v4 prompt, 1 run each, 17 Oct)
 Run through the repo's Worker (`worker/index.ts`, `wrangler dev`, Workers AI binding) with temperature 0, medium reasoning and 4096 max tokens, as in `eval/run_experiment.mjs`. The tool loop is the same as the local harness, with the tool messages in OpenAI form. The local Ollama results above used v3, except for Q12 (v4).
 - **Q11 (best qualifier):** pass. Verstappen, 10 poles. Same answer as the local runs.
