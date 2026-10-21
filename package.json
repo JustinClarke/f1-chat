@@ -8,7 +8,7 @@
     "dev": "vite web",
     "build": "tsc --noEmit && vite build web",
     "typecheck": "tsc --noEmit",
-    "eval": "node eval/run_eval.mjs"
+    "eval": "node experiments/_shared/run_eval.mjs"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.29.0",

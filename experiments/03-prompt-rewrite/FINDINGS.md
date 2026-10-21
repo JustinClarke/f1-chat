@@ -8,10 +8,10 @@
 - **"Seven" scorer issue.** The model wrote the winner count in words; the scorer needs digits. Fix: guide says numbers in digits. Scorer unchanged.
 - **Bahrain rounding scorer issue.** The model gives 96.537 s, matching the expected 1:36.537, but |96.537 - 96.5365| is 0.000500000000002 in floating point, just over the 0.0005 tolerance. A "round to 4 decimals" line got 2/3 but only serves the scorer, so it was left out. Bahrain fails in all candidates for this reason.
 - **Q9 garbled ns time.** The answer quoted a garbled figure (55 247 420 000 000 ns). The guide gave raw nanoseconds but did not say to convert in SQL; the rewrite tells the model to divide by 1e9 inside the query, never by hand (see `candidates/prompt_proposal.md`; moderate confidence, not re-tested).
-- **Q12 fastest qualifier vs pole sitter.** The model used the pole sitter (results Position = 1 in session Q) or Q3 times instead of the fastest qualifying lap from `laps`. Fix: added a fastest-qualifying-lap line (prompt v4, in 2026-10-15-prompt-variants) and a rule in the guide.
+- **Q12 fastest qualifier vs pole sitter.** The model used the pole sitter (results Position = 1 in session Q) or Q3 times instead of the fastest qualifying lap from `laps`. Fix: added a fastest-qualifying-lap line (prompt v4, in 01-prompt-variants) and a rule in the guide.
 - **Q13 no-record rule.** For a driver not in the 2024 data (Michael Schumacher), say there is no 2024 data and give no points figure or driver. The rewrite states this as a general rule (no 2024 row in driver_seasons means no figures); the unanswerable line also says to name no driver or result from memory.
 - **Q6 pit-stop pairing check.** Pairing each pit-in lap with the next lap's pit-out time was checked in the data: 824 of 849 pairs verified.
-- **Ollama 4096 vs 20480 context.** Ollama defaulted to a 4096-token context, truncating the prompt. Fixed with `eval/ollama/Modelfile` (num_ctx 20480, num_predict 8192).
+- **Ollama 4096 vs 20480 context.** Ollama defaulted to a 4096-token context, truncating the prompt. Fixed with `experiments/_shared/ollama/Modelfile` (num_ctx 20480, num_predict 8192).
 - **/v1 endpoint limit.** The OpenAI-compatible `/v1` endpoint cannot set num_ctx per request, which is why the value is baked into the Modelfile.
 
 ## Still open
@@ -22,4 +22,4 @@
 - Q7 chart not checked in the browser.
 - Scorer rounding for Bahrain (scorer not changed).
 - Poles question hits the step cap (8 calls) with guide off.
-- Guide-off behaviour and questions outside `eval/questions.json` were not re-probed by the fix agent; results are single runs.
+- Guide-off behaviour and questions outside `experiments/_shared/questions.json` were not re-probed by the fix agent; results are single runs.

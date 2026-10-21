@@ -1,5 +1,5 @@
-"""Computes ground truth for eval/questions.json straight from the raw Parquet files (not the app's views).
-Run: .venv/bin/python eval/ground_truth.py   (needs `pip install duckdb` in .venv)"""
+"""Computes ground truth for experiments/_shared/questions.json straight from the raw Parquet files (not the app's views).
+Run: .venv/bin/python experiments/_shared/ground_truth.py   (needs `pip install duckdb` in .venv)"""
 import duckdb, json, os
 
 DATA = os.environ.get("DATA_ROOT", "/Users/justin/github/off-the-pace/data") + "/bronze"

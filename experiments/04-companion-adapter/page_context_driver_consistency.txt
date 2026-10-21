@@ -1,0 +1,10 @@
+Page: Driver Consistency (/drivers/consistency)
+Source of this text: off-the-pace app/src/features/driver-consistency/methodology.tsx (copied as given).
+
+Each point represents a driver's season-level lap time residual the component of pace unexplained by car, tyre state, fuel, dirty air, and conditions. Residuals are computed per clean lap and aggregated across a season.
+
+- Mean residual: average delta vs the expected lap given circumstances. Negative = faster than circumstances predict; positive = slower.
+- Std dev: lap-to-lap variance in that residual. Low = consistent delivery; high = erratic hot laps but also cold ones.
+- Clean lap filter: laps with safety cars, pit-in/out windows, anomaly flags, or fewer than 10 valid laps are excluded.
+
+The crosshairs show the season median on each axis, creating four quadrants. The north-star quadrant is fast-consistent (bottom-left): the driver reliably extracts more from the car than circumstances predict.

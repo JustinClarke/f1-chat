@@ -1,0 +1,14 @@
+[
+  {
+    "id": "u_braking_point",
+    "use_case": 2,
+    "category": "views-answerable",
+    "question": "What was Verstappen's braking point into Turn 1 at Monza in 2024?",
+    "ground_truth_sql": "SELECT round(avg(braking_point_m),2) FROM v_corners WHERE driver_id = 'VER' AND race_id = '2024_16' AND corner_name = 'Turn 1'",
+    "ground_truth_output": [[748.14]],
+    "expected": "About 748.14 m (mean over 53 race laps; per-lap values range 630.5 to 788.3 m).",
+    "expected_values": [
+      { "kind": "number", "label": "mean braking point (m)", "value": 748.14 }
+    ]
+  }
+]

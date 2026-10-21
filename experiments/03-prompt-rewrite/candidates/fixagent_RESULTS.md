@@ -1,6 +1,6 @@
 # DATA_GUIDE probe results (gpt-oss:20b-f1 via Ollama, guide on, notes off)
 
-Harness: `probe.mjs <candidate.ts> <ids|all> <repeats>` bundles the real web/src db.ts + chat.ts with esbuild, swaps dataGuide.ts for the candidate, and routes the app's Worker /chat calls to Ollama with the same body as run_eval.mjs (LLM_URL path). It scores answers with eval/score.mjs. Logs: `logs/*.jsonl` (per run: SQL, answer, verdict) and `logs/*.out` (console).
+Harness: `probe.mjs <candidate.ts> <ids|all> <repeats>` bundles the real web/src db.ts + chat.ts with esbuild, swaps dataGuide.ts for the candidate, and routes the app's Worker /chat calls to Ollama with the same body as run_eval.mjs (LLM_URL path). It scores answers with experiments/_shared/score.mjs. Logs: `logs/*.jsonl` (per run: SQL, answer, verdict) and `logs/*.out` (console).
 The final candidate is `dataGuide.ts`, which is the same file as `candidates/c4_example.ts`.
 
 ## Candidates
@@ -43,4 +43,4 @@ Model calls: c0 94, c1 91, c2 80 (+42), c3 18, c4 81 (+15).
 ## Not verified
 - Guide-off behaviour (the poles 8-step stop, words for numbers, unanswerable naming a driver) was not probed. Only guide-on was tested.
 - The test set has only one unanswerable question. Unanswerable passed 3/3 in every candidate. The c4 refusal line now adds "name no driver or result from memory".
-- Questions outside eval/questions.json (pit stops, consistency, qualifying laps, charts) were not re-run. The edits leave those guide lines unchanged, apart from the names rule, which still joins driver_seasons for laps codes.
+- Questions outside experiments/_shared/questions.json (pit stops, consistency, qualifying laps, charts) were not re-run. The edits leave those guide lines unchanged, apart from the names rule, which still joins driver_seasons for laps codes.

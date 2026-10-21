@@ -23,7 +23,7 @@ export async function initDb(): Promise<void> {
   await loadViews(conn, manifest, (f) => db.registerFileURL(f, `${DATA_URL}/${f}`, duckdb.DuckDBDataProtocol.HTTP, false));
 }
 
-// Also used by eval/run_eval.mjs, which supplies a Node DuckDB-WASM connection and registers files itself.
+// Also used by experiments/_shared/run_eval.mjs, which supplies a Node DuckDB-WASM connection and registers files itself.
 export async function loadViews(c: Conn, manifest: Record<string, string[]>, register: (file: string) => unknown): Promise<void> {
   conn = c;
   for (const [table, files] of Object.entries(manifest)) {

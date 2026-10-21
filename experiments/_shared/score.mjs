@@ -25,7 +25,12 @@ export function parseNumbers(answer) {
   t = t.replace(/(?<![\d.:])(\d{1,3}):(\d{2}(?:\.\d+)?)(?![\d:])/g, (_, m, s) => { times.push(+m * 60 + +s); return " "; });
   t = t.replace(/(?<=\d) (?=\d{3}(?!\d))/g, (m, off, str) => (/(?<![\d,.])\d{1,3}$/.test(str.slice(0, off)) ? "" : m)); // "13 514" -> "13514"
   const numbers = [];
-  for (const m of t.matchAll(/(?<![\d.])(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?/g)) numbers.push(Number(m[1].replace(/,/g, "") + (m[2] ?? "")));
+  for (const m of t.matchAll(/(?<![\d.])(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?/g)) {
+    // A leading minus counts only when it is not part of a word or range ("x-2", "1-2").
+    const neg = t[m.index - 1] === "-" && !/[\w.]/.test(t[m.index - 2] ?? " ");
+    const value = Number(m[1].replace(/,/g, "") + (m[2] ?? ""));
+    numbers.push(neg ? -value : value);
+  }
   return { numbers, times };
 }
 

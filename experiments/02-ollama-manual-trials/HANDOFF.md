@@ -5,7 +5,7 @@ A manual trial harness (run_trials.py) that asks gpt-oss-20b questions about 202
 2. How to run it
 
 Python with duckdb: /private/tmp/claude-501/-Users-justin-github--misc--chat-f1-chat/33e07af5-fe36-4b6a-a970-84018a9a48f4/scratchpad/duckvenv/bin/python (it lives in scratchpad and existed when this was written, but may be gone later; any Python with duckdb works).
-Env vars, with defaults: PROVIDER (ollama or cloudflare, default ollama); MODEL (gpt-oss:20b on Ollama; on Cloudflare only a label, since the Worker picks its model from wrangler.toml AI_MODEL); CF_WORKER_URL (http://localhost:8787/chat); ROW_CAP (50); GUIDE_FILE (../2026-10-15-prompt-variants/variants/v3.txt); QUESTION (Bahrain pit-stop question); RUNS (1); NUM_CTX (20480); MAX_OUT (8192, Ollama num_predict); CF_MAX_OUT (32768); OLLAMA_URL (http://localhost:11434/api/chat); DATA_ROOT (/Users/justin/github/off-the-pace/data).
+Env vars, with defaults: PROVIDER (ollama or cloudflare, default ollama); MODEL (gpt-oss:20b on Ollama; on Cloudflare only a label, since the Worker picks its model from wrangler.toml AI_MODEL); CF_WORKER_URL (http://localhost:8787/chat); ROW_CAP (50); GUIDE_FILE (../01-prompt-variants/variants/v3.txt); QUESTION (Bahrain pit-stop question); RUNS (1); NUM_CTX (20480); MAX_OUT (8192, Ollama num_predict); CF_MAX_OUT (32768); OLLAMA_URL (http://localhost:11434/api/chat); DATA_ROOT (/Users/justin/github/off-the-pace/data).
 For Cloudflare, start the Worker first: cd /Users/justin/github/_misc/_chat/f1-chat && npx --no-install wrangler dev --port 8787. Other wrangler dev processes from /Users/justin/github/_misc/_chat/off-the-pace-chat are not ours; leave them alone.
 
 3. The pipeline
@@ -31,7 +31,7 @@ Note: the Cloudflare section of QUESTION_TYPES.md says 4096 max tokens, which is
 (b) Q10 needs ROW_CAP=200 to show the full answer; the default 50 truncates it.
 (c) The v4 prompt change (one line in v4.txt, a copy of v3) has been tested only on Q12 and on Q1 to Q10 on Cloudflare. It has not been rerun locally on the full set.
 (d) Local runs have been one run per question for most questions; the Q8 framing (midfield caveat) is still unresolved.
-(e) The app's pipeline (eval/run_experiment.mjs in the main repo) is separate from this harness and has not been compared.
+(e) The app's pipeline (experiments/01-prompt-variants/run_experiment.mjs in the main repo) is separate from this harness and has not been compared.
 
 7. Known differences to keep in mind
 

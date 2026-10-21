@@ -1,5 +1,5 @@
 // NOTE: copied from the session scratchpad. Its paths point at this machine's scratchpad and must be updated before use elsewhere. Logic unchanged.
-// Purpose: runs a candidate DATA_GUIDE against eval questions using the real app code and local Ollama, scored with eval/score.mjs.
+// Purpose: runs a candidate DATA_GUIDE against eval questions using the real app code and local Ollama, scored with experiments/_shared/score.mjs.
 // Probe a candidate DATA_GUIDE against eval questions with the real app code (db.ts, chat.ts) and local Ollama.
 // Usage: node probe.mjs <candidate.ts> [ids comma list] [repeats]
 // Writes logs/<candidate>-<stamp>.jsonl. Does not touch the repo.
@@ -19,7 +19,7 @@ const LLM_MODEL = "gpt-oss:20b-f1";
 const candidate = path.resolve(process.argv[2]);
 const only = process.argv[3] && process.argv[3] !== "all" ? process.argv[3].split(",") : null;
 const repeats = Number(process.argv[4] ?? 3);
-const { score } = await import(pathToFileURL(path.join(ROOT, "eval/score.mjs")).href);
+const { score } = await import(pathToFileURL(path.join(ROOT, "experiments/_shared/score.mjs")).href);
 
 const { build } = createRequire(path.join(ROOT, "package.json"))("esbuild");
 const candSrc = readFileSync(candidate, "utf8");
@@ -62,7 +62,7 @@ globalThis.fetch = async (url, init) => {
   return realFetch(url, init);
 };
 
-const questions = JSON.parse(readFileSync(path.join(ROOT, "eval/questions.json"), "utf8")).filter((q) => !only || only.includes(q.id));
+const questions = JSON.parse(readFileSync(path.join(ROOT, "experiments/_shared/questions.json"), "utf8")).filter((q) => !only || only.includes(q.id));
 const stamp = new Date().toISOString().replace(/[:.]/g, "-");
 const logFile = path.join(HERE, "logs", `${path.basename(candidate, ".ts")}-${stamp}.jsonl`);
 console.log(`candidate ${path.basename(candidate)}; ${questions.length} questions x ${repeats}; log ${logFile}`);

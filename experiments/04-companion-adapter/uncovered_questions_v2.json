@@ -1,0 +1,8 @@
+[
+  { "id": "u2_team_radio", "use_case": 2, "category": "uncovered", "question": "What did Verstappen say on team radio after the 2024 Monaco Grand Prix?",
+    "expected_values": [{ "kind": "refusal", "label": "not covered", "forbidden_names": ["Verstappen", "Max Verstappen"] }] },
+  { "id": "u2_salary", "use_case": 2, "category": "uncovered", "question": "How much was Hamilton's salary in 2024?",
+    "expected_values": [{ "kind": "refusal", "label": "not covered", "forbidden_names": ["Hamilton", "Lewis Hamilton"] }] },
+  { "id": "u2_tyre_pressure", "use_case": 2, "category": "uncovered", "question": "What was Norris's front-left tyre pressure on lap 30 in Bahrain 2024?",
+    "expected_values": [{ "kind": "refusal", "label": "not covered", "forbidden_names": ["Norris", "Lando Norris"] }] }
+]

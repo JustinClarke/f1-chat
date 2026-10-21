@@ -1,4 +1,4 @@
-// node --test eval/score.test.mjs
+// node --test experiments/_shared/score.test.mjs
 import test from "node:test"; import assert from "node:assert/strict"; import { readFileSync } from "node:fs";
 import { score, parseNumbers } from "./score.mjs";
 const Q = Object.fromEntries(JSON.parse(readFileSync(new URL("./questions.json", import.meta.url))).map((q) => [q.id, q]));
@@ -24,6 +24,9 @@ test("times", () => {
 test("number parsing", () => {
   assert.deepEqual(parseNumbers("13 767 laps, 1,234.5 and 1:21.432").numbers, [13767, 1234.5]);
   assert.deepEqual(parseNumbers("1:21.432").times, [81.432]);
+  assert.deepEqual(parseNumbers("average of -0.12 s").numbers, [-0.12]);
+  assert.deepEqual(parseNumbers("‑0.12 s").numbers, [-0.12]); // non-breaking hyphen
+  assert.deepEqual(parseNumbers("races 1-2 and x-3").numbers, [1, 2, 3]);
 });
 test("unanswerable", () => {
   assert.equal(v("unanswerable", "The data does not contain 2023."), "pass");

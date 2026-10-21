@@ -1,8 +1,8 @@
 # Eval runs this session
 
-Also recorded as items in `../2026-10-17-ollama-manual-trials/status/trials-log.json` (ids `eval-...`).
+Also recorded as items in `../02-ollama-manual-trials/status/trials-log.json` (ids `eval-...`).
 
-| Run folder (eval/logs/) | Model | Prompt | Context | Guide on | Guide off |
+| Run folder (experiments/_shared/logs/) | Model | Prompt | Context | Guide on | Guide off |
 |---|---|---|---|---|---|
 | 2026-10-17T16-02-39-673Z | Cloudflare @cf/openai/gpt-oss-20b | old | n/a | 11/13 | 6/13 |
 | 2026-10-17T17-19-31-632Z | local gpt-oss:20b-f1 | old | 20480 | 11/13 | 4/13 |

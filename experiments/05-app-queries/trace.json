@@ -1,0 +1,70 @@
+[
+ {
+  "id": "t1_dirty_air_monza",
+  "question": "Who lost the most time to dirty air at Monza in 2024?",
+  "expect": "STR or MAG, about 7.28 s",
+  "calls": [
+   {
+    "name": "list_races",
+    "args": {
+     "season": 2024
+    },
+    "rowCount": 24
+   },
+   {
+    "name": "dirty_air_cost",
+    "args": {
+     "race_id": "2024_16",
+     "season": 2024
+    },
+    "rowCount": 20
+   }
+  ],
+  "answer": "At the 2024 Italian Grand Prix (Monza), Lewis Hamilton (driver_id STR) lost the most time to dirty air, with a total of **7.28 seconds**. This figure represents the cumulative seconds lost because of following other cars, but it does not account for any time lost to other factors such as tyre degradation or mechanical issues."
+ },
+ {
+  "id": "t2_consistency_2024",
+  "question": "Which drivers were the most consistent in 2024?",
+  "expect": "lowest driver_residual_stddev_s, from driver_consistency",
+  "calls": [
+   {
+    "name": "driver_consistency",
+    "args": {
+     "season": 2024
+    },
+    "rowCount": 200
+   }
+  ],
+  "answer": "The 2024 driver‑consistency data shows the lowest standard deviation (most consistent) was Lewis Hamilton with a residual‑lap‑time SD of 0.242 s, followed by Max Verstappen (0.240 s) and Charles‑Leclerc (0.237 s). These figures represent the spread of each driver’s lap‑time residuals around their mean, but they exclude any laps that were not “clean” (e.g., pit‑stop or safety‑car laps) and only include drivers with at least ten clean laps."
+ },
+ {
+  "id": "t3_constructors_2024",
+  "question": "How did the constructors compare on pace across 2024?",
+  "expect": "constructor_pace, season average, McLaren first",
+  "calls": [
+   {
+    "name": "constructor_pace",
+    "args": {
+     "mode": "race",
+     "season": 2024
+    },
+    "rowCount": 10
+   }
+  ],
+  "answer": "Across the 2024 season, McLaren led the constructors in structural pace with an average of **‑0.80 s** per lap, meaning they were on average 0.80 seconds faster than the season’s baseline. Red Bull Racing followed closely at **‑0.77 s**, and Ferrari was near‑behind at **‑0.72 s**. The remaining teams—Mercedes, Aston Martin, Haas, RB, Williams, Alpine, and Kick Sauber—were all slower than the baseline, ranging from **+0.20 s** (Aston Martin) to **+0.77 s** (Kick Sauber). These figures capture only the average lap‑time advantage or deficit; they do not reflect race‑specific variations, track characteristics, or the impact of race incidents."
+ },
+ {
+  "id": "t4_explain_dirty_air",
+  "question": "What does the dirty air cost measure, and what does it leave out?",
+  "expect": "explanation, no table needed or dirty_air_cost used",
+  "calls": [],
+  "answer": "The dirty‑air cost measures the total seconds a driver loses in a race because they are stuck in the turbulent wake of the car ahead—essentially the time lost to following another car. It is calculated from telemetry and lap‑time data and ranks drivers by the largest cost first. This metric leaves out other race‑impacting factors such as driver skill, car performance, tire wear, weather, and strategic decisions, focusing solely on the aerodynamic penalty of dirty air."
+ },
+ {
+  "id": "t5_braking_out_of_scope",
+  "question": "What was Verstappen's braking point into Turn 1 at Monza in 2024?",
+  "expect": "says no tool covers braking points; no invented number",
+  "calls": [],
+  "answer": "I’m sorry, but none of the available tools provide braking‑point data."
+ }
+]

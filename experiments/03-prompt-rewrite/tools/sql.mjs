@@ -19,7 +19,7 @@ const LLM_MODEL = "gpt-oss:20b-f1";
 const candidate = "/Users/justin/github/_misc/_chat/f1-chat/web/src/dataGuide.ts";
 const only = process.argv[3] && process.argv[3] !== "all" ? process.argv[3].split(",") : null;
 const repeats = Number(process.argv[4] ?? 3);
-const { score } = await import(pathToFileURL(path.join(ROOT, "eval/score.mjs")).href);
+const { score } = await import(pathToFileURL(path.join(ROOT, "experiments/_shared/score.mjs")).href);
 
 const { build } = createRequire(path.join(ROOT, "package.json"))("esbuild");
 const candSrc = readFileSync(candidate, "utf8");

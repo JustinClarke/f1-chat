@@ -1,0 +1,128 @@
+[
+  {
+    "id": "c3_quadrant",
+    "use_case": 3,
+    "category": "explain-page",
+    "question": "What does the fast-consistent quadrant mean on the Driver Consistency page?",
+    "ground_truth_source": "web methodology text: off-the-pace app/src/features/driver-consistency/methodology.tsx",
+    "expected": "Bottom-left quadrant. The driver reliably extracts more from the car than circumstances predict (negative mean residual, low standard deviation).",
+    "expected_values": [
+      { "kind": "phrase", "label": "location", "any": ["bottom-left", "bottom left", "lower-left", "lower left"] },
+      { "kind": "phrase", "label": "meaning", "any": ["more from the car", "more than circumstances", "faster than circumstances", "than circumstances predict", "faster than the circumstances", "than the circumstances predict", "faster than expected", "lap quicker than expected", "than expected"] }
+    ]
+  },
+  {
+    "id": "c3_std_dev",
+    "use_case": 3,
+    "category": "explain-page",
+    "question": "What does a high standard deviation mean on the Driver Consistency page?",
+    "ground_truth_source": "methodology.tsx",
+    "expected": "Lap-to-lap variance in the residual. The driver is erratic: hot laps and cold laps both get more extreme.",
+    "expected_values": [
+      { "kind": "phrase", "label": "concept", "any": ["variance", "lap-to-lap", "lap to lap", "erratic", "varies", "inconsistent"] }
+    ]
+  },
+  {
+    "id": "c3_crosshairs",
+    "use_case": 3,
+    "category": "explain-page",
+    "question": "What do the crosshairs on the Driver Consistency chart show?",
+    "ground_truth_source": "methodology.tsx",
+    "expected": "The season median on each axis, which splits the chart into four quadrants.",
+    "expected_values": [
+      { "kind": "phrase", "label": "median", "any": ["median"] },
+      { "kind": "phrase", "label": "quadrants", "any": ["four quadrant", "4 quadrant", "quadrants"] }
+    ]
+  },
+  {
+    "id": "c3_clean_lap_filter",
+    "use_case": 3,
+    "category": "explain-page",
+    "contested": true,
+    "contested_reason": "Methodology text says anomaly flags are excluded; the query in queries.ts does not filter on them. Do not score until settled.",
+    "question": "Which laps does the Driver Consistency page leave out?",
+    "ground_truth_source": "methodology.tsx (disputed against queries.ts)",
+    "expected": "Laps under safety cars, pit-in and pit-out windows, anomaly flags, and drivers with fewer than 10 valid laps.",
+    "expected_values": [
+      { "kind": "phrase", "label": "safety car", "any": ["safety car"] },
+      { "kind": "phrase", "label": "10 laps", "any": ["10 valid", "fewer than 10", "10 clean", "at least 10", "10 laps"] }
+    ]
+  },
+  {
+    "id": "c1_soft_stints",
+    "use_case": 1,
+    "category": "count",
+    "question": "How many stints in 2024 were on soft tyres?",
+    "ground_truth_sql": "SELECT count(*) FROM fct_stint_features WHERE race_year = 2024 AND compound = 'SOFT'",
+    "ground_truth_output": [[152]],
+    "expected": "152",
+    "expected_values": [
+      { "kind": "number", "label": "soft stints", "value": 152 }
+    ]
+  },
+  {
+    "id": "c1_most_stints_driver",
+    "use_case": 1,
+    "category": "aggregate",
+    "question": "Which driver had the most stints in 2024, and how many?",
+    "ground_truth_sql": "SELECT driver_id, count(*) n FROM fct_stint_features WHERE race_year = 2024 GROUP BY 1 ORDER BY 2 DESC LIMIT 1",
+    "ground_truth_output": [["ZHO", 71]],
+    "expected": "driver=ZHO, stints=71",
+    "expected_values": [
+      { "kind": "name", "label": "driver", "any": ["ZHO", "Zhou", "Zhou Guanyu"] },
+      { "kind": "number", "label": "stints", "value": 71 }
+    ]
+  },
+  {
+    "id": "c1_races_in_stints",
+    "use_case": 1,
+    "category": "count",
+    "question": "How many distinct races in 2024 are in the stint data?",
+    "ground_truth_sql": "SELECT count(DISTINCT race_id) FROM fct_stint_features WHERE race_year = 2024",
+    "ground_truth_output": [[24]],
+    "expected": "24",
+    "expected_values": [
+      { "kind": "number", "label": "races", "value": 24 }
+    ]
+  },
+  {
+    "id": "c1_lap_rows_2024",
+    "use_case": 1,
+    "category": "count",
+    "question": "How many lap rows are there for 2024 in the lap residuals table?",
+    "ground_truth_sql": "SELECT count(*) FROM fct_lap_residuals WHERE race_year = 2024",
+    "ground_truth_output": [[23256]],
+    "expected": "23256",
+    "expected_values": [
+      { "kind": "number", "label": "lap rows", "value": 23256 }
+    ]
+  },
+  {
+    "id": "c1_constructor_resid",
+    "use_case": 1,
+    "category": "aggregate",
+    "question": "Which constructor had the lowest average driver mean residual in 2024? Give the average to two decimal places.",
+    "ground_truth_sql": "SELECT constructor_id, round(avg(driver_residual_mean_s),2) FROM fct_driver_skill_features WHERE race_year = 2024 AND driver_residual_mean_s IS NOT NULL GROUP BY 1 ORDER BY 2 ASC LIMIT 1",
+    "ground_truth_output": [["Haas F1 Team", -0.12]],
+    "expected": "constructor=Haas F1 Team, avg=-0.12",
+    "expected_values": [
+      { "kind": "name", "label": "constructor", "any": ["Haas F1 Team", "Haas", "Haas F1"] },
+      { "kind": "number", "label": "avg residual", "value": -0.12 }
+    ]
+  },
+  {
+    "id": "c1_consistency_lowest_sd",
+    "use_case": 1,
+    "category": "aggregate",
+    "contested": true,
+    "contested_reason": "fct_driver_skill_features is one row per driver per race (463 rows for 2024, 24 drivers), not one per driver per season. The answer is one race, not a season. Confirm the intended question before scoring.",
+    "question": "Which driver had the lowest residual standard deviation in 2024 among laps with at least 10 clean laps?",
+    "ground_truth_sql": "SELECT driver_id, round(driver_residual_stddev_s,3) FROM fct_driver_skill_features WHERE race_year = 2024 AND driver_residual_stddev_s IS NOT NULL AND clean_lap_count >= 10 ORDER BY 2 ASC LIMIT 1",
+    "ground_truth_output": [["BOT", 0.173]],
+    "expected": "driver=BOT (single race row), stddev=0.173",
+    "expected_values": [
+      { "kind": "name", "label": "driver", "any": ["BOT", "Valtteri Bottas", "Bottas"] },
+      { "kind": "number", "label": "stddev", "value": 0.173, "tolerance": 0.001 }
+    ]
+  }
+]

@@ -28,7 +28,7 @@ Counts are runs. Each row is a separate run with the same prompt unless noted. D
 - The app was not tested with these changes.
 
 ## 5. Every question run by hand (one run each unless noted)
-Expected answers are from eval/questions.json or checked against the parquet. "Steps" is the number of run_sql calls.
+Expected answers are from experiments/_shared/questions.json or checked against the parquet. "Steps" is the number of run_sql calls.
 
 | Question | Expected | Result | Notes |
 |---|---|---|---|
@@ -43,4 +43,4 @@ Expected answers are from eval/questions.json or checked against the parquet. "S
 | Monaco: how many race laps did Norris complete? | 78 | 76 before the counting rule; 78 in 3 of 3 runs after | See section 3 |
 | Bahrain: most pit stops, and who | Tie at 3: GAS, HUL, SAR | See sections 1 to 4 | Final rule set: 5 of 5 correct, with the all-seasons table |
 
-Not run by hand: the other questions in eval/questions.json (wins by team, fastest lap at other circuits, unanswerable 2023 question). Run them with the rules before the app test.
+Not run by hand: the other questions in experiments/_shared/questions.json (wins by team, fastest lap at other circuits, unanswerable 2023 question). Run them with the rules before the app test.

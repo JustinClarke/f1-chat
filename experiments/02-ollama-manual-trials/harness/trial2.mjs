@@ -1,4 +1,4 @@
-// One-off trial: same loop as experiments/2026-10-17-ollama-manual-trials/run_trials.py, ported to Node
+// One-off trial: same loop as experiments/02-ollama-manual-trials/run_trials.py, ported to Node
 // so it can use the native duckdb package. Usage: node trial.mjs "<question>" [runs]
 import { createRequire } from "node:module";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
@@ -11,7 +11,7 @@ const DATA_ROOT = process.env.DATA_ROOT || "/Users/justin/github/off-the-pace/da
 const OLLAMA = "http://localhost:11434/api/chat";
 const MODEL = "gpt-oss:20b";
 const NUM_CTX = 20480;
-const GUIDE = readFileSync("/Users/justin/github/_misc/_chat/off-the-pace-chat/experiments/2026-10-15-prompt-variants/variants/v3.txt", "utf8");
+const GUIDE = readFileSync("/Users/justin/github/_misc/_chat/off-the-pace-chat/experiments/01-prompt-variants/variants/v3.txt", "utf8");
 const QUESTION = process.argv[2];
 const RUNS = Number(process.argv[3] || 1);
 const MAX_STEPS = Number(process.env.MAX_STEPS || 16); // app cap is 8 (web/src/chat.ts); raised for this trial

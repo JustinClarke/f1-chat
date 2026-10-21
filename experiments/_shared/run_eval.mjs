@@ -1,5 +1,5 @@
-// Runs questions from eval/questions.json under a matrix of configs (data guide on/off x exploration notes off/on), REPEATS times each,
-// and logs everything to eval/logs/<timestamp>/{runs.jsonl,summary.md}. Env: ONLY=id,id  GUIDE=on,off  NOTES=off|on|off,on  REPEATS=3
+// Runs questions from experiments/_shared/questions.json under a matrix of configs (data guide on/off x exploration notes off/on), REPEATS times each,
+// and logs everything to experiments/_shared/logs/<timestamp>/{runs.jsonl,summary.md}. Env: ONLY=id,id  GUIDE=on,off  NOTES=off|on|off,on  REPEATS=3
 // MODEL=<label> (the model is really set by the Worker's AI_MODEL; default is read from wrangler.toml)  LABEL=<free text note>
 // Uses the real web/src chat/explore/profile/db code, bundled for Node with DuckDB-WASM (blocking build) over the same Parquet files,
 // and the same Worker the browser hits.   Needs `npm run data` and `npm run worker` running.
@@ -12,7 +12,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const DATA_URL = process.env.VITE_DATA_URL ?? "http://localhost:8000";
 const WORKER_URL = process.env.VITE_WORKER_URL ?? "http://localhost:8787";
 const DATA_ROOT = path.resolve(process.env.DATA_ROOT || "/Users/justin/github/off-the-pace/data");
@@ -64,7 +64,7 @@ const LLM_MODEL = process.env.LLM_MODEL; // Ollama model name, e.g. qwen3:4b
 const model = process.env.MODEL || (LLM_URL ? `ollama:${LLM_MODEL}` : (readFileSync(path.join(ROOT, "wrangler.toml"), "utf8").match(/AI_MODEL\s*=\s*"([^"]+)"/)?.[1] ?? "unknown"));
 const modelNote = process.env.MODEL ? "from MODEL env (must match the Worker's --var AI_MODEL)" : "from wrangler.toml (the Worker's default)";
 const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-const logDir = path.join(ROOT, "eval/logs", stamp);
+const logDir = path.join(ROOT, "experiments/_shared/logs", stamp);
 mkdirSync(logDir, { recursive: true });
 const runsFile = path.join(logDir, "runs.jsonl");
 const sha = (x) => createHash("sha256").update(x).digest("hex").slice(0, 12);
@@ -78,7 +78,7 @@ globalThis.fetch = async (url, init) => {
   if (isChat && LLM_URL) {
     // Same OpenAI-style request, sent to Ollama instead of the Worker. The model name is added here.
     url = `${LLM_URL}/chat/completions`;
-    // max_tokens matches the Worker default (8192). The context size comes from the Ollama model (eval/ollama/Modelfile), not from this request.
+    // max_tokens matches the Worker default (8192). The context size comes from the Ollama model (experiments/_shared/ollama/Modelfile), not from this request.
     init = { ...init, body: JSON.stringify({ model: LLM_MODEL, reasoning_effort: process.env.LLM_THINK ? undefined : "none", max_tokens: 8192, ...JSON.parse(init.body) }) };
     // Thinking is off by default: a 4B model spends ~2 min per call reasoning locally. Set LLM_THINK=1 to turn it on.
   }
@@ -156,7 +156,7 @@ async function runOne(q, cfg, rep) {
 }
 
 // 4. Run: repeat -> config -> question, so slow drift in the model hits every config alike.
-const questions = JSON.parse(readFileSync(path.join(ROOT, "eval/questions.json"), "utf8")).filter((q) => !only || only.includes(q.id));
+const questions = JSON.parse(readFileSync(path.join(ROOT, "experiments/_shared/questions.json"), "utf8")).filter((q) => !only || only.includes(q.id));
 if (!questions.length) { console.error("No questions selected."); process.exit(1); }
 console.log(`Model ${model} (${modelNote}); configs ${JSON.stringify(configs)}; ${questions.length} questions x ${repeats} repeats -> ${logDir}`);
 let explored = false;
@@ -177,7 +177,7 @@ for (let rep = 1; rep <= repeats; rep++) {
 const cell = (r) => ({ pass: "PASS", fail: "FAIL", "check manually": "CHECK", error: "ERROR" }[r.verdict]);
 const cfgName = (c) => `guide ${c.guide}${c.notes === "on" ? " + notes" : ""}`;
 let md = `# Eval run ${stamp}\n\nModel: \`${model}\` (${modelNote}). Repeats: ${repeats}. Full detail per run: \`runs.jsonl\` (one line per run; \`run_id\` is the key).\n\n`;
-md += `Scorer: all expected values (from ground_truth.py) must appear in the answer; numbers are exact (commas, spaces, 1:21.432 times and ns handled); names whole-word; unanswerable needs a refusal and no driver name. See eval/score.mjs.\n\n`;
+md += `Scorer: all expected values (from ground_truth.py) must appear in the answer; numbers are exact (commas, spaces, 1:21.432 times and ns handled); names whole-word; unanswerable needs a refusal and no driver name. See experiments/_shared/score.mjs.\n\n`;
 const groups = [...new Set(records.map((r) => cfgName(r.config)))];
 md += `## Pass counts (pass / runs)\n\n| question | ${groups.join(" | ")} |\n|---|${groups.map(() => "---").join("|")}|\n`;
 for (const q of questions) md += `| ${q.id} | ${groups.map((g) => { const rs = records.filter((r) => r.question_id === q.id && cfgName(r.config) === g); return `${rs.filter((r) => r.verdict === "pass").length}/${rs.length}`; }).join(" | ")} |\n`;

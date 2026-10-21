@@ -25,8 +25,8 @@ const db = await duck.createDuckDB({ mvp: { mainModule: `${dist}/duckdb-mvp.wasm
 await db.instantiate(() => {});
 const manifest = await (await fetch("http://localhost:8000/manifest.json")).json();
 await app.loadViews(db.connect(), manifest, (f) => db.registerFileURL(f, path.join(DATA_ROOT, f), duck.DuckDBDataProtocol.NODE_FS, false));
-const { score } = await import(pathToFileURL(ROOT + "/eval/score.mjs").href);
-const Q = JSON.parse(rq("fs").readFileSync(ROOT + "/eval/questions.json", "utf8")).find((q) => q.id === "team_wins_and_points");
+const { score } = await import(pathToFileURL(ROOT + "/experiments/_shared/score.mjs").href);
+const Q = JSON.parse(rq("fs").readFileSync(ROOT + "/experiments/_shared/questions.json", "utf8")).find((q) => q.id === "team_wins_and_points");
 for (let i = 1; i <= Number(process.env.N ?? 2); i++) {
   app.resetChat();
   const sqls = [];

@@ -97,7 +97,7 @@ RULES
 
 ## Not verified
 
-- No run was made. All causes above come from reading the prompt, not from SQL logs. For Q3 and Q8 I have no evidence of the model's chosen SQL; read `eval/logs/` for them before trusting my cause.
+- No run was made. All causes above come from reading the prompt, not from SQL logs. For Q3 and Q8 I have no evidence of the model's chosen SQL; read `experiments/_shared/logs/` for them before trusting my cause.
 - The Q6 pairing sentence assumes PitOutTime is on the lap after PitInTime (as FastF1 normally records). Check one sample driver in the data.
 - The Q10 split clause costs a few tokens and may encourage extra queries, which could add steps for a model that already over-checks. If so, drop that clause.
 - Removed column lines (tyres, speeds, sectors, DeletedReason, IsAccurate) may matter for questions outside the 14. The schema still lists the names and types, but the meaning of Stint, TyreLife, or SpeedST is no longer explained. Add back one line only if such questions appear.

@@ -1,0 +1,8 @@
+[
+  { "id": "u_braking_point", "use_case": 2, "category": "uncovered", "question": "What was Verstappen's braking point into Turn 1 at Monza in 2024?",
+    "expected_values": [{ "kind": "refusal", "label": "not covered", "forbidden_names": ["Verstappen", "Max Verstappen"] }] },
+  { "id": "u_tyre_temp", "use_case": 2, "category": "uncovered", "question": "What was Norris's left front tyre temperature on lap 30 in Bahrain 2024?",
+    "expected_values": [{ "kind": "refusal", "label": "not covered", "forbidden_names": ["Norris", "Lando Norris"] }] },
+  { "id": "u_top_speed", "use_case": 2, "category": "uncovered", "question": "What was Leclerc's top speed in Monaco 2024?",
+    "expected_values": [{ "kind": "refusal", "label": "not covered", "forbidden_names": ["Leclerc", "Charles Leclerc"] }] }
+]

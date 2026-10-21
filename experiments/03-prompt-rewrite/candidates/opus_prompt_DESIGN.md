@@ -2,7 +2,7 @@
 
 ## Shape
 
-All instructions now sit in `DATA_GUIDE`, about 3,550 characters. The old prompt had 8,700 in the guide plus 1,550 in RULES. The guide has three parts: DATA (only what the schema cannot say), QUALIFYING (where two sources look alike) and HOW TO ANSWER. With the guide off, the model gets the opening line, the tools and the schema. `export const DATA_GUIDE =` is unchanged, because `eval/run_eval.mjs` rewrites that exact string to toggle the guide.
+All instructions now sit in `DATA_GUIDE`, about 3,550 characters. The old prompt had 8,700 in the guide plus 1,550 in RULES. The guide has three parts: DATA (only what the schema cannot say), QUALIFYING (where two sources look alike) and HOW TO ANSWER. With the guide off, the model gets the opening line, the tools and the schema. `export const DATA_GUIDE =` is unchanged, because `experiments/_shared/run_eval.mjs` rewrites that exact string to toggle the guide.
 
 ## Kept
 

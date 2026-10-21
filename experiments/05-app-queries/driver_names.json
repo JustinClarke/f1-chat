@@ -1,0 +1,131 @@
+{
+ "AIT": {
+  "name": "Jack Aitken"
+ },
+ "ALB": {
+  "name": "Alexander Albon"
+ },
+ "ALO": {
+  "name": "Fernando Alonso"
+ },
+ "ANT": {
+  "name": "Andrea Kimi Antonelli"
+ },
+ "BEA": {
+  "name": "Oliver Bearman"
+ },
+ "BOR": {
+  "name": "Gabriel Bortoleto"
+ },
+ "BOT": {
+  "name": "Valtteri Bottas"
+ },
+ "COL": {
+  "name": "Franco Colapinto"
+ },
+ "DEV": {
+  "name": "Nyck de Vries"
+ },
+ "DOO": {
+  "name": "Jack Doohan"
+ },
+ "ERI": {
+  "name": "Marcus Ericsson"
+ },
+ "FIT": {
+  "name": "Pietro Fittipaldi"
+ },
+ "GAS": {
+  "name": "Pierre Gasly"
+ },
+ "GIO": {
+  "name": "Antonio Giovinazzi"
+ },
+ "GRO": {
+  "name": "Romain Grosjean"
+ },
+ "HAD": {
+  "name": "Isack Hadjar"
+ },
+ "HAM": {
+  "name": "Lewis Hamilton"
+ },
+ "HAR": {
+  "name": "Brendon Hartley"
+ },
+ "HUL": {
+  "name": "Nico Hulkenberg"
+ },
+ "KUB": {
+  "name": "Robert Kubica"
+ },
+ "KVY": {
+  "name": "Daniil Kvyat"
+ },
+ "LAT": {
+  "name": "Nicholas Latifi"
+ },
+ "LAW": {
+  "name": "Liam Lawson"
+ },
+ "LEC": {
+  "name": "Charles Leclerc"
+ },
+ "MAG": {
+  "name": "Kevin Magnussen"
+ },
+ "MAZ": {
+  "name": "Nikita Mazepin"
+ },
+ "MSC": {
+  "name": "Mick Schumacher"
+ },
+ "NOR": {
+  "name": "Lando Norris"
+ },
+ "OCO": {
+  "name": "Esteban Ocon"
+ },
+ "PER": {
+  "name": "Sergio Perez"
+ },
+ "PIA": {
+  "name": "Oscar Piastri"
+ },
+ "RAI": {
+  "name": "Kimi Raikkonen"
+ },
+ "RIC": {
+  "name": "Daniel Ricciardo"
+ },
+ "RUS": {
+  "name": "George Russell"
+ },
+ "SAI": {
+  "name": "Carlos Sainz"
+ },
+ "SAR": {
+  "name": "Logan Sargeant"
+ },
+ "SIR": {
+  "name": "Sergey Sirotkin"
+ },
+ "STR": {
+  "name": "Lance Stroll"
+ },
+ "TSU": {
+  "name": "Yuki Tsunoda"
+ },
+ "VAN": {
+  "name": "Stoffel Vandoorne"
+ },
+ "VER": {
+  "name": "Max Verstappen"
+ },
+ "VET": {
+  "name": "Sebastian Vettel"
+ },
+ "ZHO": {
+  "name": "Zhou Guanyu"
+ }
+}

@@ -1,6 +1,6 @@
 # Prompt rewrite and data guide fixes (17-18 Oct 2026)
 
-Index of one working session. Plain findings are in FINDINGS.md; per-run records are in TRIALS.md and in `../2026-10-17-ollama-manual-trials/status/trials-log.json`.
+Index of one working session. Plain findings are in FINDINGS.md; per-run records are in TRIALS.md and in `../02-ollama-manual-trials/status/trials-log.json`.
 
 ## What is in the app now
 
@@ -11,10 +11,10 @@ Index of one working session. Plain findings are in FINDINGS.md; per-run records
 
 ## Order of work
 
-1. 17 Oct, early: eval of the old prompt on Cloudflare (`gpt-oss-20b`), one run per question: `eval/logs/2026-10-17T16-02-39-673Z`.
-2. 17 Oct: local Ollama model. First runs hit a 4096-token context; fixed with `eval/ollama/Modelfile` (num_ctx 20480). Run before the rewrite: `eval/logs/2026-10-17T17-19-31-632Z`. (Other folders in `eval/logs/` dated 17 Oct 16-37 to 17-35 are earlier or partial runs and are not summarised here.)
-3. 17 Oct: prompt review (`candidates/prompt_proposal.md`), then the rewrite: leaner prompt, new data guide, RULES block removed (`candidates/opus_prompt_DESIGN.md`). Eval: `eval/logs/2026-10-17T18-59-46-794Z`.
-4. 17 Oct: fix agent probed five guide variants with `tools/probe.mjs` (3 repeats, guide on only; results in `candidates/fixagent_RESULTS.md`), landing on c4_example. Eval: `eval/logs/2026-10-17T19-47-56-938Z`.
+1. 17 Oct, early: eval of the old prompt on Cloudflare (`gpt-oss-20b`), one run per question: `experiments/_shared/logs/2026-10-17T16-02-39-673Z`.
+2. 17 Oct: local Ollama model. First runs hit a 4096-token context; fixed with `experiments/_shared/ollama/Modelfile` (num_ctx 20480). Run before the rewrite: `experiments/_shared/logs/2026-10-17T17-19-31-632Z`. (Other folders in `experiments/_shared/logs/` dated 17 Oct 16-37 to 17-35 are earlier or partial runs and are not summarised here.)
+3. 17 Oct: prompt review (`candidates/prompt_proposal.md`), then the rewrite: leaner prompt, new data guide, RULES block removed (`candidates/opus_prompt_DESIGN.md`). Eval: `experiments/_shared/logs/2026-10-17T18-59-46-794Z`.
+4. 17 Oct: fix agent probed five guide variants with `tools/probe.mjs` (3 repeats, guide on only; results in `candidates/fixagent_RESULTS.md`), landing on c4_example. Eval: `experiments/_shared/logs/2026-10-17T19-47-56-938Z`.
 
 ## Headline results (pass out of 13 questions, one run each)
 
@@ -31,5 +31,5 @@ Single runs are noisy (the fix agent's 3-repeat probe, guide on, went 25/39 base
 
 - `archive/` prompt snapshots (kept as is).
 - `candidates/` every prompt candidate plus design notes and the fix agent's RESULTS.
-- `tools/` scripts copied from the session scratchpad. They hold paths to this machine and the scratchpad; update before reuse. Logic unchanged. `eval/ollama/Modelfile` is in the repo and not copied.
+- `tools/` scripts copied from the session scratchpad. They hold paths to this machine and the scratchpad; update before reuse. Logic unchanged. `experiments/_shared/ollama/Modelfile` is in the repo and not copied.
 - `FINDINGS.md`, `TRIALS.md`.

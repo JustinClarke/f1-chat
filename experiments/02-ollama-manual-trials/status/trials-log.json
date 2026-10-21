@@ -661,14 +661,14 @@
         "max_out": 32768
       },
       "stage": "PARTIAL",
-      "ground_truth_ref": "eval/questions.json (13 questions, guide on and off)",
-      "log_path": "../../../eval/logs/2026-10-17T16-02-39-673Z/summary.md",
+      "ground_truth_ref": "experiments/_shared/questions.json (13 questions, guide on and off)",
+      "log_path": "../../../experiments/_shared/logs/2026-10-17T16-02-39-673Z/summary.md",
       "result": "Guide on 11/13, guide off 6/13 (1 run each). Cloudflare, one run per question. Guide-on fails: team_wins_and_points (error), distinct_winners.",
       "history": [
         {
           "date": "2026-10-17",
           "stage": "PARTIAL",
-          "note": "Added from the prompt-rewrite session; see experiments/2026-10-18-prompt-rewrite/README.md"
+          "note": "Added from the prompt-rewrite session; see experiments/03-prompt-rewrite/README.md"
         }
       ]
     },
@@ -683,14 +683,14 @@
         "max_out": 8192
       },
       "stage": "PARTIAL",
-      "ground_truth_ref": "eval/questions.json (13 questions, guide on and off)",
-      "log_path": "../../../eval/logs/2026-10-17T17-19-31-632Z/summary.md",
+      "ground_truth_ref": "experiments/_shared/questions.json (13 questions, guide on and off)",
+      "log_path": "../../../experiments/_shared/logs/2026-10-17T17-19-31-632Z/summary.md",
       "result": "Guide on 11/13, guide off 4/13 (1 run each). Local gpt-oss:20b-f1 with 20k context, before the rewrite. Guide-on fails: team_wins_and_points, distinct_winners.",
       "history": [
         {
           "date": "2026-10-17",
           "stage": "PARTIAL",
-          "note": "Added from the prompt-rewrite session; see experiments/2026-10-18-prompt-rewrite/README.md"
+          "note": "Added from the prompt-rewrite session; see experiments/03-prompt-rewrite/README.md"
         }
       ]
     },
@@ -705,14 +705,14 @@
         "max_out": 8192
       },
       "stage": "PARTIAL",
-      "ground_truth_ref": "eval/questions.json (13 questions, guide on and off)",
-      "log_path": "../../../eval/logs/2026-10-17T18-59-46-794Z/summary.md",
+      "ground_truth_ref": "experiments/_shared/questions.json (13 questions, guide on and off)",
+      "log_path": "../../../experiments/_shared/logs/2026-10-17T18-59-46-794Z/summary.md",
       "result": "Guide on 10/13, guide off 6/13 (1 run each). New rewritten prompt (RULES block removed). Guide-on fails: team_wins_and_points, top_compound, bahrain_clean_pace.",
       "history": [
         {
           "date": "2026-10-17",
           "stage": "PARTIAL",
-          "note": "Added from the prompt-rewrite session; see experiments/2026-10-18-prompt-rewrite/README.md"
+          "note": "Added from the prompt-rewrite session; see experiments/03-prompt-rewrite/README.md"
         }
       ]
     },
@@ -727,14 +727,14 @@
         "max_out": 8192
       },
       "stage": "PARTIAL",
-      "ground_truth_ref": "eval/questions.json (13 questions, guide on and off)",
-      "log_path": "../../../eval/logs/2026-10-17T19-47-56-938Z/summary.md",
+      "ground_truth_ref": "experiments/_shared/questions.json (13 questions, guide on and off)",
+      "log_path": "../../../experiments/_shared/logs/2026-10-17T19-47-56-938Z/summary.md",
       "result": "Guide on 12/13, guide off 5/13 (1 run each). Fix-agent dataGuide. Guide-on fails: bahrain_clean_pace only (scorer rounding artefact).",
       "history": [
         {
           "date": "2026-10-17",
           "stage": "PARTIAL",
-          "note": "Added from the prompt-rewrite session; see experiments/2026-10-18-prompt-rewrite/README.md"
+          "note": "Added from the prompt-rewrite session; see experiments/03-prompt-rewrite/README.md"
         }
       ]
     },
@@ -749,8 +749,8 @@
         "max_out": 8192
       },
       "stage": "PARTIAL",
-      "ground_truth_ref": "eval/questions.json",
-      "log_path": "eval/logs/2026-10-18T07-15-03-118Z/summary.md",
+      "ground_truth_ref": "experiments/_shared/questions.json",
+      "log_path": "experiments/_shared/logs/2026-10-18T07-15-03-118Z/summary.md",
       "result": "Guide on 12/13 (1 run). Only failure bahrain_clean_pace: answer right, but 96.537 misses the scorer's 0.5 ms tolerance around 96.5365 (scorer rounding), and no faster driver named.",
       "history": [
         {
@@ -771,8 +771,8 @@
         "max_out": 8192
       },
       "stage": "BLOCKED",
-      "ground_truth_ref": "eval/questions.json",
-      "log_path": "eval/logs/2026-10-18T07-18-29-137Z/",
+      "ground_truth_ref": "experiments/_shared/questions.json",
+      "log_path": "experiments/_shared/logs/2026-10-18T07-18-29-137Z/",
       "result": "Not scored. Every call returned AiError 4006 (daily free allocation used up). Rerun after the quota resets.",
       "history": [
         {
@@ -977,7 +977,7 @@
     },
     {
       "date": "2026-10-17",
-      "change": "v4.txt created in ../../2026-10-15-prompt-variants/variants/ as a copy of v3 with one added line in HOW TO ANSWER (fastest qualifying lap from laps, session Q). v3.txt is unchanged (SHA-256 matches HASHES.txt). Local v4 on Q12: 3 of 3 correct (11)."
+      "change": "v4.txt created in ../../01-prompt-variants/variants/ as a copy of v3 with one added line in HOW TO ANSWER (fastest qualifying lap from laps, session Q). v3.txt is unchanged (SHA-256 matches HASHES.txt). Local v4 on Q12: 3 of 3 correct (11)."
     },
     {
       "date": "2026-10-17",
@@ -1001,11 +1001,11 @@
     },
     {
       "date": "2026-10-17",
-      "change": "Prompt rewrite session: four eval runs added as eval-* items (summary entries, one per run folder, question null). Details in experiments/2026-10-18-prompt-rewrite/."
+      "change": "Prompt rewrite session: four eval runs added as eval-* items (summary entries, one per run folder, question null). Details in experiments/03-prompt-rewrite/."
     },
     {
       "date": "2026-10-18",
-      "change": "Chart and tooling session. Local model is now the app default (gpt-oss:20b-f1, 20k context). Fix-agent guide installed, 12/13 guide on, 5/13 guide off (19:47 eval). Prompt archived in experiments/2026-10-18-prompt-rewrite/. Browser test of a two-driver lap chart failed: make_chart has no series option, so both drivers drew on one line. Agreed next steps: series option on make_chart, a custom lap-comparison tool, and a declarative chart spec rendered by Recharts (the model does not write Recharts code). See docs/HANDOFF.md."
+      "change": "Chart and tooling session. Local model is now the app default (gpt-oss:20b-f1, 20k context). Fix-agent guide installed, 12/13 guide on, 5/13 guide off (19:47 eval). Prompt archived in experiments/03-prompt-rewrite/. Browser test of a two-driver lap chart failed: make_chart has no series option, so both drivers drew on one line. Agreed next steps: series option on make_chart, a custom lap-comparison tool, and a declarative chart spec rendered by Recharts (the model does not write Recharts code). See docs/HANDOFF.md."
     },
     {
       "date": "2026-10-18",

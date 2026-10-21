@@ -1,0 +1,369 @@
+[
+ {
+  "id": "t1_dirty_air_monza",
+  "question": "Who lost the most time to dirty air at Monza in 2024?",
+  "expect": "STR or MAG, about 7.28 s",
+  "calls": [
+   {
+    "name": "list_races",
+    "args": {
+     "season": 2024
+    },
+    "rowCount": 24
+   },
+   {
+    "name": "dirty_air_cost",
+    "args": {
+     "race_id": "2024_16",
+     "season": 2024
+    },
+    "rowCount": 20,
+    "rows": [
+     {
+      "rank": 1,
+      "driver_id": "STR",
+      "total_dirty_air_cost_s": 7.282000000000001,
+      "avg_tax_s": 0.17760975609756105,
+      "taxed_laps": 22,
+      "total_laps": 41,
+      "driver_name": "Lance Stroll"
+     },
+     {
+      "rank": 1,
+      "driver_id": "MAG",
+      "total_dirty_air_cost_s": 7.282,
+      "avg_tax_s": 0.15830434782608704,
+      "taxed_laps": 22,
+      "total_laps": 46,
+      "driver_name": "Kevin Magnussen"
+     },
+     {
+      "rank": 3,
+      "driver_id": "GAS",
+      "total_dirty_air_cost_s": 6.620000000000002,
+      "avg_tax_s": 0.1576190476190477,
+      "taxed_laps": 20,
+      "total_laps": 42,
+      "driver_name": "Pierre Gasly"
+     },
+     {
+      "rank": 4,
+      "driver_id": "RUS",
+      "total_dirty_air_cost_s": 5.958000000000002,
+      "avg_tax_s": 0.13540909090909095,
+      "taxed_laps": 18,
+      "total_laps": 44,
+      "driver_name": "George Russell"
+     },
+     {
+      "rank": 5,
+      "driver_id": "LEC",
+      "total_dirty_air_cost_s": 5.627000000000002,
+      "avg_tax_s": 0.11972340425531919,
+      "taxed_laps": 17,
+      "total_laps": 47,
+      "driver_name": "Charles Leclerc"
+     },
+     {
+      "rank": 6,
+      "driver_id": "ALO",
+      "total_dirty_air_cost_s": 5.296000000000001,
+      "avg_tax_s": 0.1203636363636364,
+      "taxed_laps": 16,
+      "total_laps": 44,
+      "driver_name": "Fernando Alonso"
+     },
+     {
+      "rank": 7,
+      "driver_id": "PER",
+      "total_dirty_air_cost_s": 4.634,
+      "avg_tax_s": 0.10297777777777778,
+      "taxed_laps": 14,
+      "total_laps": 45,
+      "driver_name": "Sergio Perez"
+     },
+     {
+      "rank": 8,
+      "driver_id": "OCO",
+      "total_dirty_air_cost_s": 4.303000000000001,
+      "avg_tax_s": 0.09354347826086956,
+      "taxed_laps": 13,
+      "total_laps": 46,
+      "driver_name": "Esteban Ocon"
+     },
+     {
+      "rank": 9,
+      "driver_id": "BOT",
+      "total_dirty_air_cost_s": 3.972,
+      "avg_tax_s": 0.08634782608695653,
+      "taxed_laps": 12,
+      "total_laps": 46,
+      "driver_name": "Valtteri Bottas"
+     },
+     {
+      "rank": 10,
+      "driver_id": "NOR",
+      "total_dirty_air_cost_s": 3.6410000000000005,
+      "avg_tax_s": 0.08275,
+      "taxed_laps": 11,
+      "total_laps": 44,
+      "driver_name": "Lando Norris"
+     }
+    ],
+    "note": "Only the top 10 of 20 rows are shown; 10 rows were dropped."
+   }
+  ],
+  "answer": "At the 2024 Italian Grand Prix (Monza, race_id 2024_16), Lance Stroll and Kevin Magnussen tied for the most dirty‑air time, each losing about **7.28 seconds** to following other cars.  \nThis figure is the total seconds lost per driver due to aerodynamic turbulence; it does not account for other race‑time losses such as pit stops or on‑track incidents."
+ },
+ {
+  "id": "t2_consistency_2024",
+  "question": "Which drivers were the most consistent in 2024?",
+  "expect": "lowest driver_residual_stddev_s, from driver_consistency",
+  "calls": [
+   {
+    "name": "driver_consistency",
+    "args": {
+     "season": 2024
+    },
+    "rowCount": 200,
+    "rows": [
+     {
+      "rank": 1,
+      "driver_id": "BOT",
+      "race_year": 2024,
+      "driver_residual_mean_s": 0.05205374096517356,
+      "driver_residual_stddev_s": 0.17320666883107522,
+      "clean_lap_count": 22,
+      "constructor_id": "Kick Sauber",
+      "driver_name": "Valtteri Bottas"
+     },
+     {
+      "rank": 2,
+      "driver_id": "TSU",
+      "race_year": 2024,
+      "driver_residual_mean_s": 0.07434966522740032,
+      "driver_residual_stddev_s": 0.18494228100315047,
+      "clean_lap_count": 55,
+      "constructor_id": "RB",
+      "driver_name": "Yuki Tsunoda"
+     },
+     {
+      "rank": 3,
+      "driver_id": "PER",
+      "race_year": 2024,
+      "driver_residual_mean_s": 0.6052071934808648,
+      "driver_residual_stddev_s": 0.18693586183493366,
+      "clean_lap_count": 27,
+      "constructor_id": "Red Bull Racing",
+      "driver_name": "Sergio Perez"
+     },
+     {
+      "rank": 4,
+      "driver_id": "VER",
+      "race_year": 2024,
+      "driver_residual_mean_s": 0.07517918272294188,
+      "driver_residual_stddev_s": 0.18939162984053798,
+      "clean_lap_count": 54,
+      "constructor_id": "Red Bull Racing",
+      "driver_name": "Max Verstappen"
+     },
+     {
+      "rank": 5,
+      "driver_id": "NOR",
+      "race_year": 2024,
+      "driver_residual_mean_s": -0.15319998659176426,
+      "driver_residual_stddev_s": 0.22805277871200647,
+      "clean_lap_count": 47,
+      "constructor_id": "McLaren",
+      "driver_name": "Lando Norris"
+     },
+     {
+      "rank": 6,
+      "driver_id": "SAI",
+      "race_year": 2024,
+      "driver_residual_mean_s": 0.1859464130916644,
+      "driver_residual_stddev_s": 0.23624732822393857,
+      "clean_lap_count": 55,
+      "constructor_id": "Ferrari",
+      "driver_name": "Carlos Sainz"
+     },
+     {
+      "rank": 7,
+      "driver_id": "LEC",
+      "race_year": 2024,
+      "driver_residual_mean_s": -0.4706357486687725,
+      "driver_residual_stddev_s": 0.23704329445748665,
+      "clean_lap_count": 47,
+      "constructor_id": "Ferrari",
+      "driver_name": "Charles Leclerc"
+     },
+     {
+      "rank": 8,
+      "driver_id": "HAM",
+      "race_year": 2024,
+      "driver_residual_mean_s": 0.08317164242687945,
+      "driver_residual_stddev_s": 0.24218858844853938,
+      "clean_lap_count": 54,
+      "constructor_id": "Mercedes",
+      "driver_name": "Lewis Hamilton"
+     },
+     {
+      "rank": 9,
+      "driver_id": "GAS",
+      "race_year": 2024,
+      "driver_residual_mean_s": 0.09210339686793903,
+      "driver_residual_stddev_s": 0.25091580433033805,
+      "clean_lap_count": 38,
+      "constructor_id": "Alpine",
+      "driver_name": "Pierre Gasly"
+     },
+     {
+      "rank": 10,
+      "driver_id": "NOR",
+      "race_year": 2024,
+      "driver_residual_mean_s": 0.06393042248760906,
+      "driver_residual_stddev_s": 0.256790254812805,
+      "clean_lap_count": 34,
+      "constructor_id": "McLaren",
+      "driver_name": "Lando Norris"
+     }
+    ],
+    "note": "Only the top 10 of 200 rows are shown; 190 rows were dropped."
+   }
+  ],
+  "answer": "The most consistent drivers in 2024, ranked by the lowest standard deviation of residual lap times, were Valtteri Bottas (0.173 s), Yuki Tsunoda (0.185 s), Sergio Perez (0.187 s), Max Verstappen (0.189 s), and Lando Norris (0.228 s).  \nThese figures show how tightly each driver’s lap times clustered around their average, but they exclude drivers with fewer than ten clean laps and do not account for race‑specific conditions or track difficulty."
+ },
+ {
+  "id": "t3_constructors_2024",
+  "question": "How did the constructors compare on pace across 2024?",
+  "expect": "constructor_pace, season average, McLaren first",
+  "calls": [
+   {
+    "name": "constructor_pace",
+    "args": {
+     "mode": "race",
+     "race_id": "",
+     "season": 2024
+    },
+    "rowCount": 10,
+    "rows": [
+     {
+      "rank": 1,
+      "constructor_id": "McLaren",
+      "constructor_structural_pace_s": -0.8046683278064479,
+      "constructor_structural_pace_se_s": 0.11017299778504834,
+      "constructor_structural_pace_ci_low_s": -1.0206074034651424,
+      "constructor_structural_pace_ci_high_s": -0.588729252147753,
+      "panel_observations_n": 2129,
+      "races_n": 23
+     },
+     {
+      "rank": 2,
+      "constructor_id": "Red Bull Racing",
+      "constructor_structural_pace_s": -0.7715264243438003,
+      "constructor_structural_pace_se_s": 0.12290863166979428,
+      "constructor_structural_pace_ci_low_s": -1.0124273424165968,
+      "constructor_structural_pace_ci_high_s": -0.5306255062710032,
+      "panel_observations_n": 1952,
+      "races_n": 23
+     },
+     {
+      "rank": 3,
+      "constructor_id": "Ferrari",
+      "constructor_structural_pace_s": -0.7165143172133107,
+      "constructor_structural_pace_se_s": 0.1040924916796346,
+      "constructor_structural_pace_ci_low_s": -0.9205356009053944,
+      "constructor_structural_pace_ci_high_s": -0.5124930335212269,
+      "panel_observations_n": 2128,
+      "races_n": 22
+     },
+     {
+      "rank": 4,
+      "constructor_id": "Mercedes",
+      "constructor_structural_pace_s": -0.5516362552128268,
+      "constructor_structural_pace_se_s": 0.11681173251149887,
+      "constructor_structural_pace_ci_low_s": -0.7805872509353643,
+      "constructor_structural_pace_ci_high_s": -0.3226852594902888,
+      "panel_observations_n": 2036,
+      "races_n": 23
+     },
+     {
+      "rank": 5,
+      "constructor_id": "Aston Martin",
+      "constructor_structural_pace_s": 0.19855052275476995,
+      "constructor_structural_pace_se_s": 0.11400184006824744,
+      "constructor_structural_pace_ci_low_s": -0.024893083778995045,
+      "constructor_structural_pace_ci_high_s": 0.421994129288535,
+      "panel_observations_n": 1982,
+      "races_n": 23
+     },
+     {
+      "rank": 6,
+      "constructor_id": "Haas F1 Team",
+      "constructor_structural_pace_s": 0.338426052185045,
+      "constructor_structural_pace_se_s": 0.11625212862464877,
+      "constructor_structural_pace_ci_low_s": 0.11057188008073342,
+      "constructor_structural_pace_ci_high_s": 0.5662802242893565,
+      "panel_observations_n": 1973,
+      "races_n": 22
+     },
+     {
+      "rank": 7,
+      "constructor_id": "RB",
+      "constructor_structural_pace_s": 0.4203450486609821,
+      "constructor_structural_pace_se_s": 0.1237172890143762,
+      "constructor_structural_pace_ci_low_s": 0.1778591621928049,
+      "constructor_structural_pace_ci_high_s": 0.6628309351291597,
+      "panel_observations_n": 1899,
+      "races_n": 23
+     },
+     {
+      "rank": 8,
+      "constructor_id": "Williams",
+      "constructor_structural_pace_s": 0.5151833361940098,
+      "constructor_structural_pace_se_s": 0.13579953972838144,
+      "constructor_structural_pace_ci_low_s": 0.24901623832638223,
+      "constructor_structural_pace_ci_high_s": 0.7813504340616375,
+      "panel_observations_n": 1769,
+      "races_n": 22
+     },
+     {
+      "rank": 9,
+      "constructor_id": "Alpine",
+      "constructor_structural_pace_s": 0.6069662829472895,
+      "constructor_structural_pace_se_s": 0.1347543165359226,
+      "constructor_structural_pace_ci_low_s": 0.34284782253688145,
+      "constructor_structural_pace_ci_high_s": 0.8710847433576978,
+      "panel_observations_n": 1877,
+      "races_n": 23
+     },
+     {
+      "rank": 10,
+      "constructor_id": "Kick Sauber",
+      "constructor_structural_pace_s": 0.7708347371023645,
+      "constructor_structural_pace_se_s": 0.13359793966754085,
+      "constructor_structural_pace_ci_low_s": 0.5089827753539844,
+      "constructor_structural_pace_ci_high_s": 1.0326866988507444,
+      "panel_observations_n": 1980,
+      "races_n": 23
+     }
+    ]
+   }
+  ],
+  "answer": "Across the 2024 season, McLaren was the fastest constructor, with an average structural pace of **‑0.80 s** per lap (lower is better). Red Bull Racing followed closely at **‑0.77 s**, while Ferrari was **‑0.72 s**. The remaining teams were slower, with Aston Martin the fastest of the slower group at **+0.20 s** and Kick Sauber the slowest at **+0.77 s**. These figures represent the mean lap‑time advantage or deficit relative to the season average, but they do not account for track‑specific conditions or race‑by‑race variations."
+ },
+ {
+  "id": "t4_explain_dirty_air",
+  "question": "What does the dirty air cost measure, and what does it leave out?",
+  "expect": "explanation, no table needed or dirty_air_cost used",
+  "calls": [],
+  "answer": "The dirty‑air cost measures the total seconds a driver loses in a race because they are stuck in the turbulent wake of the car ahead—essentially the time lost to following another car. It is calculated from telemetry and lap‑time data and ranks drivers by the largest cost first. This metric leaves out other race‑impacting factors such as tire wear, fuel load, driver skill, and mechanical issues, focusing solely on the aerodynamic penalty of dirty air."
+ },
+ {
+  "id": "t5_braking_out_of_scope",
+  "question": "What was Verstappen's braking point into Turn 1 at Monza in 2024?",
+  "expect": "says no tool covers braking points; no invented number",
+  "calls": [],
+  "answer": "I’m sorry, but none of the available tools provide braking‑point data."
+ }
+]

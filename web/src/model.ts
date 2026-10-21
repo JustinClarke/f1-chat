@@ -6,7 +6,7 @@ export type Call = { id: string; name: string; args: string };
 const PROVIDER = import.meta.env.VITE_PROVIDER ?? "local";
 const WORKER_URL = import.meta.env.VITE_WORKER_URL ?? "http://localhost:8787";
 const OLLAMA_URL = import.meta.env.VITE_OLLAMA_URL ?? "http://localhost:11434/v1";
-// gpt-oss:20b with a 20k context and 8k output, built from eval/ollama/Modelfile.
+// gpt-oss:20b with a 20k context and 8k output, built from experiments/_shared/ollama/Modelfile.
 const OLLAMA_MODEL = import.meta.env.VITE_OLLAMA_MODEL ?? "gpt-oss:20b-f1";
 
 export class ModelClient {

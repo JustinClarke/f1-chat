@@ -1,9 +1,9 @@
-// Prompt-variant experiment (protocol: eval/experiment/PROTOCOL.md). One variable changes: the data-guide text (eval/variants/v0..v3.txt).
+// Prompt-variant experiment (protocol: experiments/01-prompt-variants/PROTOCOL.md). One variable changes: the data-guide text (experiments/01-prompt-variants/variants/v0..v3.txt).
 // Everything else is frozen. Uses the real web/src chat/db code, bundled for Node, against the same Worker the browser hits.
 // Needs `npm run data` and `npm run worker` running.
-//   PILOT=1 [PILOT_V=v3 PILOT_Q=bahrain_clean_pace]  one run -> eval/experiment/pilot.jsonl
-//   (default)                                         full grid -> eval/experiment/runs.jsonl (skips run ids already logged, so it can resume)
-//   SUMMARY_ONLY=1                                    rebuild eval/experiment/summary.md from runs.jsonl
+//   PILOT=1 [PILOT_V=v3 PILOT_Q=bahrain_clean_pace]  one run -> experiments/01-prompt-variants/results/pilot.jsonl
+//   (default)                                         full grid -> experiments/01-prompt-variants/results/runs.jsonl (skips run ids already logged, so it can resume)
+//   SUMMARY_ONLY=1                                    rebuild experiments/01-prompt-variants/results/summary.md from runs.jsonl
 import { build } from "esbuild";
 import { createRequire } from "node:module";
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdtempSync } from "node:fs";
@@ -11,10 +11,10 @@ import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
-import { score } from "./score.mjs";
+import { score } from "../_shared/score.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const EXP = path.join(ROOT, "eval/experiment");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const EXP = path.join(ROOT, "experiments/01-prompt-variants/results");
 const DATA_URL = "http://localhost:8000", WORKER_URL = "http://localhost:8787";
 const DATA_ROOT = path.resolve(process.env.DATA_ROOT || "/Users/justin/github/off-the-pace/data");
 
@@ -27,7 +27,7 @@ const SETTINGS = { temperature: 0, reasoning: { effort: "medium" }, max_tokens: 
 const QUESTIONS_SHA256 = readFileSync(path.join(EXP, "questions.sha256"), "utf8").trim().split(/\s+/)[0];
 
 const sha = (x) => createHash("sha256").update(x).digest("hex");
-const read = (f) => readFileSync(path.join(ROOT, "eval/variants", f), "utf8");
+const read = (f) => readFileSync(path.join(ROOT, "experiments/01-prompt-variants/variants", f), "utf8");
 const variantText = Object.fromEntries(VARIANTS.map((v) => [v, read(`${v}.txt`)]));
 const RULE = read("rule.txt").replace(/\n$/, "");
 const variantSha = Object.fromEntries(VARIANTS.map((v) => [v, sha(variantText[v])]));
@@ -35,8 +35,8 @@ const jsonl = (f) => (existsSync(f) ? readFileSync(f, "utf8").split("\n").filter
 
 if (process.env.SUMMARY_ONLY) { writeSummary(jsonl(path.join(EXP, "runs.jsonl"))); process.exit(0); }
 
-const questionsRaw = readFileSync(path.join(ROOT, "eval/questions.json"));
-if (sha(questionsRaw) !== QUESTIONS_SHA256) { console.error("eval/questions.json does not match eval/experiment/questions.sha256. Ground truth is frozen; stopping."); process.exit(1); }
+const questionsRaw = readFileSync(path.join(ROOT, "experiments/_shared/questions.json"));
+if (sha(questionsRaw) !== QUESTIONS_SHA256) { console.error("experiments/_shared/questions.json does not match experiments/01-prompt-variants/results/questions.sha256. Ground truth is frozen; stopping."); process.exit(1); }
 const allQ = JSON.parse(questionsRaw);
 const questions = QUESTION_IDS.map((id) => allQ.find((q) => q.id === id) ?? (() => { throw new Error(`missing question ${id}`); })());
 
@@ -66,7 +66,7 @@ await build({
 });
 const bundleUrl = pathToFileURL(out).href;
 const probe = await import(`${bundleUrl}?probe`);
-if (probe.__realGuide !== variantText.v3) { console.error("eval/variants/v3.txt differs from DATA_GUIDE in web/src/dataGuide.ts. Run node eval/variants/make_v3.mjs."); process.exit(1); }
+if (probe.__realGuide !== variantText.v3) { console.error("experiments/01-prompt-variants/variants/v3.txt differs from DATA_GUIDE in web/src/dataGuide.ts. Run node experiments/01-prompt-variants/variants/make_v3.mjs."); process.exit(1); }
 
 // 2. Servers reachable?
 for (const [u, n] of [[`${DATA_URL}/manifest.json`, "Data server (npm run data)"], [`${WORKER_URL}/chat`, "Worker (npm run worker)"]]) {
@@ -197,7 +197,7 @@ writeSummary(jsonl(runsFile), stopped);
 function writeSummary(recs, stopNote = null) {
   const med = (a) => { const s = a.filter((x) => x !== null && x !== undefined).sort((x, y) => x - y); if (!s.length) return "n/a"; const m = s.length >> 1; return +(s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2).toFixed(2); };
   let md = `# Summary (${new Date().toISOString().slice(0, 10)})\n\nRuns logged: ${recs.length} of ${VARIANTS.length * QUESTION_IDS.length * REPEATS} planned. Seed ${SEED}. Source: runs.jsonl.${stopNote ? `\n\nSTOPPED EARLY: ${stopNote}` : ""}\n\n`;
-  md += "Each cell is passes/runs under the strict scorer (eval/score.mjs). Verdicts other than pass: fail, check manually (CHK), error (infrastructure).\n\n";
+  md += "Each cell is passes/runs under the strict scorer (experiments/_shared/score.mjs). Verdicts other than pass: fail, check manually (CHK), error (infrastructure).\n\n";
   md += `| question | ${VARIANTS.join(" | ")} |\n|---|${VARIANTS.map(() => "---").join("|")}|\n`;
   for (const id of QUESTION_IDS) md += `| ${id} | ${VARIANTS.map((v) => { const r = recs.filter((x) => x.variant === v && x.question_id === id); const c = (k) => r.filter((x) => x.verdict === k).length; return `${c("pass")}/${r.length}` + (c("check manually") ? ` (${c("check manually")} CHK)` : "") + (c("error") ? ` (${c("error")} err)` : ""); }).join(" | ")} |\n`;
   md += `| **all** | ${VARIANTS.map((v) => { const r = recs.filter((x) => x.variant === v); return `**${r.filter((x) => x.verdict === "pass").length}/${r.length}**`; }).join(" | ")} |\n`;

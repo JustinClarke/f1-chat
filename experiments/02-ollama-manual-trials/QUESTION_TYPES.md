@@ -94,7 +94,7 @@ Race rows in `results` have `session_type` NULL; qualifying rows have `'Q'`. In 
   - Runs 1 and 2 used `results.Position = 1` in the qualifying session, which is the pole sitter, not the fastest lap. Run 2 ran three steps and never queried `laps`.
   - Run 3 used the minimum `Q3` time per driver from `results`. That is a different measure and the model did not query `laps` at all.
   - The model never joined `laps` to `results`. This is the join the question was built to test, so it is a clear fail for this model.
-- **Rerun with a fastest-qualifying-lap line added to the guide (v4, 3 runs, 17 Oct):** all 3 correct, 11. Each run queried `laps` with session 'Q', `LapTime` not null, not deleted, grouped by race, then compared to the race winner. The fix is one line in "HOW TO ANSWER". v3 is unchanged; the v4 copy is in `experiments/2026-10-15-prompt-variants/variants/v4.txt`. Only Q12 has been rerun. Other questions have not been checked against v4, so the change could affect them.
+- **Rerun with a fastest-qualifying-lap line added to the guide (v4, 3 runs, 17 Oct):** all 3 correct, 11. Each run queried `laps` with session 'Q', `LapTime` not null, not deleted, grouped by race, then compared to the race winner. The fix is one line in "HOW TO ANSWER". v3 is unchanged; the v4 copy is in `experiments/01-prompt-variants/variants/v4.txt`. Only Q12 has been rerun. Other questions have not been checked against v4, so the change could affect them.
 
 ## 13. Trap (driver not in the 2024 data)
 - **Question:** How many points did Michael Schumacher score in the 2024 season?
@@ -145,7 +145,7 @@ Race rows in `results` have `session_type` NULL; qualifying rows have `'Q'`. In 
 - **Result:** not run.
 
 ## Cloudflare Workers AI run (gpt-oss-20b, v4 prompt, 1 run each, 17 Oct)
-Run through the repo's Worker (`worker/index.ts`, `wrangler dev`, Workers AI binding) with temperature 0, medium reasoning and 4096 max tokens, as in `eval/run_experiment.mjs`. The tool loop is the same as the local harness, with the tool messages in OpenAI form. The local Ollama results above used v3, except for Q12 (v4).
+Run through the repo's Worker (`worker/index.ts`, `wrangler dev`, Workers AI binding) with temperature 0, medium reasoning and 4096 max tokens, as in `experiments/01-prompt-variants/run_experiment.mjs`. The tool loop is the same as the local harness, with the tool messages in OpenAI form. The local Ollama results above used v3, except for Q12 (v4).
 - **Q11 (best qualifier):** pass. Verstappen, 10 poles. Same answer as the local runs.
 - **Q12 (fastest qualifying lap, v4):** pass. 11 races. Two SQL steps, using `laps` for session Q.
 - **Q13 (Schumacher trap):** pass. Says the data covers 2024 only and he is not in it. No points figure.

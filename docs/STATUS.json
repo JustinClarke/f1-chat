@@ -1,0 +1,378 @@
+{
+  "goal": {
+    "summary": "Build an LLM companion to the off-the-pace React app that can (a) drive the app (open and redirect to pages), (b) explain what the user sees from the Mintlify docs and the page methodology, and (c) answer data questions and show the data it queried.",
+    "use_cases_in_build_order": [
+      "Case 3: explain what the user is looking at (no SQL, answered from the page's methodology text)",
+      "Case 1: ask a question and get a table (the natural-language query page)",
+      "Case 2: take me there (navigate)",
+      "Case 4: explain a result on the page",
+      "Case 5: find something interesting (last, highest risk)"
+    ],
+    "related_docs": {
+      "readme_how_to_run": "/Users/justin/github/_misc/_chat/f1-chat/README.md",
+      "known_issues_detail": "/Users/justin/github/_misc/_chat/f1-chat/docs/known-issues.md",
+      "decisions_dir": "/Users/justin/github/_misc/_chat/f1-chat/docs/decisions",
+      "archive": "/Users/justin/github/_misc/_chat/f1-chat/_archive/docs"
+    }
+  },
+  "repos": {
+    "f1-chat": {
+      "path": "/Users/justin/github/_misc/_chat/f1-chat",
+      "role": "Prototype and eval bench",
+      "branch": "multiyear-scope",
+      "react": "19.3"
+    },
+    "off-the-pace": {
+      "path": "/Users/justin/github/off-the-pace",
+      "role": "Product app",
+      "react": "18.3",
+      "router": "react-router-dom 7",
+      "exported_data": "/Users/justin/github/off-the-pace/app/public/data",
+      "manifest": "/Users/justin/github/off-the-pace/app/public/data/_manifest.json",
+      "query_lab_engine": "/Users/justin/github/off-the-pace/app/src/data/duckdb/queryLab.ts",
+      "query_lab_function": "runLabQuery",
+      "route_catalogue": "/Users/justin/github/off-the-pace/app/src/nav/routes.ts",
+      "route_catalogue_filter": "shipped !== false",
+      "route_catalogue_joined_to": "/Users/justin/github/off-the-pace/app/src/nav/pillars.ts"
+    },
+    "note": "The React versions differ, so port logic, not components."
+  },
+  "phase_status": [
+    {
+      "phase": "(a) Prototype loop and eval bench in this repo",
+      "status": "done",
+      "note": "2024 bronze data. Guide on 12/13, off 5/13 at the 19:47 run on 17 Oct. Known scorer issue on the Bahrain rounding."
+    },
+    {
+      "phase": "(b) All-years data scope",
+      "status": "paused",
+      "note": "The bronze season column work may be unnecessary if the companion reads the app exports."
+    },
+    {
+      "phase": "(c) Companion prototype reading app exports via a read-only adapter",
+      "status": "in progress",
+      "note": "Harness and adapter built on the gold Parquet in Node DuckDB (not the app exports). Plain raw schema 24/24, views 21/24. Braking question open. 20 Oct spike (experiments/05-app-queries/): the app's own SQL as tools picks the right tool 3/3 and refuses out-of-scope; answers still invent names and numbers on long lists. See prototype.companion_eval."
+    },
+    {
+      "phase": "(d) Navigate tool validated against the route catalogue",
+      "status": "not started",
+      "note": ""
+    },
+    {
+      "phase": "(e) Move the loop into off-the-pace as a feature",
+      "status": "not started",
+      "note": ""
+    }
+  ],
+  "decisions": {
+    "note": "Earlier prototype decisions are in /Users/justin/github/_misc/_chat/f1-chat/docs/decisions.",
+    "items": [
+      {
+        "date": "2026-10-18",
+        "decision": "Do not copy the React app into this repo. Test here against the app's exported files."
+      },
+      {
+        "date": "2026-10-18",
+        "decision": "No tunnel or relay yet. The browser calls Ollama through a dev proxy."
+      },
+      {
+        "date": "2026-10-18",
+        "decision": "No gold or silver tables for now: they are not materialised as Parquet on disk, and they are shaped for ML."
+      },
+      {
+        "date": "2026-10-18",
+        "decision": "No raw telemetry: the app itself never exports it (7.2 GB)."
+      },
+      {
+        "date": "2026-10-18",
+        "decision": "Start with a read-only natural-language query page on the Query Lab engine, before navigation."
+      },
+      {
+        "date": "2026-10-18",
+        "decision": "Local model gpt-oss:20b on Ollama is the default, because the Cloudflare free quota ran out on 17 Oct."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "Keep off-the-pace read-only: no edits there."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "The three views (v_corners, v_stints, v_driver_season_skill) live in the adapter for now. Port to dbt in the data repo only after the views prove out and with the owner's OK."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "No fine-tuning."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "The 20k-character value-list prompt is archived (archive-value-lists-22k/); plain raw-table schema is the baseline."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "The 3-query harness cap is a diagnostic, not a product decision."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "Join circuits on race_to_track.track_id = dim_circuits.circuit_key (173 matches). dim_circuits.circuit_id is a different slug and matches nothing. Details: experiments/04-companion-adapter/DATA_MAP.md."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "The companion reads the app's exports and never writes to the app; off-the-pace stays read-only."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "Use the app's own SQL (app/src/features/*/queries.ts) as the companion's data tools instead of model-written SQL. Spike: experiments/05-app-queries/."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "Driver names live in a companion-side map (experiments/05-app-queries/driver_names.json), not in the app. The map was written from memory and is unverified."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "The schema prompt is skipped in the tool spike; the model sees only the tool definitions."
+      },
+      {
+        "date": "2026-10-19",
+        "decision": "Repo layout: numbered folders in experiments/, code used by two or more experiments in experiments/_shared/, retired material in _archive/. No top-level eval/. See experiments/06-session-handoff-2026-10-19/LAYOUT.md."
+      }
+    ]
+  },
+  "open_questions": [
+    {
+      "id": 1,
+      "question": "Does a product page accept URL parameters such as circuit or season? This decides whether navigate can open a filtered page.",
+      "settled_by": "Check the page components and router setup. Not checked yet."
+    },
+    {
+      "id": 2,
+      "question": "Which first feature to test, Ghost Standings or Driver Consistency? The owner leaned to Ghost Standings as the clearer story. The difference is two selectors versus one.",
+      "settled_by": "Owner's call after looking at both pages."
+    },
+    {
+      "id": 3,
+      "question": "What filter does features/driver-consistency/transform.ts apply, so the companion matches the page? Related: the companion eval excludes c3_clean_lap_filter because the methodology text and queries.ts disagree on anomaly flags.",
+      "settled_by": "Read that file. Not read yet."
+    },
+    {
+      "id": 4,
+      "question": "Where does the companion live: a panel in off-the-pace, or a page in it?",
+      "settled_by": "Decide after phase (c)."
+    },
+    {
+      "id": 5,
+      "question": "Which model serves production? The Worker path is blocked by the free quota.",
+      "settled_by": "Choose a hosting route once phase (c) shows what quality is needed."
+    },
+    {
+      "id": 6,
+      "question": "Does the eval harness read from server/serve-data.mjs or its own path?",
+      "settled_by": "Read /Users/justin/github/_misc/_chat/f1-chat/experiments/_shared/run_eval.mjs and /Users/justin/github/_misc/_chat/f1-chat/server/serve-data.mjs. Not checked."
+    },
+    {
+      "id": 7,
+      "question": "Define the braking question u_braking_point. The expected 748.14 m is a mean across 53 laps and is not settled; what the question means is open.",
+      "settled_by": "Owner defines it (one lap, mean, or other)."
+    },
+    {
+      "id": 8,
+      "question": "Approve the scorer rule change for refusals that name a driver (now marked check manually)?",
+      "settled_by": "Owner approval. Not approved."
+    },
+    {
+      "id": 9,
+      "question": "Approve the wording of the harness cap stop message (it was misread as a row limit).",
+      "settled_by": "Owner approval of new wording."
+    },
+    {
+      "id": 10,
+      "question": "Add a lap view or keep a raw-table fallback for lap-count questions (c1_lap_rows_2024 fails with views on).",
+      "settled_by": "Decide, then rerun the set."
+    },
+    {
+      "id": 11,
+      "question": "Add a driver_id value list to the views schema? The model guesses verstappen / max_verstappen; stored code is VER.",
+      "settled_by": "Decide, then rerun the braking question."
+    },
+    {
+      "id": 12,
+      "question": "When to promote the views to dbt, and who owns that?",
+      "settled_by": "Owner, after the views prove out."
+    },
+    {
+      "id": 13,
+      "question": "Does driver_consistency get a season-level version? The app query is one row per driver per race (no race id in the rows), so 'most consistent in 2024' needs a grouping it does not do.",
+      "settled_by": "Owner decides whether to add a season-level query in the companion (the app SQL was not changed)."
+    },
+    {
+      "id": 14,
+      "question": "Should the scorer accept rounded numbers (e.g. 96.537 for 96.5365)?",
+      "settled_by": "Owner approval of a rounding rule in experiments/_shared/score.mjs."
+    }
+  ],
+  "next_step": [
+    "Define the braking question (open question 7: one lap, mean, or other).",
+    "Decide whether driver_consistency gets a season-level version (open question 13).",
+    "Decide whether the scorer accepts rounded numbers (open question 14).",
+    "Check driver_names.json against a source (it was written from memory).",
+    "Rerun the five app-query questions more than once per question (n=1 so far) before reading anything into the grain note.",
+    "Carried over from 19 Oct: driver_id value list for the views, a lap view or raw fallback, cap stop-message wording, refusal scoring rule."
+  ],
+  "session_log": [
+    {
+      "date": "2026-10-19",
+      "entries": [
+        "Full account: experiments/06-session-handoff-2026-10-19/SESSION.md. Layout decisions: experiments/06-session-handoff-2026-10-19/LAYOUT.md.",
+        "Mapped the app data: ERD_FULL.md and DATA_MAP.md in experiments/04-companion-adapter/ (39 manifest tables plus 3 adapter views; 11 unlisted table folders in the bucket; fct_telemetry_deltas 28.6 M rows).",
+        "Spike experiments/05-app-queries/: the app's own SQL as tools; right tool 3/3, braking refused; names and numbers still invented on long lists in round 1; round 2 fixed with a name map, rank and top-10.",
+        "Repo cleanup: experiments numbered 01-06, shared scorer and app eval in experiments/_shared/, eval/ removed, retired material in _archive/."
+      ]
+    },
+    {
+      "date": "2026-10-19",
+      "entries": [
+        "Built the companion eval set experiments/04-companion-adapter/companion_questions.json: 8 scored questions (3 explain-page, 5 lookup). Two contested items excluded: c3_clean_lap_filter (methodology text vs queries.ts disagree on anomaly flags) and c1_consistency_lowest_sd (fct_driver_skill_features is one row per driver per race, not per season).",
+        "Built the harness in experiments/04-companion-adapter/: run.mjs (one master system prompt, run_sql, temperature 0, MAX_TURNS 6, MAX_SQL cap default 3) and adapter.mjs (gold Parquet in Node DuckDB). Env switches: VIEWS, SCHEMA_VALUES, QUESTIONS, RUNS_FILE, SUMMARY_FILE, REPEATS, ONLY, TRACE_ID/TRACE_TO.",
+        "Results: plain raw schema 24/24 (3 repeats). Raw with value lists (22.8k chars) 24/24, archived. Views on 21/24; only failure c1_lap_rows_2024 (no lap table in the views). View row counts match source with 0 join failures (VIEWS_CHECK.md).",
+        "Braking u_braking_point: 0/3 with views on. Model uses track italian_grand_prix correctly but guesses driver_id. Expected 748.14 m is a 53-lap mean, not settled.",
+        "Coverage: team radio, salary and tyre pressure are absent from all 39 tables (NOTES.md).",
+        "The 3-query cap ends loops, but its stop message was misread as a row limit; wording to be fixed.",
+        "Fixed the parseNumbers minus-sign bug in experiments/_shared/score.mjs (tests pass 5/5). Refusals naming a driver are marked check manually; rule change not approved.",
+        "Data facts recorded in DATA_MAP.md: circuit join key, race_id text like 2024_16, corner names Turn_1."
+      ]
+    },
+    {
+      "date": "2026-10-18",
+      "entries": [
+        "Created branch multiyear-scope.",
+        "Agreed the companion direction and the five use cases and their order.",
+        "Explored the off-the-pace app with Sonnet (data exports, Query Lab engine, route catalogue).",
+        "Decided to start with the Query Lab engine, read-only, before navigation.",
+        "Created this status doc.",
+        "Merged HANDOFF.md and LOG.md into this file (prototype key and session_log). Old copies are in _archive/docs/."
+      ]
+    },
+    {
+      "date": "2026-10-17",
+      "entries": [
+        "Ran manual trials on gpt-oss:20b locally (Ollama, 16k then 20k context). Tie rule, counting rule, name rule and a driver-season table tested on the Bahrain pit-stop question and the Monaco laps question. Details: experiments/02-ollama-manual-trials/RESULTS.md.",
+        "Built dim_driver_seasons (dbt, data repo) and exported it for the app. Tests pass.",
+        "Folded the rules, the table and its data-guide entry into the app. Typecheck passes. Not browser-tested.",
+        "Restructured these docs. Old HANDOFF and BUILD_LOG moved to _archive/docs/.",
+        "Later 17 Oct: row cap 200 and output cap 8192; the table is now drawn from the query result. Explanation rules were tried and removed (Q8 caveat unresolved). Added one rule, 'add one sentence on what the measure leaves out', to the app and harness; not tested. Fixed two rules sharing one line in chat.ts. Typecheck and build pass. No reruns.",
+        "Table-from-query fix: splitLongTable in chat.ts strips tables over 15 data rows; the matching run_sql result is drawn as a grid. Browser-tested on Q10; 3 harness runs correct. Tab-separated lists not detected.",
+        "Recharts integration: web/src/chart.tsx, make_chart tool, bar and line. Browser-tested once (wins per team).",
+        "Local logs (Q10, Q8 limit runs, pasted app grid) and a splitter check script copied into the experiment folder."
+      ]
+    },
+    {
+      "date": "2026-10-15",
+      "entries": [
+        "Workers AI prompt-variant grid (80 runs). Results in experiments/01-prompt-variants/. Old handoff and build log: _archive/docs/."
+      ]
+    }
+  ],
+  "update_checklist": [
+    "Edit only this file at the end of a session.",
+    "Update phase_status and the prototype block (current_state, known_problems, next_steps_agreed_not_built) if they changed.",
+    "Add new decisions with their date. Add a numbered ADR in docs/decisions/ only for a lasting choice.",
+    "Move answered open_questions out and note the answer (in decisions if it was a decision).",
+    "Replace next_step, then add a session_log entry (newest first).",
+    "Only if run commands changed, edit README.md; only if a data or model problem needs detail, edit docs/known-issues.md."
+  ],
+  "prototype": {
+    "updated": "2026-10-19",
+    "what_it_is": "A browser chat that answers questions about 2024 F1 laps and results. The model writes DuckDB SQL through run_sql. DuckDB-WASM runs the SQL in the browser on Parquet served by server/serve-data.mjs (port 8000). The model answers from the rows, and can call make_chart (bar or line). Prompt-work detail: experiments/03-prompt-rewrite/ (README, FINDINGS, TRIALS).",
+    "model_setup": [
+      "Default is the local model gpt-oss:20b-f1 on Ollama (port 11434), built from experiments/_shared/ollama/Modelfile (20k context, 8k output).",
+      "VITE_PROVIDER=cloudflare npm run dev sends chats to the Worker (worker/), which calls Workers AI. The free daily quota (10,000 neurons) ran out on 17 Oct, so the Worker returns error 4006 until it resets.",
+      "The RULES block is gone from web/src/chat.ts. All behaviour rules live in DATA_GUIDE in web/src/dataGuide.ts. With the guide off, the model gets only the opening line, the tools and the schema."
+    ],
+    "current_state": {
+      "app_prompt": "The fix-agent guide in web/src/dataGuide.ts.",
+      "eval_run": "experiments/_shared/logs/2026-10-17T19-47-56-938Z/ (19:47, 17 Oct)",
+      "score_guide_on": "12/13",
+      "score_guide_off": "5/13",
+      "only_failure_guide_on": "Bahrain pace. The model's answer is right (96.537 s), but the scorer expects 96.5365 to the 4th decimal. Scorer issue, not model.",
+      "guide_off_regressions": [
+        "Monaco laps",
+        "top compound",
+        "wins by driver"
+      ],
+      "uncommitted_at_handoff": "Commit 41666a8 (23:24, 17 Oct) holds the earlier prompt work. The fix-agent guide, the trial-log entries and the archive folder were not committed yet.",
+      "companion_eval_2026_10_19": "Companion harness reads the gold Parquet via adapter.mjs. Plain raw schema 24/24; views on 21/24; braking 0/3 with views on. See prototype.companion_eval."
+    },
+    "known_problems": [
+      "1. Chart can't show two drivers. make_chart takes one x and one y and has no series option. Asking for Verstappen vs Norris lap times draws one line that zigzags, with no legend. Pit laps (about 115 to 118 s) are not excluded.",
+      "2. Braking and other non-data questions should get 'the data doesn't cover it', and the app should not chart anything. Not yet tested in the browser.",
+      "3. Unanswerable questions sometimes name a driver while refusing (guide off).",
+      "4. Unsettled Q10 count: 138 (classified finishers lapped, per the notes) vs 144 (a recount). The data has exactly 138 rows with status 'Lapped'.",
+      "5. Q7 chart (points by driver) is checked only by its text, not the drawn bars.",
+      "6. Scorer: Bahrain rounding; 'Seven' written as a word is now accepted.",
+      "7. Companion: views have no lap table, so c1_lap_rows_2024 fails (model says not covered).",
+      "8. Companion: braking question 0/3 with views on. Model guesses driver_id (verstappen, max_verstappen; stored code is VER) and the driver list is not in the schema. The expected 748.14 m (53-lap mean) is not settled.",
+      "9. Companion: the cap stop message was misread as a row limit; wording to be fixed.",
+      "10. Companion scorer: refusals that name a driver are marked check manually; rule change not approved. parseNumbers minus-sign bug fixed."
+    ],
+    "known_problems_detail": "/Users/justin/github/_misc/_chat/f1-chat/docs/known-issues.md",
+    "next_steps_agreed_not_built": [
+      "A series option on make_chart (a column to split by, with a legend), so multi-line charts work in general.",
+      "A custom lap-comparison tool, e.g. compare_lap_times(race, driver_a, driver_b), that runs fixed SQL, excludes pit laps and returns both series. Use it for driver comparisons; run_sql stays the fallback.",
+      "A declarative chart spec (series, colours, axis labels, reference lines) rendered by Recharts. Do not let the model write Recharts or JSX code.",
+      "Re-run the 14-question eval after any prompt change, guide on and off, and check the chart questions by hand in the browser.",
+      "Companion: add driver_id value list to views; add a lap view or raw fallback; fix cap wording; decide braking definition; approve or reject refusal rule; rerun the full set and uncovered-v2 with views on and off."
+    ],
+    "experiments": {
+      "experiments/01-prompt-variants/": "Earlier Workers AI prompt grid (frozen). Runner run_experiment.mjs.",
+      "experiments/02-ollama-manual-trials/": "Hand-run questions and trial log (status/trials-log.json).",
+      "experiments/03-prompt-rewrite/": "Prompt rewrite, with archived prompts and tools.",
+      "experiments/04-companion-adapter/": "Companion adapter, harness, views, protocols and summaries (see companion_eval).",
+      "experiments/05-app-queries/": "Spike: the app's own SQL as companion tools (FINDINGS.md, FINDINGS-round2.md).",
+      "experiments/06-session-handoff-2026-10-19/": "Session handoff (SESSION.md) and layout decisions (LAYOUT.md).",
+      "experiments/_shared/": "Scorer and tests, app eval runner (npm run eval) with its logs, questions.json, ground_truth.py, ollama/Modelfile."
+    },
+    "watch_out_for": [
+      "Ollama's /v1 endpoint cannot set context size per request. That's why experiments/_shared/ollama/Modelfile bakes in num_ctx 20480. Without it, prompts were silently cut to 4096 tokens.",
+      "The driver_seasons table covers 2018 to 2025. Always join it with season = 2024, or totals multiply by 8.",
+      "Ollama's gpt-oss sometimes calls tools that don't exist (e.g. container.exec). The app should return an error to the model rather than crash. Not fixed yet.",
+      "race_id is text like 2024_16; corner names are Turn_1 in the data.",
+      "Join circuits on race_to_track.track_id = dim_circuits.circuit_key; dim_circuits.circuit_id matches nothing.",
+      "fct_driver_skill_features is one row per driver per race, not per season."
+    ],
+    "companion_eval": {
+      "set": "experiments/04-companion-adapter/companion_questions.json",
+      "harness": "experiments/04-companion-adapter/run.mjs",
+      "adapter": "experiments/04-companion-adapter/adapter.mjs",
+      "files": [
+        "DATA_MAP.md",
+        "ERD_FULL.md",
+        "VIEWS_CHECK.md",
+        "NOTES.md",
+        "PROTOCOL-master-prompt.md",
+        "PROTOCOL-loop-stop.md",
+        "PROTOCOL-uncovered-v2.md",
+        "summary-novalues.md",
+        "summary-views-values.md",
+        "summary-views-values-braking.md",
+        "summary-uncovered-v2.md",
+        "baseline-plain/",
+        "archive-value-lists-22k/"
+      ],
+      "score_plain_raw": "24/24",
+      "score_raw_with_value_lists_22k": "24/24 (archived)",
+      "score_views_on": "21/24 (only failure c1_lap_rows_2024)",
+      "braking_views_on": "0/3",
+      "scorer": "experiments/_shared/score.mjs",
+      "dir": "experiments/04-companion-adapter/",
+      "app_query_spike": {
+        "dir": "experiments/05-app-queries/",
+        "tools": "experiments/05-app-queries/tools.mjs",
+        "runner": "experiments/05-app-queries/run_tools.mjs",
+        "scorer": "experiments/05-app-queries/score_round2.mjs",
+        "findings": [
+          "experiments/05-app-queries/FINDINGS.md",
+          "experiments/05-app-queries/FINDINGS-round2.md"
+        ]
+      }
+    }
+  }
+}

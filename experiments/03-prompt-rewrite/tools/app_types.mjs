@@ -25,7 +25,7 @@ const db = await duck.createDuckDB({ mvp: { mainModule: `${dist}/duckdb-mvp.wasm
 await db.instantiate(() => {});
 const manifest = await (await fetch("http://localhost:8000/manifest.json")).json();
 await app.loadViews(db.connect(), manifest, (f) => db.registerFileURL(f, path.join(DATA_ROOT, f), duck.DuckDBDataProtocol.NODE_FS, false));
-const { score } = await import(pathToFileURL(ROOT + "/eval/score.mjs").href);
+const { score } = await import(pathToFileURL(ROOT + "/experiments/_shared/score.mjs").href);
 const QS = [
   "In the 2024 Bahrain Grand Prix, who had the faster race pace, Verstappen or Norris? Use only green-flag laps, excluding in-laps, out-laps and deleted laps. Give the median lap time for each.",
   "Across the 2024 Grand Prix races, which drivers finished on the podium (top 3) after starting outside the top 10 on the grid? Give each driver with how many times they did it.",
